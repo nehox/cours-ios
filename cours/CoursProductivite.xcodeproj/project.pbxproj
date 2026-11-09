@@ -1,0 +1,327 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1B2C3D41A00000100000001 /* CoursProductiviteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000001 /* CoursProductiviteApp.swift */; };
+		A1B2C3D41A00000100000002 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000002 /* MainView.swift */; };
+		A1B2C3D41A00000100000003 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000003 /* Task.swift */; };
+		A1B2C3D41A00000100000004 /* Priority.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000004 /* Priority.swift */; };
+		A1B2C3D41A00000100000005 /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000005 /* TaskList.swift */; };
+		A1B2C3D41A00000100000006 /* TaskPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000006 /* TaskPolicy.swift */; };
+		A1B2C3D41A00000100000007 /* TaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000007 /* TaskStore.swift */; };
+		A1B2C3D41A00000100000008 /* Lesson01_Basics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000008 /* Lesson01_Basics.swift */; };
+		A1B2C3D41A00000100000009 /* Lesson02_Optionals.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000009 /* Lesson02_Optionals.swift */; };
+		A1B2C3D41A0000010000000A /* Lesson03_Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A0000010000000A /* Lesson03_Protocols.swift */; };
+		A1B2C3D41A0000010000000B /* Lesson04_ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A0000010000000B /* Lesson04_ViewModel.swift */; };
+		A1B2C3D41A00000100000012 /* CourseBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000012 /* CourseBootstrap.swift */; };
+		A1B2C3D41A00000100000013 /* ProductivityHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000013 /* ProductivityHomeView.swift */; };
+		A1B2C3D41A00000100000014 /* Lesson05_HomeScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000014 /* Lesson05_HomeScreenViewModel.swift */; };
+		A1B2C3D41A0000010000000C /* TaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A0000010000000C /* TaskTests.swift */; };
+		A1B2C3D41A0000010000000D /* TaskListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A0000010000000D /* TaskListTests.swift */; };
+		A1B2C3D41A0000010000000E /* TaskPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A0000010000000E /* TaskPolicyTests.swift */; };
+		A1B2C3D41A0000010000000F /* LessonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A0000010000000F /* LessonTests.swift */; };
+		A1B2C3D41A00000100000010 /* MainViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000010 /* MainViewModelTests.swift */; };
+		A1B2C3D41A00000100000011 /* CoursProductiviteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000011 /* CoursProductiviteTests.swift */; };
+		A1B2C3D41A00000100000015 /* Lesson05_HomeScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D31A00000100000015 /* Lesson05_HomeScreenTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A1B2C3D31A00000100000001 /* CoursProductiviteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/App/CoursProductiviteApp.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000002 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/App/MainView.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000003 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Domain/Task.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000004 /* Priority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Domain/Priority.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000005 /* TaskList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Domain/TaskList.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000006 /* TaskPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Domain/TaskPolicy.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000007 /* TaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Infrastructure/TaskStore.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000008 /* Lesson01_Basics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Lessons/Lesson01_Basics.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000009 /* Lesson02_Optionals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Lessons/Lesson02_Optionals.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A0000010000000A /* Lesson03_Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Lessons/Lesson03_Protocols.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A0000010000000B /* Lesson04_ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Lessons/Lesson04_ViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000012 /* CourseBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/App/CourseBootstrap.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000013 /* ProductivityHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/App/ProductivityHomeView.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000014 /* Lesson05_HomeScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductivite/Lessons/Lesson05_HomeScreenViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A0000010000000C /* TaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductiviteTests/TaskTests.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A0000010000000D /* TaskListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductiviteTests/TaskListTests.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A0000010000000E /* TaskPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductiviteTests/TaskPolicyTests.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A0000010000000F /* LessonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductiviteTests/LessonTests.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000010 /* MainViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductiviteTests/MainViewModelTests.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000011 /* CoursProductiviteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductiviteTests/CoursProductiviteTests.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000015 /* Lesson05_HomeScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursProductiviteTests/Lesson05_HomeScreenTests.swift; sourceTree = SOURCE_ROOT; };
+		A1B2C3D31A00000100000020 /* CoursProductivite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoursProductivite.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D31A00000100000021 /* CoursProductiviteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoursProductiviteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		A1B2C3D21A00000100000001 = {isa = PBXGroup; children = (
+			A1B2C3D21A00000100000002,
+			A1B2C3D21A00000100000003,
+			A1B2C3D21A00000100000004,
+			A1B2C3D21A00000100000005,
+			A1B2C3D21A00000100000006,
+			A1B2C3D21A00000100000007,
+		); sourceTree = "<group>"; };
+		A1B2C3D21A00000100000002 = {isa = PBXGroup; children = (
+			A1B2C3D31A00000100000001,
+			A1B2C3D31A00000100000002,
+			A1B2C3D31A00000100000012,
+			A1B2C3D31A00000100000013,
+		); name = App; sourceTree = "<group>"; };
+		A1B2C3D21A00000100000003 = {isa = PBXGroup; children = (
+			A1B2C3D31A00000100000003,
+			A1B2C3D31A00000100000004,
+			A1B2C3D31A00000100000005,
+			A1B2C3D31A00000100000006,
+		); name = Domain; sourceTree = "<group>"; };
+		A1B2C3D21A00000100000004 = {isa = PBXGroup; children = (
+			A1B2C3D31A00000100000007,
+		); name = Infrastructure; sourceTree = "<group>"; };
+		A1B2C3D21A00000100000005 = {isa = PBXGroup; children = (
+			A1B2C3D31A00000100000008,
+			A1B2C3D31A00000100000009,
+			A1B2C3D31A0000010000000A,
+			A1B2C3D31A0000010000000B,
+			A1B2C3D31A00000100000014,
+		); name = Lessons; sourceTree = "<group>"; };
+		A1B2C3D21A00000100000006 = {isa = PBXGroup; children = (
+			A1B2C3D31A0000010000000C,
+			A1B2C3D31A0000010000000D,
+			A1B2C3D31A0000010000000E,
+			A1B2C3D31A0000010000000F,
+			A1B2C3D31A00000100000010,
+			A1B2C3D31A00000100000011,
+			A1B2C3D31A00000100000015,
+		); name = CoursProductiviteTests; sourceTree = "<group>"; };
+		A1B2C3D21A00000100000007 = {isa = PBXGroup; children = (
+			A1B2C3D31A00000100000020,
+			A1B2C3D31A00000100000021,
+		); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1B2C3D11A00000100000001 /* CoursProductivite */ = {isa = PBXNativeTarget; buildConfigurationList = A1B2C3D51A00000100000001 /* Build configuration list for PBXNativeTarget "CoursProductivite" */; buildPhases = (
+			A1B2C3D61A00000100000001 /* Sources */,
+			A1B2C3D61A00000100000002 /* Frameworks */,
+			A1B2C3D61A00000100000003 /* Resources */,
+		); buildRules = (
+		); dependencies = (
+		); name = CoursProductivite; productName = CoursProductivite; productReference = A1B2C3D31A00000100000020 /* CoursProductivite.app */; productType = "com.apple.product-type.application"; };
+		A1B2C3D11A00000100000002 /* CoursProductiviteTests */ = {isa = PBXNativeTarget; buildConfigurationList = A1B2C3D51A00000100000002 /* Build configuration list for PBXNativeTarget "CoursProductiviteTests" */; buildPhases = (
+			A1B2C3D61A00000100000004 /* Sources */,
+			A1B2C3D61A00000100000005 /* Frameworks */,
+			A1B2C3D61A00000100000006 /* Resources */,
+		); buildRules = (
+		); dependencies = (
+			A1B2C3D71A00000100000001 /* PBXTargetDependency */,
+		); name = CoursProductiviteTests; productName = CoursProductiviteTests; productReference = A1B2C3D31A00000100000021 /* CoursProductiviteTests.xctest */; productType = "com.apple.product-type.bundle.unit-test"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A1B2C3D01A00000100000001 /* Project object */ = {isa = PBXProject; attributes = {LastUpgradeCheck = 1500; TargetAttributes = {A1B2C3D11A00000100000001 = {CreatedOnToolsVersion = 15.0;}; A1B2C3D11A00000100000002 = {CreatedOnToolsVersion = 15.0; TestTargetID = A1B2C3D11A00000100000001;};};}; buildConfigurationList = A1B2C3D51A00000100000003 /* Build configuration list for PBXProject "CoursProductivite" */; compatibilityVersion = "Xcode 15.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (
+			en,
+			Base,
+		); mainGroup = A1B2C3D21A00000100000001; productRefGroup = A1B2C3D21A00000100000007; projectDirPath = ""; projectRoot = ""; targets = (
+			A1B2C3D11A00000100000001,
+			A1B2C3D11A00000100000002,
+		); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1B2C3D61A00000100000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
+		); runOnlyForDeploymentPostprocessing = 0; };
+		A1B2C3D61A00000100000006 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
+		); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A1B2C3D61A00000100000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+			A1B2C3D41A00000100000001 /* CoursProductiviteApp.swift in Sources */,
+			A1B2C3D41A00000100000002 /* MainView.swift in Sources */,
+			A1B2C3D41A00000100000012 /* CourseBootstrap.swift in Sources */,
+			A1B2C3D41A00000100000013 /* ProductivityHomeView.swift in Sources */,
+			A1B2C3D41A00000100000003 /* Task.swift in Sources */,
+			A1B2C3D41A00000100000004 /* Priority.swift in Sources */,
+			A1B2C3D41A00000100000005 /* TaskList.swift in Sources */,
+			A1B2C3D41A00000100000006 /* TaskPolicy.swift in Sources */,
+			A1B2C3D41A00000100000007 /* TaskStore.swift in Sources */,
+			A1B2C3D41A00000100000008 /* Lesson01_Basics.swift in Sources */,
+			A1B2C3D41A00000100000009 /* Lesson02_Optionals.swift in Sources */,
+			A1B2C3D41A0000010000000A /* Lesson03_Protocols.swift in Sources */,
+			A1B2C3D41A0000010000000B /* Lesson04_ViewModel.swift in Sources */,
+			A1B2C3D41A00000100000014 /* Lesson05_HomeScreenViewModel.swift in Sources */,
+		); runOnlyForDeploymentPostprocessing = 0; };
+		A1B2C3D61A00000100000004 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+			A1B2C3D41A0000010000000C /* TaskTests.swift in Sources */,
+			A1B2C3D41A0000010000000D /* TaskListTests.swift in Sources */,
+			A1B2C3D41A0000010000000E /* TaskPolicyTests.swift in Sources */,
+			A1B2C3D41A0000010000000F /* LessonTests.swift in Sources */,
+			A1B2C3D41A00000100000010 /* MainViewModelTests.swift in Sources */,
+			A1B2C3D41A00000100000011 /* CoursProductiviteTests.swift in Sources */,
+			A1B2C3D41A00000100000015 /* Lesson05_HomeScreenTests.swift in Sources */,
+		); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A1B2C3D71A00000100000001 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = A1B2C3D11A00000100000001 /* CoursProductivite */; targetProxy = A1B2C3D81A00000100000001 /* PBXContainerItemProxy */; };
+/* End PBXTargetDependency section */
+
+/* Begin PBXContainerItemProxy section */
+		A1B2C3D81A00000100000001 /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = A1B2C3D01A00000100000001 /* Project object */; proxyType = 1; remoteGlobalIDString = A1B2C3D11A00000100000001; remoteInfo = CoursProductivite; };
+/* End PBXContainerItemProxy section */
+
+/* Begin XCBuildConfiguration section */
+		A1B2C3D91A00000100000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+			CODE_SIGNING_ALLOWED = NO;
+			CODE_SIGNING_REQUIRED = NO;
+			CODE_SIGN_STYLE = Manual;
+			CURRENT_PROJECT_VERSION = 1;
+			DEVELOPMENT_TEAM = "";
+			ENABLE_STRICT_OBJC_MSGSEND = YES;
+			ENABLE_TESTABILITY = YES;
+			GCC_C_LANGUAGE_STANDARD = gnu11;
+			GENERATE_INFOPLIST_FILE = YES;
+			INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+			IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+			MARKETING_VERSION = 1.0;
+			PRODUCT_BUNDLE_IDENTIFIER = com.jficerai.CoursProductivite;
+			PRODUCT_NAME = CoursProductivite;
+			SDKROOT = iphoneos;
+			SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+			SWIFT_EMIT_LOC_STRINGS = YES;
+			SWIFT_VERSION = 5.0;
+			TARGETED_DEVICE_FAMILY = "1,2";
+		}; name = Debug; };
+		A1B2C3D91A00000100000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+			CODE_SIGNING_ALLOWED = NO;
+			CODE_SIGNING_REQUIRED = NO;
+			CODE_SIGN_STYLE = Manual;
+			CURRENT_PROJECT_VERSION = 1;
+			DEVELOPMENT_TEAM = "";
+			ENABLE_STRICT_OBJC_MSGSEND = YES;
+			GCC_C_LANGUAGE_STANDARD = gnu11;
+			GENERATE_INFOPLIST_FILE = YES;
+			INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+			IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+			MARKETING_VERSION = 1.0;
+			PRODUCT_BUNDLE_IDENTIFIER = com.jficerai.CoursProductivite;
+			PRODUCT_NAME = CoursProductivite;
+			SDKROOT = iphoneos;
+			SWIFT_EMIT_LOC_STRINGS = YES;
+			SWIFT_VERSION = 5.0;
+			TARGETED_DEVICE_FAMILY = "1,2";
+		}; name = Release; };
+		A1B2C3D91A00000100000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			BUNDLE_LOADER = "$(TEST_HOST)";
+			CODE_SIGNING_ALLOWED = NO;
+			CODE_SIGNING_REQUIRED = NO;
+			CODE_SIGN_STYLE = Manual;
+			CURRENT_PROJECT_VERSION = 1;
+			DEVELOPMENT_TEAM = "";
+			ENABLE_TESTABILITY = YES;
+			GENERATE_INFOPLIST_FILE = YES;
+			IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+			MARKETING_VERSION = 1.0;
+			PRODUCT_BUNDLE_IDENTIFIER = com.jficerai.CoursProductiviteTests;
+			PRODUCT_NAME = CoursProductiviteTests;
+			SDKROOT = iphoneos;
+			SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+			SWIFT_VERSION = 5.0;
+			TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CoursProductivite.app/CoursProductivite";
+			TARGETED_DEVICE_FAMILY = "1,2";
+		}; name = Debug; };
+		A1B2C3D91A00000100000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			BUNDLE_LOADER = "$(TEST_HOST)";
+			CODE_SIGNING_ALLOWED = NO;
+			CODE_SIGNING_REQUIRED = NO;
+			CODE_SIGN_STYLE = Manual;
+			CURRENT_PROJECT_VERSION = 1;
+			DEVELOPMENT_TEAM = "";
+			GENERATE_INFOPLIST_FILE = YES;
+			IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+			MARKETING_VERSION = 1.0;
+			PRODUCT_BUNDLE_IDENTIFIER = com.jficerai.CoursProductiviteTests;
+			PRODUCT_NAME = CoursProductiviteTests;
+			SDKROOT = iphoneos;
+			SWIFT_VERSION = 5.0;
+			TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CoursProductivite.app/CoursProductivite";
+			TARGETED_DEVICE_FAMILY = "1,2";
+		}; name = Release; };
+		A1B2C3D91A00000100000005 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+			CODE_SIGN_STYLE = Automatic;
+			CURRENT_PROJECT_VERSION = 1;
+			DEVELOPMENT_TEAM = "";
+			ENABLE_STRICT_OBJC_MSGSEND = YES;
+			GCC_C_LANGUAGE_STANDARD = gnu11;
+			GENERATE_INFOPLIST_FILE = YES;
+			IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+			MARKETING_VERSION = 1.0;
+			PRODUCT_BUNDLE_IDENTIFIER = com.jficerai.CoursProductivite;
+			PRODUCT_NAME = CoursProductivite;
+			SDKROOT = iphoneos;
+			SWIFT_VERSION = 5.0;
+			TARGETED_DEVICE_FAMILY = "1,2";
+		}; name = Debug; };
+		A1B2C3D91A00000100000006 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+			CODE_SIGN_STYLE = Automatic;
+			CURRENT_PROJECT_VERSION = 1;
+			DEVELOPMENT_TEAM = "";
+			ENABLE_STRICT_OBJC_MSGSEND = YES;
+			GCC_C_LANGUAGE_STANDARD = gnu11;
+			GENERATE_INFOPLIST_FILE = YES;
+			IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+			MARKETING_VERSION = 1.0;
+			PRODUCT_BUNDLE_IDENTIFIER = com.jficerai.CoursProductivite;
+			PRODUCT_NAME = CoursProductivite;
+			SDKROOT = iphoneos;
+			SWIFT_VERSION = 5.0;
+			TARGETED_DEVICE_FAMILY = "1,2";
+		}; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1B2C3D51A00000100000001 /* Build configuration list for PBXNativeTarget "CoursProductivite" */ = {isa = XCConfigurationList; buildConfigurations = (
+			A1B2C3D91A00000100000001,
+			A1B2C3D91A00000100000002,
+		); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		A1B2C3D51A00000100000002 /* Build configuration list for PBXNativeTarget "CoursProductiviteTests" */ = {isa = XCConfigurationList; buildConfigurations = (
+			A1B2C3D91A00000100000003,
+			A1B2C3D91A00000100000004,
+		); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		A1B2C3D51A00000100000003 /* Build configuration list for PBXProject "CoursProductivite" */ = {isa = XCConfigurationList; buildConfigurations = (
+			A1B2C3D91A00000100000005,
+			A1B2C3D91A00000100000006,
+		); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+/* End XCConfigurationList section */
+	};
+	rootObject = A1B2C3D01A00000100000001 /* Project object */;
+}

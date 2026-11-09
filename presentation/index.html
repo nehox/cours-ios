@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Développement iOS Moderne : Swift, SwiftUI & TDD</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Prism.js pour Coloration Syntaxique Swift -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
+
+  <!-- Styles personnalisés -->
+  <link rel="stylesheet" href="style.css">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            swift: {
+              DEFAULT: '#F05138',
+              glow: 'rgba(240, 81, 56, 0.4)',
+              dark: '#C83822'
+            },
+            apple: {
+              blue: '#2997FF',
+              green: '#30D158',
+              purple: '#BF5AF2',
+              card: 'rgba(20, 22, 34, 0.7)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#05050A] text-white select-none">
+
+  <!-- Ambient Glow & Subtle Grid Background -->
+  <div class="ambient-glow"></div>
+  <div class="subtle-grid"></div>
+
+  <!-- Header / Navigation Top Bar -->
+  <header class="fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-8 bg-black/40 backdrop-blur-xl border-b border-white/10">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#F05138] to-[#FF8C69] flex items-center justify-center font-bold text-white shadow-lg shadow-orange-500/20">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M21.9 14.8c-.2 1.4-1.1 2.8-2.3 3.8-1.5 1.3-3.4 1.8-5.3 1.4 1.6-.9 2.7-2.3 3.1-4-.2.1-.5.3-.7.4-2.1 1.1-4.7 1.1-6.8-.2-1.7-1-2.8-2.6-3.2-4.5-.1-.7-.1-1.4 0-2.1.3 1.3.9 2.5 1.8 3.5 1.2 1.3 2.7 2.2 4.4 2.6-1.5-.4-2.9-1.2-4-2.3-1.4-1.4-2.2-3.3-2.2-5.3 0-.6.1-1.2.2-1.8 1.1 2.2 2.8 4 5 5.2 2.1 1.1 4.5 1.5 6.9 1 1.2-.2 2.3-.7 3.3-1.4-.4.8-1 1.6-1.8 2.2 1-.3 1.9-.8 2.7-1.4-.2.9-.6 1.8-1.1 2.5 1.1-.3 2.1-.9 3-1.7-.6 1-1.4 1.8-2.4 2.4z"/>
+        </svg>
+      </div>
+      <div>
+        <span class="text-sm font-bold tracking-tight text-white">Cours iOS Moderne</span>
+        <span class="text-xs text-gray-400 hidden sm:inline ml-2 pl-2 border-l border-white/20">Swift 5.10 &bull; SwiftUI &bull; TDD</span>
+      </div>
+    </div>
+
+    <!-- Center Progress Bar -->
+    <div class="hidden md:flex flex-col items-center w-1/3 max-w-xs">
+      <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-blue-500 transition-all duration-300 w-0"></div>
+      </div>
+      <span id="slide-counter" class="text-[11px] font-mono text-gray-400 mt-1">1 / 15</span>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="flex items-center gap-2">
+      <!-- Presenter Timer -->
+      <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-mono text-gray-300">
+        <span id="timer-display">00:00</span>
+        <button id="timer-toggle" class="hover:text-white transition ml-1" title="Démarrer/Pause">▶</button>
+        <button id="timer-reset" class="hover:text-white transition text-gray-500 text-[10px]" title="Reset">↺</button>
+      </div>
+
+      <button id="overview-btn" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition" title="Vue d'ensemble (O)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+      </button>
+
+      <button id="fullscreen-btn" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition" title="Plein Écran (F)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+      </button>
+
+      <button id="help-btn" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition" title="Aide Raccourcis (?)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Bottom Floating Navigation Arrows -->
+  <footer class="fixed bottom-6 right-8 z-40 flex items-center gap-2">
+    <button id="prev-btn" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white transition flex items-center gap-1.5 shadow-lg shadow-black/40 text-sm">
+      <span>←</span> <span class="hidden sm:inline">Précédent</span>
+    </button>
+    <button id="next-btn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-white font-semibold transition flex items-center gap-1.5 shadow-lg shadow-orange-500/25 text-sm">
+      <span class="hidden sm:inline">Suivant</span> <span>→</span>
+    </button>
+  </footer>
+
+  <!-- MAIN SLIDES CONTAINER -->
+  <main id="slides-container">
+
+    <!-- ========================================== -->
+    <!-- SLIDE 1 : HERO / TITRE                     -->
+    <!-- ========================================== -->
+    <section class="slide active justify-center items-center text-center">
+      <div class="max-w-4xl flex flex-col items-center">
+        <!-- Floating Apple Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/15 backdrop-blur-xl mb-6 shadow-xl">
+          <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping"></span>
+          <span class="text-xs font-semibold tracking-wide text-orange-300 uppercase">Cours Pratique & Professionnel</span>
+          <span class="text-xs text-white/30">&bull;</span>
+          <span class="text-xs text-gray-300">Xcode 15+ &bull; iOS 17</span>
+        </div>
+
+        <h1 class="text-5xl sm:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+          Développement iOS <br/>
+          <span class="gradient-text-swift">avec Swift & SwiftUI</span>
+        </h1>
+
+        <p class="text-xl sm:text-2xl text-gray-300 font-light max-w-2xl mb-10 leading-relaxed">
+          Devenez autonome : des fondations de <strong class="text-white font-semibold">Swift</strong> à la création d'une application de productivité testée et robuste.
+        </p>
+
+        <!-- Feature Pills -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl mb-12">
+          <div class="glass-panel rounded-2xl p-4 text-center">
+            <div class="text-2xl mb-1">⚡️</div>
+            <div class="text-sm font-bold text-white">Swift Moderne</div>
+            <div class="text-[11px] text-gray-400">Typage sûr, optionnels</div>
+          </div>
+          <div class="glass-panel rounded-2xl p-4 text-center">
+            <div class="text-2xl mb-1">🎨</div>
+            <div class="text-sm font-bold text-white">SwiftUI</div>
+            <div class="text-[11px] text-gray-400">UI déclarative & réactive</div>
+          </div>
+          <div class="glass-panel rounded-2xl p-4 text-center">
+            <div class="text-2xl mb-1">🏛️</div>
+            <div class="text-sm font-bold text-white">Architecture MVVM</div>
+            <div class="text-[11px] text-gray-400">Protocoles & Isolation</div>
+          </div>
+          <div class="glass-panel rounded-2xl p-4 text-center">
+            <div class="text-2xl mb-1">🧪</div>
+            <div class="text-sm font-bold text-white">TDD & Tests</div>
+            <div class="text-[11px] text-gray-400">Qualité pro sans bug</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs text-gray-400 font-mono">
+          <span>Utilisez les flèches</span>
+          <span class="key-badge">→</span>
+          <span>ou la touche</span>
+          <span class="key-badge">Espace</span>
+          <span>pour naviguer</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 2 : L'ÉCOSYSTÈME & PHILOSOPHIE       -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-6">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 1 &bull; L'Écosystème</span>
+          <h2 class="text-4xl font-extrabold text-white mt-1">Pourquoi Swift est unique en son genre ?</h2>
+          <p class="text-gray-400 text-sm mt-1">Né chez Apple en 2014 pour remplacer Objective-C, conçu pour la sécurité et la vitesse.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+          <!-- Card 1 -->
+          <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-orange-500/50 transition duration-300">
+            <div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-2xl mb-4 text-orange-400">
+              🛡️
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">1. Sûr par Conception</h3>
+            <p class="text-gray-300 text-sm leading-relaxed">
+              En Swift, les bugs de type <code class="text-rose-400 bg-rose-500/10 px-1 py-0.5 rounded">NullPointerException</code> ou <code class="text-rose-400 bg-rose-500/10 px-1 py-0.5 rounded">undefined is not a function</code> sont <strong>impossibles à la compilation</strong> grâce au système d'Optionnels.
+            </p>
+            <div class="mt-4 pt-4 border-t border-white/10 text-xs text-orange-300">
+              Le compilateur détecte les erreurs avant même de lancer l'application.
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-blue-500/50 transition duration-300">
+            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-2xl mb-4 text-blue-400">
+              ⚡️
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">2. Ultra Rapide (LLVM)</h3>
+            <p class="text-gray-300 text-sm leading-relaxed">
+              Langage compilé directement en code machine natif via LLVM. Pas de machine virtuelle, pas de Garbage Collector lourd : gestion de mémoire instantanée via <strong>ARC</strong> (Automatic Reference Counting).
+            </p>
+            <div class="mt-4 pt-4 border-t border-white/10 text-xs text-blue-300">
+              Performances comparables au C++ avec la clarté de Python.
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-purple-500/50 transition duration-300">
+            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-2xl mb-4 text-purple-400">
+              💎
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">3. Expressif & Moderne</h3>
+            <p class="text-gray-300 text-sm leading-relaxed">
+              Inférence de types, génériques puissants, pattern matching, closures fluides et concurrence moderne (<code class="text-purple-300 bg-purple-500/10 px-1 py-0.5 rounded">async/await</code>, Actors).
+            </p>
+            <div class="mt-4 pt-4 border-t border-white/10 text-xs text-purple-300">
+              Moins de code boilerplate, plus de valeur métier.
+            </div>
+          </div>
+        </div>
+
+        <!-- Proverb Banner -->
+        <div class="mt-6 p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-4">
+          <div class="text-2xl">💡</div>
+          <div class="text-sm text-gray-300">
+            <strong class="text-white">Règle d'or pour un développeur iOS :</strong> Le compilateur Swift est exigeant, mais c'est votre meilleur allié. S'il refuse de compiler, c'est qu'il vient de vous éviter un crash utilisateur en production !
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 3 : BASES SWIFT (LET, VAR, TYPES)    -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 2 &bull; Les Fondations (Lesson 01)</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Variables, Types & Immuabilité</h2>
+          <p class="text-gray-400 text-sm">La règle fondamentale : privilégiez toujours <code>let</code> avant <code>var</code>.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-auto">
+          <!-- Left Column: Code -->
+          <div class="code-container">
+            <div class="code-header">
+              <div class="window-dots">
+                <div class="window-dot red"></div>
+                <div class="window-dot yellow"></div>
+                <div class="window-dot green"></div>
+              </div>
+              <span class="text-xs text-gray-400 font-mono">Basics.swift</span>
+              <button class="copy-code-btn text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs leading-relaxed overflow-x-auto"><code class="language-swift">// 1. Constante (Immuable - Recommandé !)
+let maximumStudents: Int = 30
+// maximumStudents = 32  ❌ Erreur de compilation : Cannot assign to 'let'
+
+// 2. Inférence de type (Swift devine pour vous)
+let courseTitle = "Cours iOS & TDD"   // String automatique
+var currentAttendees = 25              // Int modifiable
+
+// 3. Mutation contrôlée
+currentAttendees += 1                  // ✅ OK : var est mutable
+
+// 4. Interpolation de chaînes
+let status = "\(courseTitle) : \(currentAttendees)/\(maximumStudents)"
+print(status)
+// Affiche : "Cours iOS & TDD : 26/30"</code></pre>
+          </div>
+
+          <!-- Right Column: Explanations -->
+          <div class="space-y-4">
+            <div class="glass-panel rounded-xl p-4 border-l-4 border-l-orange-500">
+              <h4 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                <span class="text-orange-400 font-mono">let</span> vs <span class="text-blue-400 font-mono">var</span>
+              </h4>
+              <p class="text-xs text-gray-300 leading-relaxed">
+                Utilisez <code class="text-orange-400">let</code> par défaut à 95%. Si votre variable n'a pas besoin de changer, verrouillez-la ! Cela garantit la sécurité en environnement multi-thread et évite les bugs de mutation inattendue.
+              </p>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4 border-l-4 border-l-blue-500">
+              <h4 class="text-sm font-bold text-white mb-1">Inférence de Types Forte</h4>
+              <p class="text-xs text-gray-300 leading-relaxed">
+                Swift est à typage statique strict. Vous n'avez pas besoin d'écrire <code class="text-blue-300">let x: String = "Hello"</code>, écrire <code class="text-blue-300">let x = "Hello"</code> est tout aussi sûr et beaucoup plus lisible.
+              </p>
+            </div>
+
+            <!-- Focus sur Lesson 01 -->
+            <div class="p-4 rounded-xl bg-gradient-to-r from-orange-500/10 to-transparent border border-orange-500/20">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-orange-400">Dans votre TP (Lesson 01)</span>
+              <div class="text-xs text-gray-200 mt-1 font-mono">
+                struct Lesson01Basics {<br/>
+                &nbsp;&nbsp;let title: String<br/>
+                &nbsp;&nbsp;let objective: String<br/>
+                }
+              </div>
+              <p class="text-[11px] text-gray-400 mt-2">
+                Une simple structure avec des propriétés immuables suffit à représenter un modèle fiable et testable.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 4 : STRUCT VS CLASS & MEMOIRE        -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 2 &bull; Modèles</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Struct vs Class : Le Choix Crucial</h2>
+          <p class="text-gray-400 text-sm">Value Types (Copie par valeur) vs Reference Types (Partage d'adresse). Testez l'interactivité ci-dessous !</p>
+        </div>
+
+        <!-- Interactive Memory Visualizer -->
+        <div class="glass-panel rounded-2xl p-6 my-auto">
+          <!-- Toggle buttons -->
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+            <div class="flex gap-2">
+              <button id="btn-mem-struct" onclick="setMemoryDemo('struct')" class="px-4 py-2 rounded-xl text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/40 shadow-lg shadow-orange-500/10">
+                📦 Struct (Value Type)
+              </button>
+              <button id="btn-mem-class" onclick="setMemoryDemo('class')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10">
+                🔗 Class (Reference Type)
+              </button>
+            </div>
+            <span class="text-xs text-gray-400 font-mono">Cliquez pour comparer</span>
+          </div>
+
+          <!-- Description Box -->
+          <div class="mb-6">
+            <h3 id="mem-demo-title" class="text-lg font-bold text-white">
+              <span class="text-orange-400 font-bold">Struct (Value Type)</span> : Copie intégrale indépendante
+            </h3>
+            <p id="mem-demo-desc" class="text-xs text-gray-300 mt-1">
+              Modifier 'b' ne touche JAMAIS 'a'. Chaque variable possède sa propre boîte en mémoire (Stack).
+            </p>
+          </div>
+
+          <!-- Memory Diagram -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+            <div id="mem-box-a" class="p-4 rounded-xl bg-black/40 border border-white/15">
+              <div class="text-[11px] text-gray-400 font-mono">variable a</div>
+              <div class="text-sm font-bold text-white mt-1">title = <span class="text-orange-300">"Tâche A"</span></div>
+              <div class="text-[10px] text-emerald-400 mt-1">Adresse : 0xStack01</div>
+            </div>
+
+            <div id="mem-box-b" class="p-4 rounded-xl bg-black/40 border border-white/15">
+              <div class="text-[11px] text-gray-400 font-mono">variable b (copie)</div>
+              <div class="text-sm font-bold text-white mt-1">title = <span class="text-emerald-300">"Tâche Modifiée"</span></div>
+              <div class="text-[10px] text-emerald-400 mt-1">Adresse : 0xStack02 (Indépendant)</div>
+            </div>
+
+            <!-- Pointer graphic for Class mode -->
+            <div id="mem-pointer-graphic" class="hidden md:col-span-2 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-xs text-blue-300 flex items-center justify-center gap-2">
+              <span>⚠️ Les deux variables pointent vers le même objet en Heap : <strong>0xHeap99</strong></span>
+            </div>
+          </div>
+
+          <!-- Rule of thumb -->
+          <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-gray-300">
+            <span><strong>Recommandation Apple :</strong> Préférez toujours <code>struct</code> pour vos modèles de données (`Task`, `User`). Réservez <code>class</code> pour vos ViewModels ou les ressources partagées.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 5 : QUIZ FLASH #1                    -->
+    <!-- ========================================== -->
+    <section class="slide justify-center items-center">
+      <div class="max-w-2xl w-full glass-panel rounded-3xl p-8 border border-white/20 shadow-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">
+            ⚡️ Quiz Flash #1 &bull; Les Fondations
+          </span>
+          <span class="text-xs text-gray-400 font-mono">Question 1/2</span>
+        </div>
+
+        <h3 class="text-2xl font-bold text-white mb-3">
+          Observez ce code Swift. Que se passe-t-il lors de la compilation ?
+        </h3>
+
+        <div class="code-container my-4">
+          <pre class="p-3 text-xs"><code class="language-swift">let taskCount = 10
+taskCount = 12
+print(taskCount)</code></pre>
+        </div>
+
+        <div class="quiz-options space-y-2 mt-4">
+          <button onclick="checkQuiz(this, false, 'quiz1-expl')" class="w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-gray-200 transition">
+            A) Le programme affiche <code class="text-orange-400 font-mono">12</code> sans problème
+          </button>
+          <button onclick="checkQuiz(this, true, 'quiz1-expl')" class="w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-gray-200 transition">
+            B) Erreur de compilation : impossible de réassigner une constante déclarée avec <code class="text-orange-400 font-mono">let</code>
+          </button>
+          <button onclick="checkQuiz(this, false, 'quiz1-expl')" class="w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-gray-200 transition">
+            C) Le programme plante au moment de l'exécution (crash runtime)
+          </button>
+        </div>
+
+        <div id="quiz1-expl" class="hidden mt-4 p-4 rounded-xl border text-xs text-gray-200 leading-relaxed">
+          <strong class="text-white">Explication :</strong> En Swift, <code class="text-orange-400">let</code> déclare une valeur strictement immuable. Le compilateur refuse catégoriquement toute réassignation dès l'analyse statique du code. Pour pouvoir modifier <code class="text-orange-400">taskCount</code>, il aurait fallu utiliser <code class="text-blue-400">var</code>.
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 6 : LE BOSS FINAL : LES OPTIONNELS   -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 3 &bull; La Sécurité (Lesson 02)</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Le Boss Final : Les Optionnels (<code>T?</code>)</h2>
+          <p class="text-gray-400 text-sm">Pourquoi <code>nil</code> en Swift n'est pas le <code>null</code> des autres langages ?</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-auto">
+          <!-- Interactive Box Visualizer -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Métaphore de la Boîte Mystère</span>
+                <div class="flex gap-2">
+                  <button id="btn-opt-val" onclick="setOptionalMode(true)" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                    Valeur présente
+                  </button>
+                  <button id="btn-opt-nil" onclick="setOptionalMode(false)" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10">
+                    Vide (nil)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Animated Box Container -->
+              <div class="flex items-center justify-center py-6">
+                <div id="optional-box" class="w-36 h-36 rounded-2xl border-2 border-emerald-400 bg-emerald-500/10 flex flex-col items-center justify-center p-4 transition-all duration-300 shadow-xl shadow-emerald-500/20">
+                  <div id="optional-value-text" class="text-center">
+                    📦 <div class="mt-1 font-mono text-xs font-bold text-emerald-300">"Swift 5.10"</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center mb-2">
+                <span class="text-xs text-gray-400">Représentation interne dans Swift :</span>
+                <div id="optional-state-badge" class="mt-1">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">.some("Swift 5.10")</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-300 bg-white/5 p-3 rounded-xl border border-white/10">
+              Un type <code class="text-orange-400 font-bold">String?</code> n'est <strong>PAS</strong> une chaîne de caractères. C'est un conteneur (une boîte) qui contient soit une chaîne, soit rien (<code class="text-rose-400 font-bold">nil</code>). On doit obligatoirement l'ouvrir pour y toucher !
+            </p>
+          </div>
+
+          <!-- Dynamic Unwrapping Results -->
+          <div class="space-y-3">
+            <div class="glass-panel rounded-xl p-4">
+              <div class="flex items-center justify-between text-xs font-bold text-blue-400 mb-1">
+                <span>1. if let (Déballage classique)</span>
+                <span class="font-mono text-gray-400">if let title { ... }</span>
+              </div>
+              <div id="opt-iflet-output" class="text-xs text-gray-200 font-mono mt-2 bg-black/40 p-2.5 rounded-lg border border-white/10">
+                <span class="text-emerald-400 font-bold">✓ Exécuté :</span> "Le titre est Swift 5.10"
+              </div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4">
+              <div class="flex items-center justify-between text-xs font-bold text-purple-400 mb-1">
+                <span>2. guard let (Sortie précoce - Idiomatique Swift)</span>
+                <span class="font-mono text-gray-400">guard let title else { return }</span>
+              </div>
+              <div id="opt-guard-output" class="text-xs text-gray-200 font-mono mt-2 bg-black/40 p-2.5 rounded-lg border border-white/10">
+                <span class="text-emerald-400 font-bold">✓ Passe le garde :</span> continue avec "Swift 5.10"
+              </div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4">
+              <div class="flex items-center justify-between text-xs font-bold text-orange-400 mb-1">
+                <span>3. Nil-Coalescing (Valeur par défaut)</span>
+                <span class="font-mono text-gray-400">title ?? "Sans titre"</span>
+              </div>
+              <div id="opt-nilcoal-output" class="text-xs text-gray-200 font-mono mt-2 bg-black/40 p-2.5 rounded-lg border border-white/10">
+                "Swift 5.10" <span class="text-gray-400">(valeur déballée)</span>
+              </div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4 border border-rose-500/30">
+              <div class="flex items-center justify-between text-xs font-bold text-rose-400 mb-1">
+                <span>⚠️ Force Unwrap (L'interdit)</span>
+                <span class="font-mono text-rose-400">title!</span>
+              </div>
+              <div id="opt-crash-output" class="text-xs text-gray-200 font-mono mt-2 bg-black/40 p-2.5 rounded-lg border border-white/10">
+                <span class="text-emerald-400">"Swift 5.10" (OK mais risqué)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 7 : GUARD LET & NETTOYAGE DES DONNEES-->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 3 &bull; Sécurisation (Lesson 02)</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">L'élégance de <code>guard let</code></h2>
+          <p class="text-gray-400 text-sm">Le pattern officiel d'Apple pour éviter la "Pyramide du Destin" (imbrications infinies de if).</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-auto">
+          <!-- Code Before/After -->
+          <div class="space-y-4">
+            <div class="code-container">
+              <div class="code-header">
+                <span class="text-xs font-bold text-rose-400">❌ Approche naïve (Pyramide)</span>
+                <span class="text-[11px] text-gray-400">Difficile à lire</span>
+              </div>
+              <pre class="p-3 text-[11px] leading-relaxed"><code class="language-swift">func processTask(title: String?) {
+    if let title = title {
+        let trimmed = title.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty {
+            // Enfin le code métier au 3ème niveau d'indentation !
+            save(trimmed)
+        }
+    }
+}</code></pre>
+            </div>
+
+            <div class="code-container border-emerald-500/40">
+              <div class="code-header bg-emerald-500/10">
+                <span class="text-xs font-bold text-emerald-400">✅ Approche Swift Idiomatique (Lesson 02)</span>
+                <span class="text-[11px] text-emerald-300">Clean & Testable</span>
+              </div>
+              <pre class="p-3 text-[11px] leading-relaxed"><code class="language-swift">enum Lesson02Optionals {
+    static func trimmedTitle(from title: String?) -> String? {
+        // Sortie précoce immédiate si nil !
+        guard let title else {
+            return nil
+        }
+
+        let candidate = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        return candidate.isEmpty ? nil : candidate
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <!-- Why Guard Let Rules -->
+          <div class="space-y-4">
+            <div class="glass-panel rounded-2xl p-5">
+              <h3 class="text-base font-bold text-white mb-2 flex items-center gap-2">
+                <span>🚪</span> La philosophie du "Bouncer" (Videur à l'entrée)
+              </h3>
+              <p class="text-xs text-gray-300 leading-relaxed">
+                Le mot-clé <code class="text-purple-300 font-bold">guard</code> teste les conditions nécessaires dès la première ligne. Si la donnée est invalide ou <code class="text-rose-300 font-bold">nil</code>, la fonction quitte immédiatement avec un <code class="text-purple-300 font-mono">return</code> ou <code class="text-purple-300 font-mono">throw</code>.
+              </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-5">
+              <h3 class="text-base font-bold text-white mb-2 flex items-center gap-2">
+                <span>🎯</span> Portée de la variable déballée
+              </h3>
+              <p class="text-xs text-gray-300 leading-relaxed">
+                Contrairement à <code class="text-blue-300 font-mono">if let</code> où la variable déballée n'existe que dans les accolades du bloc, avec <code class="text-purple-300 font-mono">guard let title</code>, la variable <code class="text-emerald-300 font-mono">title</code> reste disponible dans <strong>tout le reste de la fonction</strong> !
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-xs text-orange-200">
+              ⚡️ <strong>Objectif TP :</strong> Vous utiliserez cette fonction dans vos tests de validation pour rejeter les tâches vides ou ne contenant que des espaces.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 8 : PROTOCOLES & INJECTION           -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 4 &bull; Architecture (Lesson 03)</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Protocoles & Injection de Dépendances</h2>
+          <p class="text-gray-400 text-sm">Comment écrire du code découplé qui se teste en quelques millisecondes.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-auto">
+          <!-- Code -->
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-300 font-mono">Lesson03_Protocols.swift</span>
+              <button class="copy-code-btn text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs leading-relaxed"><code class="language-swift">// 1. Le Contrat (Interface)
+protocol Lesson03TaskProviding {
+    func currentTasks() -> [ProductivityTask]
+}
+
+// 2. L'implémentation de Test (Mock)
+struct Lesson03MockProvider: Lesson03TaskProviding {
+    let tasks: [ProductivityTask]
+
+    func currentTasks() -> [ProductivityTask] {
+        tasks
+    }
+}
+
+// 3. L'implémentation Réelle (Base de données / API)
+final class TaskStore: Lesson03TaskProviding {
+    func currentTasks() -> [ProductivityTask] {
+        // Lit depuis le disque ou CoreData/SwiftData...
+    }
+}</code></pre>
+          </div>
+
+          <!-- Explanation & Diagram -->
+          <div class="space-y-4">
+            <div class="glass-panel rounded-2xl p-5">
+              <h3 class="text-base font-bold text-white mb-2">Qu'est-ce qu'un Protocole ?</h3>
+              <p class="text-xs text-gray-300 leading-relaxed">
+                C'est une <strong>promesse</strong>. Il spécifie quelles méthodes ou propriétés un objet doit posséder, sans se soucier de <em>comment</em> elles sont implémentées.
+              </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-5">
+              <h3 class="text-base font-bold text-white mb-2">Le Secret des Apps Testables</h3>
+              <p class="text-xs text-gray-300 leading-relaxed">
+                Votre interface graphique (View) ou votre logique métier (ViewModel) ne doit <strong>jamais</strong> appeler directement une base de données ou un serveur réseau. Elle doit dépendre d'un <code class="text-orange-400 font-bold">protocol</code>.
+              </p>
+              <div class="mt-3 flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
+                <span class="text-blue-300 font-mono">ViewModel</span>
+                <span class="text-gray-400">➔ dépend de ➔</span>
+                <span class="text-orange-300 font-mono font-bold">TaskProviding</span>
+                <span class="text-gray-400">➔ injecte ➔</span>
+                <span class="text-emerald-300 font-mono">MockProvider</span>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-200">
+              💡 <strong>Résultat :</strong> Vous pouvez tester toute votre application sur simulateur ou en CI sans aucune connexion Internet ni base de données réelle !
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 9 : TDD (TEST DRIVEN DEVELOPMENT)   -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 4 &bull; Qualité Pro</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Le Cycle TDD : Rouge ➔ Vert ➔ Refactor</h2>
+          <p class="text-gray-400 text-sm">Pourquoi écrire le test unitaire avant ou pendant l'implémentation change la donne.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+          <!-- Step 1 -->
+          <div class="glass-panel rounded-2xl p-6 border-t-4 border-t-rose-500">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-3xl">🔴</span>
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold">Étape 1</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">1. Écrire le Test (Rouge)</h3>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              On commence par exprimer l'attente métier dans un test unitaire avec <code class="text-rose-300 font-mono">XCTest</code>. Le test échoue car le code n'existe pas encore.
+            </p>
+            <div class="mt-4 p-3 rounded-lg bg-black/40 font-mono text-[10px] text-rose-300 border border-rose-500/20">
+              XCTAssertEqual(vm.taskCountText, "Aucune tâche")<br/>
+              ❌ FAILED : test failed
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="glass-panel rounded-2xl p-6 border-t-4 border-t-emerald-500">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-3xl">🟢</span>
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">Étape 2</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">2. Faire Passer (Vert)</h3>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              On implémente le code le plus simple possible pour faire passer le test au vert. Pas de sur-ingénierie prématurée.
+            </p>
+            <div class="mt-4 p-3 rounded-lg bg-black/40 font-mono text-[10px] text-emerald-300 border border-emerald-500/20">
+              Product > Test (Cmd + U)<br/>
+              ✅ PASSED : Test Suite Passed
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="glass-panel rounded-2xl p-6 border-t-4 border-t-blue-500">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-3xl">🔵</span>
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-bold">Étape 3</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">3. Refactoriser</h3>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              Maintenant que le test veille sur vous comme un filet de sécurité, vous pouvez nettoyer les noms, optimiser et découper le code sans peur de casser quoi que ce soit !
+            </p>
+            <div class="mt-4 p-3 rounded-lg bg-black/40 font-mono text-[10px] text-blue-300 border border-blue-500/20">
+              Répétez en toute confiance.
+            </div>
+          </div>
+        </div>
+
+        <!-- Command Line Tip -->
+        <div class="mt-6 p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">⌨️</span>
+            <span class="text-xs text-gray-300">Raccourci clé dans Xcode pour lancer les tests :</span>
+            <span class="key-badge">Cmd + U</span>
+          </div>
+          <span class="text-xs font-mono text-gray-400">Ou en CLI : xcodebuild test</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 10 : SWIFTUI & LE PATTERN MVVM      -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 5 &bull; UI & Architecture (Lesson 04 & 05)</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">SwiftUI & MVVM : View = f(State)</h2>
+          <p class="text-gray-400 text-sm">L'interface utilisateur n'est plus impérative, elle est la projection directe de votre ViewModel.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+          <!-- Model -->
+          <div class="glass-panel rounded-2xl p-6">
+            <div class="text-xs font-bold text-orange-400 mb-1">M &bull; Modèle (Données)</div>
+            <h3 class="text-lg font-bold text-white mb-2">ProductivityTask</h3>
+            <p class="text-xs text-gray-300 leading-relaxed mb-4">
+              Pure structure Swift immuable avec un identifiant unique (UUID), un titre et une priorité.
+            </p>
+            <div class="p-3 rounded-xl bg-black/40 font-mono text-[11px] text-orange-300 border border-white/10">
+              struct ProductivityTask {<br/>
+              &nbsp;&nbsp;let id: UUID<br/>
+              &nbsp;&nbsp;var title: String<br/>
+              &nbsp;&nbsp;var isDone: Bool<br/>
+              }
+            </div>
+          </div>
+
+          <!-- ViewModel -->
+          <div class="glass-panel rounded-2xl p-6 border-2 border-blue-500/40 shadow-xl shadow-blue-500/10">
+            <div class="text-xs font-bold text-blue-400 mb-1">VM &bull; ViewModel (Cerveau)</div>
+            <h3 class="text-lg font-bold text-white mb-2">HomeScreenViewModel</h3>
+            <p class="text-xs text-gray-300 leading-relaxed mb-4">
+              Classe <code class="text-blue-300">ObservableObject</code> annotée <code class="text-blue-300">@MainActor</code>. Elle expose des propriétés <code class="text-blue-300">@Published</code> que l'écran observe.
+            </p>
+            <div class="p-3 rounded-xl bg-black/40 font-mono text-[11px] text-blue-300 border border-white/10">
+              @Published var tasks<br/>
+              var completedCount: Int<br/>
+              func markTaskDone(...)
+            </div>
+          </div>
+
+          <!-- View -->
+          <div class="glass-panel rounded-2xl p-6">
+            <div class="text-xs font-bold text-emerald-400 mb-1">V &bull; View (Interface SwiftUI)</div>
+            <h3 class="text-lg font-bold text-white mb-2">ProductivityHomeView</h3>
+            <p class="text-xs text-gray-300 leading-relaxed mb-4">
+              Structure légère conforme au protocole <code class="text-emerald-300">View</code>. Elle écoute le ViewModel et redessine l'écran dès que les données changent.
+            </p>
+            <div class="p-3 rounded-xl bg-black/40 font-mono text-[11px] text-emerald-300 border border-white/10">
+              struct ...: View {<br/>
+              &nbsp;&nbsp;@ObservedObject var vm<br/>
+              &nbsp;&nbsp;var body: some View { ... }<br/>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 rounded-xl bg-white/5 border border-white/10 text-center text-xs text-gray-300">
+          🎯 <strong>Pourquoi c'est génial ?</strong> Zéro logique métier dans la vue SwiftUI. Toute la logique est dans le ViewModel et se teste automatiquement en un clin d'œil sans avoir besoin de cliquer sur l'écran !
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 11 : DEMO SIMULATEUR IPHONE 15       -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full flex flex-col justify-between h-full">
+        <div class="mb-2">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 5 &bull; Démo Live Interactive</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Le Composant Réel : Code SwiftUI & Rendu iOS</h2>
+          <p class="text-gray-400 text-xs">Cliquez sur les tâches dans l'iPhone ci-contre pour tester la réactivité SwiftUI en direct !</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-auto">
+          <!-- Left: SwiftUI Code (7 cols) -->
+          <div class="lg:col-span-7 code-container h-[510px] flex flex-col">
+            <div class="code-header">
+              <span class="text-xs font-mono text-gray-300">ProductivityHomeView.swift</span>
+              <span class="text-[11px] text-emerald-400 font-bold">● Preview SwiftUI</span>
+            </div>
+            <pre class="p-4 text-xs leading-relaxed overflow-y-auto flex-1"><code class="language-swift">import SwiftUI
+
+struct ProductivityHomeView: View {
+    @ObservedObject var viewModel: Lesson05HomeScreenViewModel
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                // En-tête dynamique
+                headerSection
+                
+                // Carte de résumé calculée en direct
+                summaryCard
+                
+                // Liste des tâches réactive
+                tasksSection
+            }
+            .padding(24)
+        }
+        .background(Color(.systemGroupedBackground))
+    }
+
+    private var summaryCard: some View {
+        HStack {
+            Text(viewModel.completedCountText)
+                .font(.title2.bold())
+            Spacer()
+            Text(viewModel.pendingCountText)
+                .foregroundStyle(.secondary)
+        }
+        .padding()
+        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+    }
+}</code></pre>
+          </div>
+
+          <!-- Right: Interactive iPhone 15 Pro Mockup (5 cols) -->
+          <div class="lg:col-span-5 flex justify-center">
+            <div class="iphone-frame scale-[0.88] origin-center">
+              <!-- Dynamic Island -->
+              <div class="dynamic-island">
+                <div class="island-camera"></div>
+                <div class="text-[10px] font-bold text-orange-400">TP iOS</div>
+                <div class="island-sensor"></div>
+              </div>
+
+              <!-- Status Bar -->
+              <div class="status-bar">
+                <span>9:41</span>
+                <div class="flex items-center gap-1">
+                  <span>5G</span>
+                  <span>100%</span>
+                </div>
+              </div>
+
+              <!-- Screen Content -->
+              <div class="iphone-screen">
+                <div class="text-xl font-extrabold text-gray-900 tracking-tight">Productivité</div>
+                <div class="text-[11px] text-gray-500">TP SwiftUI & TDD</div>
+                <div class="text-[11px] font-semibold text-blue-600 mt-1">Étape 5 / 5</div>
+
+                <!-- Dynamic Summary Card -->
+                <div class="mt-4 p-3.5 rounded-2xl bg-white shadow-sm border border-gray-100">
+                  <div class="text-[11px] font-bold text-gray-800">Progression du TP</div>
+                  <div class="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+                    <span id="sim-completed-count" class="text-sm font-extrabold text-gray-900">2 terminée(s)</span>
+                    <span id="sim-pending-count" class="text-xs text-gray-500">2 en cours</span>
+                  </div>
+                </div>
+
+                <!-- All Done Banner -->
+                <div id="sim-alldone-banner" class="hidden mt-3 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center text-xs font-bold text-emerald-700">
+                  🎉 Bravo ! Tous les objectifs sont validés !
+                </div>
+
+                <!-- Tasks Section -->
+                <div class="text-xs font-bold text-gray-800 mt-5 mb-2 flex items-center justify-between">
+                  <span>Tâches du cours</span>
+                  <span class="text-[10px] text-gray-400">(cliquez pour cocher)</span>
+                </div>
+
+                <div id="sim-tasks-list" class="space-y-2 flex-1">
+                  <!-- Injected via JavaScript -->
+                </div>
+
+                <!-- Add Task Box -->
+                <div class="mt-4 pt-3 border-t border-gray-200 flex gap-1.5">
+                  <input id="sim-new-task-input" type="text" placeholder="Ajouter une tâche..." class="flex-1 px-2.5 py-1.5 rounded-lg bg-white border border-gray-200 text-xs text-gray-900 focus:outline-none focus:border-blue-500" onkeydown="if(event.key==='Enter') addSimTask()">
+                  <button onclick="addSimTask()" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-500">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 12 : VISITE GUIDEE DE XCODE          -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 6 &bull; L'Atelier</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Anatomie de Xcode : Visite Guidée</h2>
+          <p class="text-gray-400 text-sm">Cliquez sur les zones pour découvrir leur fonction et les raccourcis indispensables.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto">
+          <!-- Zone Selection Buttons -->
+          <div class="lg:col-span-5 space-y-2">
+            <button onclick="selectXcodeZone('navigator')" data-zone="navigator" class="xcode-zone-btn w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition flex items-center justify-between">
+              <span>📁 1. Project Navigator</span>
+              <span class="font-mono text-[10px] text-gray-400 bg-white/10 px-2 py-0.5 rounded">Cmd + 1</span>
+            </button>
+            <button onclick="selectXcodeZone('editor')" data-zone="editor" class="xcode-zone-btn w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition flex items-center justify-between">
+              <span>✍️ 2. Code Editor</span>
+              <span class="font-mono text-[10px] text-gray-400 bg-white/10 px-2 py-0.5 rounded">Cmd + Return</span>
+            </button>
+            <button onclick="selectXcodeZone('canvas')" data-zone="canvas" class="xcode-zone-btn w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition flex items-center justify-between">
+              <span>📱 3. SwiftUI Preview Canvas</span>
+              <span class="font-mono text-[10px] text-gray-400 bg-white/10 px-2 py-0.5 rounded">Cmd + Opt + Return</span>
+            </button>
+            <button onclick="selectXcodeZone('inspector')" data-zone="inspector" class="xcode-zone-btn w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition flex items-center justify-between">
+              <span>🎛️ 4. Utilities & Inspector</span>
+              <span class="font-mono text-[10px] text-gray-400 bg-white/10 px-2 py-0.5 rounded">Cmd + Opt + 0</span>
+            </button>
+            <button onclick="selectXcodeZone('debugger')" data-zone="debugger" class="xcode-zone-btn w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition flex items-center justify-between">
+              <span>🐛 5. Debugger & Console</span>
+              <span class="font-mono text-[10px] text-gray-400 bg-white/10 px-2 py-0.5 rounded">Cmd + Shift + Y</span>
+            </button>
+          </div>
+
+          <!-- Zone Description Card -->
+          <div class="lg:col-span-7 glass-panel rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-400">Zone Sélectionnée</span>
+                <span id="xcode-zone-badge" class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Cmd + 1</span>
+              </div>
+              <h3 id="xcode-zone-title" class="text-2xl font-bold text-white mb-3">
+                1. Project Navigator (Volet Gauche)
+              </h3>
+              <p id="xcode-zone-desc" class="text-sm text-gray-300 leading-relaxed">
+                L'arborescence de vos fichiers Swift, Assets graphiques, Configs (.plist) et Tests unitaires. Raccourci clé : Cmd+1 pour l'afficher rapidement.
+              </p>
+            </div>
+
+            <!-- Pro Shortcuts Cheat Sheet -->
+            <div class="mt-6 pt-4 border-t border-white/10">
+              <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Les 4 Raccourcis Vitaux de Xcode :</div>
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div class="p-2 rounded bg-white/5 border border-white/10 flex justify-between">
+                  <span class="text-gray-300">Compiler (Build)</span>
+                  <span class="text-orange-400 font-bold">Cmd + B</span>
+                </div>
+                <div class="p-2 rounded bg-white/5 border border-white/10 flex justify-between">
+                  <span class="text-gray-300">Lancer (Run)</span>
+                  <span class="text-emerald-400 font-bold">Cmd + R</span>
+                </div>
+                <div class="p-2 rounded bg-white/5 border border-white/10 flex justify-between">
+                  <span class="text-gray-300">Tester (Test)</span>
+                  <span class="text-blue-400 font-bold">Cmd + U</span>
+                </div>
+                <div class="p-2 rounded bg-white/5 border border-white/10 flex justify-between">
+                  <span class="text-gray-300">Nettoyer (Clean)</span>
+                  <span class="text-rose-400 font-bold">Cmd + Shift + K</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 13 : QUIZ FLASH #2                    -->
+    <!-- ========================================== -->
+    <section class="slide justify-center items-center">
+      <div class="max-w-2xl w-full glass-panel rounded-3xl p-8 border border-white/20 shadow-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+            ⚡️ Quiz Flash #2 &bull; Les Optionnels
+          </span>
+          <span class="text-xs text-gray-400 font-mono">Question 2/2</span>
+        </div>
+
+        <h3 class="text-2xl font-bold text-white mb-3">
+          Que va afficher cette ligne de code en console ?
+        </h3>
+
+        <div class="code-container my-4">
+          <pre class="p-3 text-xs"><code class="language-swift">let userNickname: String? = nil
+let displayName = userNickname ?? "Invité"
+print("Bonjour, \(displayName) !")</code></pre>
+        </div>
+
+        <div class="quiz-options space-y-2 mt-4">
+          <button onclick="checkQuiz(this, false, 'quiz2-expl')" class="w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-gray-200 transition">
+            A) <code class="text-rose-400 font-mono">Fatal error: Unexpectedly found nil</code> (Crash)
+          </button>
+          <button onclick="checkQuiz(this, true, 'quiz2-expl')" class="w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-gray-200 transition">
+            B) <code class="text-emerald-400 font-mono">Bonjour, Invité !</code>
+          </button>
+          <button onclick="checkQuiz(this, false, 'quiz2-expl')" class="w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-gray-200 transition">
+            C) <code class="text-amber-400 font-mono">Bonjour, Optional(nil) !</code>
+          </button>
+        </div>
+
+        <div id="quiz2-expl" class="hidden mt-4 p-4 rounded-xl border text-xs text-gray-200 leading-relaxed">
+          <strong class="text-white">Explication :</strong> L'opérateur de coalescence <code class="text-orange-400">??</code> (Nil-Coalescing) permet de déballer un optionnel en toute sécurité en fournissant une valeur de secours si l'optionnel vaut <code class="text-rose-400">nil</code>. Aucun crash n'est possible !
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 14 : LE DEFI DU TP                    -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 7 &bull; Place à la Pratique !</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Le TP : CoursProductivite.xcodeproj</h2>
+          <p class="text-gray-400 text-sm">Votre feuille de route pour le travail pratique.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-auto">
+          <!-- The Challenge -->
+          <div class="glass-panel rounded-2xl p-6 border border-orange-500/30">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-3xl">🎯</span>
+              <div>
+                <h3 class="text-lg font-bold text-white">La Règle du Jeu</h3>
+                <p class="text-xs text-orange-400 font-semibold">Une erreur volontaire au démarrage</p>
+              </div>
+            </div>
+
+            <ol class="space-y-3 text-xs text-gray-300">
+              <li class="flex items-start gap-2">
+                <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-white shrink-0">1</span>
+                <span>Ouvrez le projet <code class="text-white font-mono bg-white/10 px-1 py-0.5 rounded">CoursProductivite.xcodeproj</code> dans Xcode.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-white shrink-0">2</span>
+                <span>Lancez la compilation avec <span class="key-badge">Cmd + B</span>. Observez l'erreur laissée intentionnellement.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-white shrink-0">3</span>
+                <span>Corrigez l'erreur de typage pour obtenir votre premier succès de compilation.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center font-bold text-white shrink-0">4</span>
+                <span>Lancez les tests avec <span class="key-badge">Cmd + U</span> : ils vous guideront pas à pas leçon après leçon !</span>
+              </li>
+            </ol>
+          </div>
+
+          <!-- The 5 Lessons Roadmap -->
+          <div class="glass-panel rounded-2xl p-6 space-y-2.5">
+            <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-2">Les 5 Leçons à Valider :</h3>
+            
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
+              <span class="font-mono text-orange-300 font-bold">Lesson01_Basics</span>
+              <span class="text-gray-400">Types, structures et init</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
+              <span class="font-mono text-emerald-300 font-bold">Lesson02_Optionals</span>
+              <span class="text-gray-400">Nettoyage avec guard let</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
+              <span class="font-mono text-blue-300 font-bold">Lesson03_Protocols</span>
+              <span class="text-gray-400">Injection de TaskProviding</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
+              <span class="font-mono text-purple-300 font-bold">Lesson04_ViewModel</span>
+              <span class="text-gray-400">Calcul du texte de comptage</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
+              <span class="font-mono text-rose-300 font-bold">Lesson05_HomeScreen</span>
+              <span class="text-gray-400">Premier écran SwiftUI dynamique</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 15 : CONCLUSION & Q&A                 -->
+    <!-- ========================================== -->
+    <section class="slide justify-center items-center text-center">
+      <div class="max-w-3xl flex flex-col items-center">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-rose-600 flex items-center justify-center text-3xl mb-6 shadow-2xl shadow-orange-500/40">
+          🚀
+        </div>
+
+        <h2 class="text-4xl sm:text-6xl font-extrabold text-white mb-4">
+          C'est à vous de coder !
+        </h2>
+
+        <p class="text-lg text-gray-300 max-w-xl mb-8 leading-relaxed">
+          Ouvrez Xcode, lancez le projet et laissez les tests unitaires vous guider. Je reste à votre disposition pour vos questions !
+        </p>
+
+        <!-- Command Shortcut Box -->
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/15 max-w-md w-full mb-8 font-mono text-xs text-gray-300 flex items-center justify-between">
+          <span class="text-gray-400">Ouvrir le projet :</span>
+          <span class="text-orange-400 font-bold">open CoursProductivite.xcodeproj</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <button onclick="updateSlide(0)" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-sm font-semibold text-white transition">
+            ↺ Recommencer du début
+          </button>
+          <button onclick="toggleOverview()" class="px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-sm font-bold text-white transition shadow-lg shadow-orange-500/25">
+            📑 Voir toutes les diapositives
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL : VUE D'ENSEMBLE (OVERVIEW)           -->
+  <!-- ========================================== -->
+  <div id="overview-modal">
+    <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Vue d'ensemble de la présentation</h2>
+        <p class="text-xs text-gray-400">Cliquez sur une diapositive pour y sauter directement (Touche 'O' ou Échap pour fermer)</p>
+      </div>
+      <button onclick="toggleOverview()" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition">
+        ✕
+      </button>
+    </div>
+
+    <div id="overview-grid" class="overview-grid flex-1">
+      <!-- Populated dynamically via app.js -->
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL : AIDE RACCOURCIS                     -->
+  <!-- ========================================== -->
+  <div id="help-modal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] hidden items-center justify-center p-6">
+    <div class="glass-panel max-w-md w-full rounded-2xl p-6 border border-white/20">
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/10">
+        <h3 class="text-lg font-bold text-white">Raccourcis Clavier</h3>
+        <button onclick="toggleHelp()" class="text-gray-400 hover:text-white">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="flex justify-between items-center py-1">
+          <span class="text-gray-300">Diapositive suivante</span>
+          <div class="flex gap-1"><span class="key-badge">→</span><span class="key-badge">↓</span><span class="key-badge">Espace</span></div>
+        </div>
+        <div class="flex justify-between items-center py-1">
+          <span class="text-gray-300">Diapositive précédente</span>
+          <div class="flex gap-1"><span class="key-badge">←</span><span class="key-badge">↑</span></div>
+        </div>
+        <div class="flex justify-between items-center py-1">
+          <span class="text-gray-300">Mode Plein Écran</span>
+          <span class="key-badge">F</span>
+        </div>
+        <div class="flex justify-between items-center py-1">
+          <span class="text-gray-300">Vue d'ensemble (Grille)</span>
+          <span class="key-badge">O</span>
+        </div>
+        <div class="flex justify-between items-center py-1">
+          <span class="text-gray-300">Démarrer / Pause Timer</span>
+          <span class="key-badge">T</span>
+        </div>
+        <div class="flex justify-between items-center py-1">
+          <span class="text-gray-300">Fermer les fenêtres modales</span>
+          <span class="key-badge">Échap</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
