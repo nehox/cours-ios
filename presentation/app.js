@@ -493,6 +493,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Interactive Widget 5.5: Dependency Injection Switcher (Prod vs Mock) ---
+  function setDiMode(mode) {
+    const btnReal = document.getElementById('di-btn-real');
+    const btnMock = document.getElementById('di-btn-mock');
+    const diSourceBadge = document.getElementById('di-source-badge');
+    const diCodeSnippet = document.getElementById('di-code-snippet');
+    const diVmOutput = document.getElementById('di-vm-output');
+    const diTimeOutput = document.getElementById('di-time-output');
+    const diDesc = document.getElementById('di-mode-desc');
+
+    if (mode === 'real') {
+      if (btnReal) btnReal.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-lg shadow-blue-500/10";
+      if (btnMock) btnMock.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition";
+      if (diSourceBadge) diSourceBadge.innerHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">🏢 Production (TaskStore)</span>`;
+      if (diCodeSnippet) diCodeSnippet.innerText = `// Dans CoursProductiviteApp.swift (En vrai)\nlet store = TaskStore() // Écrit sur disque\nlet viewModel = Lesson04ViewModel(provider: store)`;
+      if (diVmOutput) diVmOutput.innerHTML = `<span class="text-blue-400 font-bold">"4 tâche(s)"</span> (chargées depuis la base locale)`;
+      if (diTimeOutput) diTimeOutput.innerHTML = `<span class="text-amber-400 font-mono">~45 ms</span> (I/O disque)`;
+      if (diDesc) diDesc.innerText = "L'application lit le disque dur ou le stockage local pour récupérer les vraies tâches de l'utilisateur.";
+    } else {
+      if (btnReal) btnReal.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition";
+      if (btnMock) btnMock.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-lg shadow-emerald-500/10";
+      if (diSourceBadge) diSourceBadge.innerHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">🧪 Test Unitaire (MockProvider)</span>`;
+      if (diCodeSnippet) diCodeSnippet.innerText = `// Dans LessonTests.swift (En test unitaire)\nlet mock = Lesson03MockProvider(tasks: []) // RAM\nlet viewModel = Lesson04ViewModel(provider: mock)`;
+      if (diVmOutput) diVmOutput.innerHTML = `<span class="text-emerald-400 font-bold">"Aucune tâche"</span> (données factices en RAM)`;
+      if (diTimeOutput) diTimeOutput.innerHTML = `<span class="text-emerald-400 font-mono">0.001 ms</span> (instantané en mémoire !)`;
+      if (diDesc) diDesc.innerText = "Le test injecte une liste vide en mémoire. Zéro écriture sur disque, aucun risque de corrompre les données réelles !";
+    }
+
+    if (window.Prism && diCodeSnippet) {
+      Prism.highlightElement(diCodeSnippet);
+    }
+  }
+
   // --- Interactive Widget 6: SwiftUI Stacks Switcher (VStack, HStack, ZStack) ---
   function setStackMode(mode) {
     const stage = document.getElementById('stacks-demo-stage');
@@ -812,6 +845,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setMemoryDemo = setMemoryDemo;
   window.checkQuiz = checkQuiz;
   window.selectXcodeZone = selectXcodeZone;
+  window.setDiMode = setDiMode;
   window.setStackMode = setStackMode;
   window.selectStorybookComponent = selectStorybookComponent;
   window.toggleSbDarkMode = toggleSbDarkMode;

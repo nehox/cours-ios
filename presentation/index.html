@@ -64,7 +64,7 @@
       <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
         <div id="progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-blue-500 transition-all duration-300 w-0"></div>
       </div>
-      <span id="slide-counter" class="text-[11px] font-mono text-gray-400 mt-1">1 / 18</span>
+      <span id="slide-counter" class="text-[11px] font-mono text-gray-400 mt-1">1 / 19</span>
     </div>
 
     <!-- Right Controls -->
@@ -584,78 +584,189 @@ print(taskCount)</code></pre>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 8 : PROTOCOLES & INJECTION           -->
+    <!-- SLIDE 8 : LES PROTOCOLES (LE CONTRAT USB-C) -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
         <div class="mb-4">
           <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 4 &bull; Architecture (Lesson 03)</span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Protocoles & Injection de Dépendances</h2>
-          <p class="text-gray-400 text-sm">Comment écrire du code découplé qui se teste en quelques millisecondes.</p>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Les Protocoles : Un Contrat, Pas du Code !</h2>
+          <p class="text-gray-400 text-sm">L'analogie concrète : pourquoi votre iPhone se fiche complètement de la marque de votre chargeur.</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-auto">
-          <!-- Code -->
-          <div class="code-container">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto items-center">
+          <!-- Left: Real World Analogy (6 cols) -->
+          <div class="lg:col-span-6 space-y-3">
+            <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-orange-500">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-2xl">🔌</span>
+                <h3 class="text-base font-bold text-white">L'analogie du quotidien : Le Port USB-C</h3>
+              </div>
+              <p class="text-xs text-gray-300 leading-relaxed">
+                Le port USB-C est un <strong>protocole physique</strong>. C'est une simple fiche technique : <em>"Pour te brancher ici, tu dois avoir telle forme et savoir délivrer de l'énergie"</em>. Le port lui-même ne fabrique pas une seule goutte d'électricité !
+              </p>
+            </div>
+
+            <!-- The 3 implementations -->
+            <div class="grid grid-cols-3 gap-2.5 text-center">
+              <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                <div class="text-xl mb-1">🏠</div>
+                <div class="text-xs font-bold text-white">Prise Murale</div>
+                <div class="text-[10px] text-gray-400">Réseau EDF 220V</div>
+                <div class="text-[9px] text-blue-300 font-mono mt-1">Prod réelle</div>
+              </div>
+              <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                <div class="text-xl mb-1">🔋</div>
+                <div class="text-xs font-bold text-white">Batterie Externe</div>
+                <div class="text-[10px] text-gray-400">Cellules Lithium</div>
+                <div class="text-[9px] text-purple-300 font-mono mt-1">Alternative</div>
+              </div>
+              <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                <div class="text-xl mb-1">🧪</div>
+                <div class="text-xs font-bold text-white">Banc de Test</div>
+                <div class="text-[10px] text-gray-400">Labo Apple</div>
+                <div class="text-[9px] text-emerald-300 font-mono mt-1">Mock / Faux</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-xs text-orange-200 leading-relaxed">
+              💡 <strong>L'iPhone ne pose aucune question indiscrète :</strong> Tant que l'accessoire respecte la norme USB-C, l'iPhone charge. Il n'a pas besoin de savoir si le courant provient d'une centrale nucléaire ou d'une batterie portable !
+            </div>
+          </div>
+
+          <!-- Right: Swift Code Translation (6 cols) -->
+          <div class="lg:col-span-6 code-container">
             <div class="code-header">
               <span class="text-xs text-gray-300 font-mono">Lesson03_Protocols.swift</span>
-              <button class="copy-code-btn text-xs text-gray-400 hover:text-white transition">Copier</button>
+              <span class="text-[11px] text-orange-400 font-bold">Le Contrat Swift</span>
             </div>
-            <pre class="p-4 text-xs leading-relaxed"><code class="language-swift">// 1. Le Contrat (Interface)
+            <pre class="p-4 text-xs leading-relaxed overflow-x-auto"><code class="language-swift">// 1. Le Protocole : ZERO code à l'intérieur !
+// C'est juste un cahier des charges (la norme USB-C)
 protocol Lesson03TaskProviding {
     func currentTasks() -> [ProductivityTask]
 }
 
-// 2. L'implémentation de Test (Mock)
+// 2. Implémentation A : La vraie base sur disque (La prise murale)
+final class TaskStore: Lesson03TaskProviding {
+    func currentTasks() -> [ProductivityTask] {
+        // Lit les vrais fichiers SQLite / SwiftData sur le disque dur
+        loadTasksFromDatabase()
+    }
+}
+
+// 3. Implémentation B : Le faux bouchon de test (Le banc de labo)
 struct Lesson03MockProvider: Lesson03TaskProviding {
     let tasks: [ProductivityTask]
 
     func currentTasks() -> [ProductivityTask] {
-        tasks
-    }
-}
-
-// 3. L'implémentation Réelle (Base de données / API)
-final class TaskStore: Lesson03TaskProviding {
-    func currentTasks() -> [ProductivityTask] {
-        // Lit depuis le disque ou CoreData/SwiftData...
+        tasks // Répond instantanément en mémoire (RAM) !
     }
 }</code></pre>
-          </div>
-
-          <!-- Explanation & Diagram -->
-          <div class="space-y-4">
-            <div class="glass-panel rounded-2xl p-5">
-              <h3 class="text-base font-bold text-white mb-2">Qu'est-ce qu'un Protocole ?</h3>
-              <p class="text-xs text-gray-300 leading-relaxed">
-                C'est une <strong>promesse</strong>. Il spécifie quelles méthodes ou propriétés un objet doit posséder, sans se soucier de <em>comment</em> elles sont implémentées.
-              </p>
-            </div>
-
-            <div class="glass-panel rounded-2xl p-5">
-              <h3 class="text-base font-bold text-white mb-2">Le Secret des Apps Testables</h3>
-              <p class="text-xs text-gray-300 leading-relaxed">
-                Votre interface graphique (View) ou votre logique métier (ViewModel) ne doit <strong>jamais</strong> appeler directement une base de données ou un serveur réseau. Elle doit dépendre d'un <code class="text-orange-400 font-bold">protocol</code>.
-              </p>
-              <div class="mt-3 flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
-                <span class="text-blue-300 font-mono">ViewModel</span>
-                <span class="text-gray-400">➔ dépend de ➔</span>
-                <span class="text-orange-300 font-mono font-bold">TaskProviding</span>
-                <span class="text-gray-400">➔ injecte ➔</span>
-                <span class="text-emerald-300 font-mono">MockProvider</span>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-200">
-              💡 <strong>Résultat :</strong> Vous pouvez tester toute votre application sur simulateur ou en CI sans aucune connexion Internet ni base de données réelle !
-            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 9 : TDD (TEST DRIVEN DEVELOPMENT)   -->
+    <!-- SLIDE 9 : INJECTION DE DEPENDANCES         -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-3">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 4 &bull; Architecture (Lesson 04)</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">L'Injection de Dépendances : Ne Soudez Rien au Mur !</h2>
+          <p class="text-gray-400 text-sm">Un grand mot savant pour un principe tout bête : passer un objet en paramètre au lieu de le créer en dur.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-auto items-center">
+          <!-- Left: Before / After Explanations (6 cols) -->
+          <div class="lg:col-span-6 space-y-3">
+            <div class="code-container border-rose-500/30">
+              <div class="code-header bg-rose-500/10 py-1.5 px-3">
+                <span class="text-xs font-bold text-rose-400">❌ Sans Injection (Couplage Sauvage & Câble Soudé)</span>
+              </div>
+              <pre class="p-3 text-[11px] leading-relaxed"><code class="language-swift">final class BadViewModel {
+    // 💥 CATASTROPHE : Créé en dur avec TaskStore() !
+    // La classe est "soudée" à la vraie base de données.
+    private let store = TaskStore() 
+}</code></pre>
+            </div>
+
+            <div class="code-container border-emerald-500/40">
+              <div class="code-header bg-emerald-500/10 py-1.5 px-3">
+                <span class="text-xs font-bold text-emerald-400">✅ Avec Injection (Câble Débranchable • Lesson 04)</span>
+              </div>
+              <pre class="p-3 text-[11px] leading-relaxed"><code class="language-swift">@MainActor
+final class Lesson04ViewModel {
+    private let provider: Lesson03TaskProviding
+
+    // L'injection se fait ICI ! On reçoit la prise en paramètre :
+    init(provider: Lesson03TaskProviding) {
+        self.provider = provider
+    }
+
+    var taskCountText: String {
+        let count = provider.currentTasks().count
+        return count == 0 ? "Aucune tâche" : "\(count) tâche(s)"
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Switcher "Branchez la Source !" (6 cols) -->
+          <div class="lg:col-span-6 glass-panel rounded-2xl p-5 flex flex-col justify-between h-[420px]">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Simulateur : Branchez la Source !</span>
+                <div class="flex gap-2">
+                  <button id="di-btn-real" onclick="setDiMode('real')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+                    🏢 En Vrai (TaskStore)
+                  </button>
+                  <button id="di-btn-mock" onclick="setDiMode('mock')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-lg shadow-emerald-500/10">
+                    🧪 En Test (MockProvider)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Active Source Badge -->
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-400">Source branchée au ViewModel :</span>
+                <span id="di-source-badge">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">🧪 Test Unitaire (MockProvider)</span>
+                </span>
+              </div>
+
+              <!-- Code Box -->
+              <div class="p-3 rounded-xl bg-black/40 font-mono text-[11px] text-gray-200 border border-white/10 mb-3">
+                <pre><code id="di-code-snippet" class="language-swift">// Dans LessonTests.swift (En test unitaire)
+let mock = Lesson03MockProvider(tasks: []) // RAM
+let viewModel = Lesson04ViewModel(provider: mock)</code></pre>
+              </div>
+
+              <!-- Result Stats -->
+              <div class="space-y-2 text-xs">
+                <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between">
+                  <span class="text-gray-400">Résultat de <code>taskCountText</code> :</span>
+                  <span id="di-vm-output" class="font-bold text-emerald-300">"Aucune tâche"</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between">
+                  <span class="text-gray-400">Temps d'exécution :</span>
+                  <span id="di-time-output" class="font-mono text-emerald-400 font-bold">0.001 ms (instantané !)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer explanation -->
+            <p id="di-mode-desc" class="text-[11px] text-gray-300 mt-3 pt-2 border-t border-white/10">
+              Le test injecte une liste vide en mémoire. Zéro écriture sur disque, aucun risque de corrompre les données réelles !
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 10 : TDD (TEST DRIVEN DEVELOPMENT)  -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -727,7 +838,7 @@ final class TaskStore: Lesson03TaskProviding {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 10 : SWIFTUI & LE PATTERN MVVM      -->
+    <!-- SLIDE 11 : SWIFTUI & LE PATTERN MVVM      -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -791,7 +902,7 @@ final class TaskStore: Lesson03TaskProviding {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 11 : LES STACKS (LAYOUT SWIFTUI)     -->
+    <!-- SLIDE 12 : LES STACKS (LAYOUT SWIFTUI)     -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -874,7 +985,7 @@ final class TaskStore: Lesson03TaskProviding {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 12 : COMPOSANTS VISUELS & MODIFIERS  -->
+    <!-- SLIDE 13 : COMPOSANTS VISUELS & MODIFIERS  -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -967,7 +1078,7 @@ final class TaskStore: Lesson03TaskProviding {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 13 : ATELIER STORYBOOK SWIFTUI       -->
+    <!-- SLIDE 14 : ATELIER STORYBOOK SWIFTUI       -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-between h-full">
@@ -1100,7 +1211,7 @@ final class TaskStore: Lesson03TaskProviding {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 14 : DEMO SIMULATEUR IPHONE 15       -->
+    <!-- SLIDE 15 : DEMO SIMULATEUR IPHONE 15       -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-between h-full">
@@ -1215,7 +1326,7 @@ struct ProductivityHomeView: View {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 15 : VISITE GUIDEE DE XCODE          -->
+    <!-- SLIDE 16 : VISITE GUIDEE DE XCODE          -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -1293,7 +1404,7 @@ struct ProductivityHomeView: View {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 16 : QUIZ FLASH #2                    -->
+    <!-- SLIDE 17 : QUIZ FLASH #2                    -->
     <!-- ========================================== -->
     <section class="slide justify-center items-center">
       <div class="max-w-2xl w-full glass-panel rounded-3xl p-8 border border-white/20 shadow-2xl">
@@ -1333,7 +1444,7 @@ print("Bonjour, \(displayName) !")</code></pre>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 17 : LE DEFI DU TP                    -->
+    <!-- SLIDE 18 : LE DEFI DU TP                    -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -1404,7 +1515,7 @@ print("Bonjour, \(displayName) !")</code></pre>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 18 : CONCLUSION & Q&A                 -->
+    <!-- SLIDE 19 : CONCLUSION & Q&A                 -->
     <!-- ========================================== -->
     <section class="slide justify-center items-center text-center">
       <div class="max-w-3xl flex flex-col items-center">
