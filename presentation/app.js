@@ -830,6 +830,215 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isDoneToggle && sbProps.isDone !== undefined) isDoneToggle.checked = sbProps.isDone;
   }
 
+  // --- Interactive Widget 8: SwiftUI Modifier Order Drag & Drop ---
+  const modifierCatalog = {
+    padding: {
+      id: 'padding',
+      swift: '.padding(24)',
+      title: 'Marge interne (24px)',
+      icon: '↔️',
+      color: 'text-purple-400',
+      badge: 'PaddingView'
+    },
+    background: {
+      id: 'background',
+      swift: '.background(Color.orange)',
+      title: 'Fond coloré orange',
+      icon: '🎨',
+      color: 'text-orange-400',
+      badge: 'BackgroundView'
+    },
+    clipShape: {
+      id: 'clipShape',
+      swift: '.clipShape(RoundedRectangle(cornerRadius: 18))',
+      title: 'Coins arrondis (18px)',
+      icon: '✂️',
+      color: 'text-blue-400',
+      badge: 'ClipView'
+    },
+    shadow: {
+      id: 'shadow',
+      swift: '.shadow(color: .black.opacity(0.4), radius: 10)',
+      title: 'Ombre portée',
+      icon: '🌑',
+      color: 'text-amber-400',
+      badge: 'ShadowView'
+    },
+    border: {
+      id: 'border',
+      swift: '.border(Color.cyan, width: 3)',
+      title: 'Bordure cyan (3px)',
+      icon: '🖼️',
+      color: 'text-cyan-400',
+      badge: 'BorderView'
+    }
+  };
+
+  let activeModifiers = ['padding', 'background', 'clipShape', 'shadow'];
+  let draggedIndex = null;
+
+  function moveModifierUp(index) {
+    if (index > 0) {
+      const temp = activeModifiers[index];
+      activeModifiers[index] = activeModifiers[index - 1];
+      activeModifiers[index - 1] = temp;
+      renderModifierDemo();
+    }
+  }
+
+  function moveModifierDown(index) {
+    if (index < activeModifiers.length - 1) {
+      const temp = activeModifiers[index];
+      activeModifiers[index] = activeModifiers[index + 1];
+      activeModifiers[index + 1] = temp;
+      renderModifierDemo();
+    }
+  }
+
+  function applyModifierPreset(presetKey) {
+    if (presetKey === 'ideal') {
+      activeModifiers = ['padding', 'background', 'clipShape', 'shadow'];
+    } else if (presetKey === 'trap') {
+      activeModifiers = ['background', 'padding', 'clipShape'];
+    } else if (presetKey === 'onion') {
+      activeModifiers = ['padding', 'background', 'padding', 'border'];
+    }
+    renderModifierDemo();
+  }
+
+  function renderModifierDemo() {
+    const listEl = document.getElementById('dnd-modifiers-list');
+    const previewEl = document.getElementById('dnd-preview-target');
+    const codeEl = document.getElementById('dnd-swift-code');
+    const onionEl = document.getElementById('dnd-onion-layers');
+    const explEl = document.getElementById('dnd-order-expl');
+
+    if (!listEl) return;
+
+    // Render Draggable List
+    listEl.innerHTML = '';
+    activeModifiers.forEach((modKey, idx) => {
+      const mod = modifierCatalog[modKey];
+      if (!mod) return;
+
+      const item = document.createElement('div');
+      item.className = 'dnd-modifier-item';
+      item.draggable = true;
+      item.dataset.index = idx;
+      item.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-gray-500 cursor-grab">⋮⋮</span>
+          <span>${mod.icon}</span>
+          <span class="font-bold ${mod.color}">${mod.swift}</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="moveModifierUp(${idx})" class="dnd-btn-arrow" title="Monter" ${idx === 0 ? 'style="opacity:0.3; pointer-events:none;"' : ''}>↑</button>
+          <button onclick="moveModifierDown(${idx})" class="dnd-btn-arrow" title="Descendre" ${idx === activeModifiers.length - 1 ? 'style="opacity:0.3; pointer-events:none;"' : ''}>↓</button>
+        </div>
+      `;
+
+      item.addEventListener('dragstart', (e) => {
+        draggedIndex = idx;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        document.querySelectorAll('.dnd-modifier-item').forEach(el => el.classList.remove('drag-over'));
+      });
+
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        item.classList.add('drag-over');
+      });
+
+      item.addEventListener('dragleave', () => {
+        item.classList.remove('drag-over');
+      });
+
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        item.classList.remove('drag-over');
+        if (draggedIndex !== null && draggedIndex !== idx) {
+          const moved = activeModifiers.splice(draggedIndex, 1)[0];
+          activeModifiers.splice(idx, 0, moved);
+          renderModifierDemo();
+        }
+      });
+
+      listEl.appendChild(item);
+    });
+
+    // Render Swift Code
+    if (codeEl) {
+      let codeText = `Text("SwiftUI")\n    .font(.title2.bold())`;
+      activeModifiers.forEach(m => {
+        const mod = modifierCatalog[m];
+        if (mod) codeText += `\n    ${mod.swift}`;
+      });
+      codeEl.innerText = codeText;
+      if (window.Prism) Prism.highlightElement(codeEl);
+    }
+
+    // Render Onion Layers Hierarchy
+    if (onionEl) {
+      onionEl.innerHTML = '';
+      // Hierarchy is reversed (outermost wraps innermost)
+      const reversed = [...activeModifiers].reverse();
+      reversed.forEach(m => {
+        const mod = modifierCatalog[m];
+        if (mod) {
+          onionEl.innerHTML += `<span class="dnd-onion-badge">${mod.badge}(</span>`;
+        }
+      });
+      onionEl.innerHTML += `<span class="dnd-onion-badge text-orange-400 font-bold">Text("SwiftUI")</span>`;
+      reversed.forEach(() => {
+        onionEl.innerHTML += `<span class="text-gray-500 font-mono text-xs">)</span>`;
+      });
+    }
+
+    // Render Visual Preview
+    if (previewEl) {
+      // Build layers like SwiftUI nests ModifiedContent
+      let html = `<span style="font-size:17px; font-weight:800; color:#fff; white-space:nowrap; letter-spacing:-0.02em;">SwiftUI</span>`;
+      
+      activeModifiers.forEach(m => {
+        if (m === 'padding') {
+          html = `<div style="padding:22px; display:inline-flex; align-items:center; justify-content:center;">${html}</div>`;
+        } else if (m === 'background') {
+          html = `<div style="background:linear-gradient(135deg, #ff7e47 0%, #f05138 100%); display:inline-flex; align-items:center; justify-content:center;">${html}</div>`;
+        } else if (m === 'clipShape') {
+          html = `<div style="border-radius:18px; overflow:hidden; display:inline-flex; align-items:center; justify-content:center;">${html}</div>`;
+        } else if (m === 'shadow') {
+          html = `<div style="box-shadow:0 12px 30px rgba(0,0,0,0.6); display:inline-flex; align-items:center; justify-content:center;">${html}</div>`;
+        } else if (m === 'border') {
+          html = `<div style="border:3px solid #2997ff; display:inline-flex; align-items:center; justify-content:center;">${html}</div>`;
+        }
+      });
+
+      previewEl.innerHTML = html;
+    }
+
+    // Update Pedagogical Diagnostics
+    if (explEl) {
+      const bgIdx = activeModifiers.indexOf('background');
+      const padIdx = activeModifiers.indexOf('padding');
+      const clipIdx = activeModifiers.indexOf('clipShape');
+
+      if (bgIdx !== -1 && padIdx !== -1 && bgIdx < padIdx) {
+        explEl.innerHTML = `<span class="text-rose-400 font-bold">⚠️ Piège Débutant :</span> Le fond orange est appliqué AVANT le padding. Résultat : le fond colle directement aux lettres du texte, et le padding autour reste transparent !`;
+      } else if (bgIdx !== -1 && padIdx !== -1 && clipIdx !== -1 && padIdx < bgIdx && bgIdx < clipIdx) {
+        explEl.innerHTML = `<span class="text-emerald-400 font-bold">✓ Ordre Idéal Apple :</span> Le texte reçoit ses marges d'abord (.padding), puis la couleur s'étend sur tout le bloc (.background), et enfin les coins sont adoucis (.clipShape). Magnifique !`;
+      } else if (activeModifiers.filter(m => m === 'padding').length > 1) {
+        explEl.innerHTML = `<span class="text-cyan-400 font-bold">🧅 Effet Oignon :</span> L'empilement successif de plusieurs .padding() et .background() crée des couches concentriques d'éléments superposés.`;
+      } else {
+        explEl.innerHTML = `<span class="text-blue-300 font-bold">💡 Règle d'or :</span> Chaque modificateur crée une NOUVELLE vue invisible qui enveloppe la précédente. L'ordre dicte qui enveloppe qui !`;
+      }
+    }
+  }
+
   // --- Export All Public Interactive Functions to Window ---
   window.updateSlide = updateSlide;
   window.nextSlide = nextSlide;
@@ -850,9 +1059,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.selectStorybookComponent = selectStorybookComponent;
   window.toggleSbDarkMode = toggleSbDarkMode;
   window.updateSbProp = updateSbProp;
+  window.moveModifierUp = moveModifierUp;
+  window.moveModifierDown = moveModifierDown;
+  window.applyModifierPreset = applyModifierPreset;
 
   // Initial call
   updateSlide(currentIndex);
   renderSimulator();
   renderStorybook();
+  renderModifierDemo();
 });

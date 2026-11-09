@@ -64,7 +64,7 @@
       <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
         <div id="progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-blue-500 transition-all duration-300 w-0"></div>
       </div>
-      <span id="slide-counter" class="text-[11px] font-mono text-gray-400 mt-1">1 / 19</span>
+      <span id="slide-counter" class="text-[11px] font-mono text-gray-400 mt-1">1 / 20</span>
     </div>
 
     <!-- Right Controls -->
@@ -1066,19 +1066,114 @@ let viewModel = Lesson04ViewModel(provider: mock)</code></pre>
             <div>
               <div class="text-xs font-bold text-white">L'ordre des modificateurs compte énormément !</div>
               <div class="text-[11px] text-gray-300">
-                <code class="text-emerald-300">Text("A").padding().background(.blue)</code> colore le texte AVEC ses marges, alors que <code class="text-rose-300">Text("A").background(.blue).padding()</code> colore uniquement le texte sans marges !
+                En SwiftUI, chaque modificateur ne change pas la vue : il <strong>l'emballe</strong> dans une nouvelle boîte invisible !
               </div>
             </div>
           </div>
-          <button onclick="toggleStorybook()" class="px-3.5 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-xs font-bold text-white transition shrink-0">
-            Tester dans le Storybook →
+          <button onclick="nextSlide()" class="px-3.5 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-xs font-bold text-white transition shrink-0">
+            Faire l'Atelier Drag & Drop →
           </button>
         </div>
       </div>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 14 : ATELIER STORYBOOK SWIFTUI       -->
+    <!-- SLIDE 14 : ATELIER DRAG & DROP MODIFIERS   -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full flex flex-col justify-between h-full">
+        <div class="mb-2">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 5 &bull; Atelier Drag & Drop</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">L'Ordre des Modificateurs : L'Effet Poupées Russes</h2>
+          <p class="text-gray-400 text-xs">Glissez-déposez les blocs (ou cliquez sur les flèches ↑/↓) pour voir le bouton se métamorphoser en direct !</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-auto">
+          <!-- Left: Séquenceur Draggable (5 cols) -->
+          <div class="lg:col-span-5 glass-panel rounded-2xl p-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-2 border-b border-white/10 mb-3">
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Séquenceur de Modificateurs</span>
+                <span class="text-[10px] text-gray-400 font-mono">Glisser / Déposer</span>
+              </div>
+
+              <!-- Base View -->
+              <div class="p-2.5 rounded-xl bg-white/10 border border-white/15 text-xs font-mono font-bold text-white mb-2 flex items-center justify-between">
+                <span>🏷️ Text("SwiftUI")</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-white/10 text-gray-300">Vue Initiale</span>
+              </div>
+
+              <!-- Draggable Modifiers List -->
+              <div id="dnd-modifiers-list" class="space-y-2">
+                <!-- Injected dynamically via app.js -->
+              </div>
+            </div>
+
+            <!-- Presets Bar -->
+            <div class="pt-3 border-t border-white/10 mt-3">
+              <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Tester un préréglage :</span>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button onclick="applyModifierPreset('ideal')" class="p-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-semibold text-emerald-300 transition text-center">
+                  ✨ Ordre Idéal
+                </button>
+                <button onclick="applyModifierPreset('trap')" class="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-[11px] font-semibold text-rose-300 transition text-center">
+                  ⚠️ Le Piège
+                </button>
+                <button onclick="applyModifierPreset('onion')" class="p-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-[11px] font-semibold text-cyan-300 transition text-center">
+                  🧅 Double Oignon
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Visual Preview & Swift Code (7 cols) -->
+          <div class="lg:col-span-7 flex flex-col gap-3">
+            <!-- Top: Live Visual Preview Surface -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between">
+              <div class="flex items-center justify-between pb-2 border-b border-white/10 mb-2">
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Rendu iOS en Temps Réel</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Live Preview</span>
+              </div>
+
+              <!-- Visual Rendering Canvas -->
+              <div class="dnd-preview-container py-8">
+                <div id="dnd-preview-target">
+                  <!-- Injected dynamically -->
+                </div>
+              </div>
+
+              <!-- Onion Hierarchy Display -->
+              <div class="mt-3 pt-2 border-t border-white/10">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Hiérarchie d'emballage (Poupées Russes) :</span>
+                <div id="dnd-onion-layers" class="flex flex-wrap items-center gap-1">
+                  <!-- Injected dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom: Swift Code & Diagnostic -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+              <div class="md:col-span-7 code-container h-36 flex flex-col">
+                <div class="code-header py-1 px-3">
+                  <span class="text-[11px] font-mono text-gray-300">Code Swift Équivalent</span>
+                  <button class="copy-code-btn text-[10px] text-gray-400 hover:text-white transition">Copier</button>
+                </div>
+                <pre class="p-2.5 text-[11px] leading-relaxed overflow-y-auto flex-1"><code id="dnd-swift-code" class="language-swift">Text("SwiftUI")</code></pre>
+              </div>
+
+              <div class="md:col-span-5 glass-panel rounded-xl p-3 flex flex-col justify-center text-xs text-gray-300 leading-relaxed border border-white/10">
+                <div id="dnd-order-expl">
+                  <!-- Diagnostic text -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 15 : ATELIER STORYBOOK SWIFTUI       -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-between h-full">
@@ -1211,7 +1306,7 @@ let viewModel = Lesson04ViewModel(provider: mock)</code></pre>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 15 : DEMO SIMULATEUR IPHONE 15       -->
+    <!-- SLIDE 16 : DEMO SIMULATEUR IPHONE 15       -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-between h-full">
@@ -1326,7 +1421,7 @@ struct ProductivityHomeView: View {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 16 : VISITE GUIDEE DE XCODE          -->
+    <!-- SLIDE 17 : VISITE GUIDEE DE XCODE          -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -1404,7 +1499,7 @@ struct ProductivityHomeView: View {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 17 : QUIZ FLASH #2                    -->
+    <!-- SLIDE 18 : QUIZ FLASH #2                    -->
     <!-- ========================================== -->
     <section class="slide justify-center items-center">
       <div class="max-w-2xl w-full glass-panel rounded-3xl p-8 border border-white/20 shadow-2xl">
@@ -1444,7 +1539,7 @@ print("Bonjour, \(displayName) !")</code></pre>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 18 : LE DEFI DU TP                    -->
+    <!-- SLIDE 19 : LE DEFI DU TP                    -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -1515,7 +1610,7 @@ print("Bonjour, \(displayName) !")</code></pre>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 19 : CONCLUSION & Q&A                 -->
+    <!-- SLIDE 20 : CONCLUSION & Q&A                 -->
     <!-- ========================================== -->
     <section class="slide justify-center items-center text-center">
       <div class="max-w-3xl flex flex-col items-center">
