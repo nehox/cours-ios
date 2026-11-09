@@ -58,6 +58,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      if (document.documentElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  }
+
+  function toggleOverview() {
+    if (!overviewModal) return;
+    const isActive = overviewModal.classList.contains('active');
+    if (!isActive) {
+      populateOverviewGrid();
+      overviewModal.classList.add('active');
+    } else {
+      overviewModal.classList.remove('active');
+    }
+  }
+
+  function toggleHelp() {
+    if (!helpModal) return;
+    helpModal.classList.toggle('active');
+  }
+
+  function toggleStorybook() {
+    const sbModal = document.getElementById('storybook-modal');
+    if (!sbModal) return;
+    const isActive = sbModal.classList.contains('active');
+    if (!isActive) {
+      sbModal.classList.add('active');
+      renderStorybook();
+    } else {
+      sbModal.classList.remove('active');
+    }
+  }
+
   // --- Keyboard Shortcuts ---
   window.addEventListener('keydown', (e) => {
     // Avoid triggering when user is typing in an input
@@ -121,30 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
   if (helpBtn) helpBtn.addEventListener('click', toggleHelp);
   if (storybookBtn) storybookBtn.addEventListener('click', toggleStorybook);
-
-  function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
-    }
-  }
-
-  function toggleOverview() {
-    if (!overviewModal) return;
-    const isActive = overviewModal.classList.contains('active');
-    if (!isActive) {
-      populateOverviewGrid();
-      overviewModal.classList.add('active');
-    } else {
-      overviewModal.classList.remove('active');
-    }
-  }
-
-  function toggleHelp() {
-    if (!helpModal) return;
-    helpModal.classList.toggle('active');
-  }
 
   // Close modals on overlay click
   if (overviewModal) {
@@ -223,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Copy Code to Clipboard ---
   document.querySelectorAll('.copy-code-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const codeBlock = btn.closest('.code-container').querySelector('code');
+      const codeBlock = btn.closest('.code-container')?.querySelector('code');
       if (codeBlock) {
         navigator.clipboard.writeText(codeBlock.innerText).then(() => {
           const originalText = btn.innerHTML;
@@ -243,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const optNilCoalOutput = document.getElementById('opt-nilcoal-output');
   const optCrashOutput = document.getElementById('opt-crash-output');
 
-  window.setOptionalMode = function(hasValue) {
+  function setOptionalMode(hasValue) {
     const valBtn = document.getElementById('btn-opt-val');
     const nilBtn = document.getElementById('btn-opt-nil');
 
@@ -276,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (optNilCoalOutput) optNilCoalOutput.innerHTML = `<span class="text-blue-400 font-bold">"Sans titre"</span> <span class="text-gray-400">(fallback sécurisé)</span>`;
       if (optCrashOutput) optCrashOutput.innerHTML = `<span class="text-rose-400 font-bold font-mono">💥 Fatal error: Unexpectedly found nil while unwrapping an Optional value</span>`;
     }
-  };
+  }
 
   // --- Interactive Widget 2: Simulateur SwiftUI iPhone 15 ---
   let simulatorTasks = [
@@ -330,15 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.toggleSimTask = function(id) {
+  function toggleSimTask(id) {
     const task = simulatorTasks.find(t => t.id === id);
     if (task) {
       task.isDone = !task.isDone;
       renderSimulator();
     }
-  };
+  }
 
-  window.addSimTask = function() {
+  function addSimTask() {
     const input = document.getElementById('sim-new-task-input');
     if (!input || !input.value.trim()) return;
     simulatorTasks.push({
@@ -349,10 +365,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     input.value = '';
     renderSimulator();
-  };
+  }
 
   // --- Interactive Widget 3: Struct vs Class Memory Visualizer ---
-  window.setMemoryDemo = function(type) {
+  function setMemoryDemo(type) {
     const structBtn = document.getElementById('btn-mem-struct');
     const classBtn = document.getElementById('btn-mem-class');
     const memTitle = document.getElementById('mem-demo-title');
@@ -398,10 +414,10 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       if (memPointer) memPointer.style.display = 'flex';
     }
-  };
+  }
 
   // --- Interactive Widget 4: Quiz Engine ---
-  window.checkQuiz = function(button, isCorrect, explanationId) {
+  function checkQuiz(button, isCorrect, explanationId) {
     const parentContainer = button.closest('.quiz-options');
     const allButtons = parentContainer.querySelectorAll('button');
     allButtons.forEach(b => {
@@ -427,10 +443,10 @@ document.addEventListener('DOMContentLoaded', () => {
         explEl.classList.add('border-rose-500/40', 'bg-rose-500/10');
       }
     }
-  };
+  }
 
   // --- Interactive Widget 5: Xcode Architecture Explorer ---
-  window.selectXcodeZone = function(zoneName) {
+  function selectXcodeZone(zoneName) {
     const zones = {
       navigator: {
         title: "1. Project Navigator (Volet Gauche)",
@@ -475,10 +491,10 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.toggle('border-blue-500', btn.dataset.zone === zoneName);
       btn.classList.toggle('bg-blue-500/20', btn.dataset.zone === zoneName);
     });
-  };
+  }
 
   // --- Interactive Widget 6: SwiftUI Stacks Switcher (VStack, HStack, ZStack) ---
-  window.setStackMode = function(mode) {
+  function setStackMode(mode) {
     const stage = document.getElementById('stacks-demo-stage');
     const codeEl = document.getElementById('stacks-code-snippet');
     const titleEl = document.getElementById('stacks-demo-title');
@@ -499,21 +515,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (mode === 'vstack') {
       if (btnV) btnV.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/40 shadow-lg shadow-orange-500/10";
-      if (titleEl) titleEl.innerText = "VStack (Vertical Stack &bull; Colonne)";
+      if (titleEl) titleEl.innerText = "VStack (Vertical Stack • Colonne)";
       if (descEl) descEl.innerText = "Empile les composants de haut en bas sur l'axe vertical Y. Idéal pour structurer les formulaires, écrans et listes.";
       if (codeEl) {
         codeEl.innerHTML = `VStack(alignment: .leading, spacing: 12) {\n    Text("Titre de la tâche")\n        .font(.headline)\n    Text("Priorité Haute")\n        .font(.subheadline)\n        .foregroundStyle(.secondary)\n    Button("Marquer comme fait") { ... }\n}`;
       }
     } else if (mode === 'hstack') {
       if (btnH) btnH.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-lg shadow-blue-500/10";
-      if (titleEl) titleEl.innerText = "HStack (Horizontal Stack &bull; Ligne)";
+      if (titleEl) titleEl.innerText = "HStack (Horizontal Stack • Ligne)";
       if (descEl) descEl.innerText = "Aligne les composants de gauche à droite sur l'axe horizontal X. Parfait pour les barres de statut, boutons avec icônes et cartes résumées.";
       if (codeEl) {
         codeEl.innerHTML = `HStack(spacing: 12) {\n    Image(systemName: "flag.fill")\n        .foregroundStyle(.orange)\n    Text("Tâche prioritaire")\n    Spacer()\n    Image(systemName: "checkmark.circle")\n}`;
       }
     } else if (mode === 'zstack') {
       if (btnZ) btnZ.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-lg shadow-purple-500/10";
-      if (titleEl) titleEl.innerText = "ZStack (Depth Stack &bull; Superposition)";
+      if (titleEl) titleEl.innerText = "ZStack (Depth Stack • Superposition)";
       if (descEl) descEl.innerText = "Superpose les composants d'arrière en avant sur l'axe de profondeur Z. Idéal pour ajouter un fond dégradé sous un contenu ou des badges de notification.";
       if (codeEl) {
         codeEl.innerHTML = `ZStack {\n    RoundedRectangle(cornerRadius: 16)\n        .fill(.ultraThinMaterial)\n    VStack {\n        Text("Contenu flottant")\n    }\n}`;
@@ -523,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.Prism && codeEl) {
       Prism.highlightElement(codeEl);
     }
-  };
+  }
 
   // --- Interactive Widget 7: SwiftUI Storybook Engine ---
   const storybookComponents = {
@@ -581,19 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let sbProps = { ...storybookComponents['vstack'].defaultProps };
   let sbDarkMode = true;
 
-  window.toggleStorybook = function() {
-    const sbModal = document.getElementById('storybook-modal');
-    if (!sbModal) return;
-    const isActive = sbModal.classList.contains('active');
-    if (!isActive) {
-      sbModal.classList.add('active');
-      renderStorybook();
-    } else {
-      sbModal.classList.remove('active');
-    }
-  };
-
-  window.selectStorybookComponent = function(compKey) {
+  function selectStorybookComponent(compKey) {
     if (!storybookComponents[compKey]) return;
     currentSbComponent = compKey;
     sbProps = { ...storybookComponents[compKey].defaultProps };
@@ -604,17 +608,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     renderStorybook();
-  };
+  }
 
-  window.toggleSbDarkMode = function() {
+  function toggleSbDarkMode() {
     sbDarkMode = !sbDarkMode;
     renderStorybook();
-  };
+  }
 
-  window.updateSbProp = function(propKey, value) {
+  function updateSbProp(propKey, value) {
     sbProps[propKey] = value;
     renderStorybook();
-  };
+  }
 
   function renderStorybook() {
     const comp = storybookComponents[currentSbComponent];
@@ -792,6 +796,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (paddingSlider && sbProps.padding !== undefined) paddingSlider.value = sbProps.padding;
     if (isDoneToggle && sbProps.isDone !== undefined) isDoneToggle.checked = sbProps.isDone;
   }
+
+  // --- Export All Public Interactive Functions to Window ---
+  window.updateSlide = updateSlide;
+  window.nextSlide = nextSlide;
+  window.prevSlide = prevSlide;
+  window.toggleFullscreen = toggleFullscreen;
+  window.toggleOverview = toggleOverview;
+  window.toggleHelp = toggleHelp;
+  window.toggleStorybook = toggleStorybook;
+  window.toggleTimer = toggleTimer;
+  window.setOptionalMode = setOptionalMode;
+  window.toggleSimTask = toggleSimTask;
+  window.addSimTask = addSimTask;
+  window.setMemoryDemo = setMemoryDemo;
+  window.checkQuiz = checkQuiz;
+  window.selectXcodeZone = selectXcodeZone;
+  window.setStackMode = setStackMode;
+  window.selectStorybookComponent = selectStorybookComponent;
+  window.toggleSbDarkMode = toggleSbDarkMode;
+  window.updateSbProp = updateSbProp;
 
   // Initial call
   updateSlide(currentIndex);
