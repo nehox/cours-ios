@@ -64,11 +64,18 @@
       <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
         <div id="progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-blue-500 transition-all duration-300 w-0"></div>
       </div>
-      <span id="slide-counter" class="text-[11px] font-mono text-gray-400 mt-1">1 / 15</span>
+      <span id="slide-counter" class="text-[11px] font-mono text-gray-400 mt-1">1 / 18</span>
     </div>
 
     <!-- Right Controls -->
     <div class="flex items-center gap-2">
+      <!-- Storybook Trigger Button -->
+      <button id="storybook-header-btn" class="px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-orange-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold shadow-lg shadow-orange-500/10" title="Ouvrir le Storybook SwiftUI (Touche S)">
+        <span>🎨</span>
+        <span class="hidden sm:inline">Storybook</span>
+        <span class="key-badge text-[10px] text-orange-300 border-orange-500/30">S</span>
+      </button>
+
       <!-- Presenter Timer -->
       <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-mono text-gray-300">
         <span id="timer-display">00:00</span>
@@ -784,7 +791,316 @@ final class TaskStore: Lesson03TaskProviding {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 11 : DEMO SIMULATEUR IPHONE 15       -->
+    <!-- SLIDE 11 : LES STACKS (LAYOUT SWIFTUI)     -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 5 &bull; Layout & Structure</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Les Piliers du Layout : VStack, HStack & ZStack</h2>
+          <p class="text-gray-400 text-sm">En SwiftUI, toute votre interface est construite en combinant ces trois briques fondamentales.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto items-center">
+          <!-- Left: Interactive Switcher & Stage (7 cols) -->
+          <div class="lg:col-span-7 glass-panel rounded-2xl p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+              <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Démonstrateur Interactif</span>
+              <div class="flex gap-2">
+                <button id="btn-stack-v" onclick="setStackMode('vstack')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/40 shadow-lg shadow-orange-500/10">
+                  VStack (Colonne)
+                </button>
+                <button id="btn-stack-h" onclick="setStackMode('hstack')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+                  HStack (Ligne)
+                </button>
+                <button id="btn-stack-z" onclick="setStackMode('zstack')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+                  ZStack (Profondeur)
+                </button>
+              </div>
+            </div>
+
+            <!-- Dynamic Info -->
+            <div class="mb-4">
+              <h4 id="stacks-demo-title" class="text-base font-bold text-white">VStack (Vertical Stack &bull; Colonne)</h4>
+              <p id="stacks-demo-desc" class="text-xs text-gray-300 mt-1">Empile les composants de haut en bas sur l'axe vertical Y. Idéal pour structurer les formulaires, écrans et listes.</p>
+            </div>
+
+            <!-- Animated Stage with 3 cards -->
+            <div id="stacks-demo-stage" class="stack-stage is-vstack p-4 rounded-xl bg-black/40 border border-white/10 gap-3">
+              <div class="stack-card p-3 rounded-xl bg-orange-500/20 border border-orange-500/40 text-xs font-semibold text-white flex items-center justify-between">
+                <span>1. En-tête de vue (Header)</span>
+                <span class="text-[10px] bg-orange-500/40 px-2 py-0.5 rounded">Élément A</span>
+              </div>
+              <div class="stack-card p-3 rounded-xl bg-blue-500/20 border border-blue-500/40 text-xs font-semibold text-white flex items-center justify-between">
+                <span>2. Carte de résumé (SummaryCard)</span>
+                <span class="text-[10px] bg-blue-500/40 px-2 py-0.5 rounded">Élément B</span>
+              </div>
+              <div class="stack-card p-3 rounded-xl bg-purple-500/20 border border-purple-500/40 text-xs font-semibold text-white flex items-center justify-between">
+                <span>3. Liste de tâches (TasksSection)</span>
+                <span class="text-[10px] bg-purple-500/40 px-2 py-0.5 rounded">Élément C</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Code & Spacer Explanation (5 cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="code-container">
+              <div class="code-header">
+                <span class="text-xs font-mono text-gray-300">Syntaxe SwiftUI</span>
+                <span class="text-[11px] text-orange-400 font-bold">Live Code</span>
+              </div>
+              <pre class="p-4 text-xs leading-relaxed"><code id="stacks-code-snippet" class="language-swift">VStack(alignment: .leading, spacing: 12) {
+    Text("Titre de la tâche")
+        .font(.headline)
+    Text("Priorité Haute")
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+    Button("Marquer comme fait") { ... }
+}</code></pre>
+            </div>
+
+            <!-- Spacer Box -->
+            <div class="glass-panel rounded-xl p-4 border-l-4 border-l-blue-400">
+              <div class="flex items-center gap-2 text-xs font-bold text-blue-300 mb-1">
+                <span>↔️</span> Le Super-Pouvoir de <code>Spacer()</code>
+              </div>
+              <p class="text-[11px] text-gray-300 leading-relaxed">
+                <code class="text-blue-300">Spacer()</code> agit comme un ressort compressible infini. Placé entre deux éléments dans un <code class="text-white">HStack</code> ou <code class="text-white">VStack</code>, il repousse les éléments vers les extrémités de l'écran.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 12 : COMPOSANTS VISUELS & MODIFIERS  -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="mb-4">
+          <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 5 &bull; Composants Visuels</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Text, Label, Button & Ordre des Modificateurs</h2>
+          <p class="text-gray-400 text-sm">Les composants graphiques atomiques d'Apple et la règle cruciale des modificateurs en cascade.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+          <!-- Card 1: Text & Typo -->
+          <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-2xl">✍️</span>
+                <h3 class="text-base font-bold text-white">Text & Typographie</h3>
+              </div>
+              <p class="text-xs text-gray-300 mb-3">
+                Utilisez toujours les styles sémantiques Apple pour respecter automatiquement la taille de police préférée de l'utilisateur (Dynamic Type).
+              </p>
+              <div class="p-2.5 rounded-lg bg-black/40 font-mono text-[11px] text-blue-300 space-y-1">
+                <div>.font(.largeTitle.bold())</div>
+                <div>.font(.headline)</div>
+                <div>.foregroundStyle(.secondary)</div>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-white/10 text-[11px] text-gray-400">
+              S'adapte en mode sombre automatiquement.
+            </div>
+          </div>
+
+          <!-- Card 2: Label & SF Symbols -->
+          <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-2xl">🌟</span>
+                <h3 class="text-base font-bold text-white">Label & SF Symbols</h3>
+              </div>
+              <p class="text-xs text-gray-300 mb-3">
+                Apple fournit plus de 5 000 icônes vectorielles natives parfaites. <code class="text-orange-300">Label</code> associe texte et icône avec un alignement impeccable.
+              </p>
+              <div class="p-2.5 rounded-lg bg-black/40 font-mono text-[11px] text-orange-300 space-y-1">
+                <div>Label("Priorité", systemImage: "flag.fill")</div>
+                <div>Image(systemName: "checkmark.circle.fill")</div>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-white/10 text-[11px] text-gray-400">
+              Colorable via <code>.foregroundStyle(.orange)</code>.
+            </div>
+          </div>
+
+          <!-- Card 3: Button & Modern Styles -->
+          <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-2xl">🔘</span>
+                <h3 class="text-base font-bold text-white">Button & Styles</h3>
+              </div>
+              <p class="text-xs text-gray-300 mb-3">
+                Le composant d'action par excellence. Avec iOS 15+, finis les styles manuels lourds, utilisez les styles système d'Apple !
+              </p>
+              <div class="p-2.5 rounded-lg bg-black/40 font-mono text-[11px] text-emerald-300 space-y-1">
+                <div>Button("Action") { ... }</div>
+                <div>&nbsp;&nbsp;.buttonStyle(.borderedProminent)</div>
+                <div>&nbsp;&nbsp;.tint(.orange)</div>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-white/10 text-[11px] text-gray-400">
+              Gère les animations de tap nativement.
+            </div>
+          </div>
+        </div>
+
+        <!-- Modifier Order Callout -->
+        <div class="mt-6 p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-transparent border border-purple-500/30 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">⚠️</span>
+            <div>
+              <div class="text-xs font-bold text-white">L'ordre des modificateurs compte énormément !</div>
+              <div class="text-[11px] text-gray-300">
+                <code class="text-emerald-300">Text("A").padding().background(.blue)</code> colore le texte AVEC ses marges, alors que <code class="text-rose-300">Text("A").background(.blue).padding()</code> colore uniquement le texte sans marges !
+              </div>
+            </div>
+          </div>
+          <button onclick="toggleStorybook()" class="px-3.5 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-xs font-bold text-white transition shrink-0">
+            Tester dans le Storybook →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 13 : ATELIER STORYBOOK SWIFTUI       -->
+    <!-- ========================================== -->
+    <section class="slide">
+      <div class="max-w-6xl mx-auto w-full flex flex-col justify-between h-full">
+        <div class="mb-2 flex items-center justify-between">
+          <div>
+            <span class="act-badge text-xs font-bold uppercase tracking-wider text-orange-400">Partie 5 &bull; Atelier Storybook</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">SwiftUI Storybook : Le Catalogue de Composants</h2>
+            <p class="text-gray-400 text-xs">Sélectionnez un composant, ajustez ses propriétés en direct et copiez le code Swift généré !</p>
+          </div>
+          <button onclick="toggleSbDarkMode()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs text-white transition flex items-center gap-1.5">
+            <span>🌓</span>
+            <span>Bascule Thème iOS</span>
+          </button>
+        </div>
+
+        <!-- Embedded Storybook Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-auto h-[510px]">
+          <!-- Sidebar: Component Tree (3 cols) -->
+          <div class="lg:col-span-3 glass-panel rounded-2xl p-3 overflow-y-auto space-y-1">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 py-1">Layout</div>
+            <div onclick="selectStorybookComponent('vstack')" class="storybook-sidebar-item active" data-component="vstack">
+              <span>📐</span> <span>VStack (Colonne)</span>
+            </div>
+            <div onclick="selectStorybookComponent('hstack')" class="storybook-sidebar-item" data-component="hstack">
+              <span>↔️</span> <span>HStack (Ligne)</span>
+            </div>
+            <div onclick="selectStorybookComponent('zstack')" class="storybook-sidebar-item" data-component="zstack">
+              <span>📑</span> <span>ZStack (Superposition)</span>
+            </div>
+
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 pt-3 py-1">Contenus</div>
+            <div onclick="selectStorybookComponent('text')" class="storybook-sidebar-item" data-component="text">
+              <span>✍️</span> <span>Text Hierarchy</span>
+            </div>
+            <div onclick="selectStorybookComponent('label')" class="storybook-sidebar-item" data-component="label">
+              <span>🏷️</span> <span>Label & SF Symbols</span>
+            </div>
+            <div onclick="selectStorybookComponent('button')" class="storybook-sidebar-item" data-component="button">
+              <span>🔘</span> <span>Button Prominent</span>
+            </div>
+
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 pt-3 py-1">Composants du TP</div>
+            <div onclick="selectStorybookComponent('taskrow')" class="storybook-sidebar-item" data-component="taskrow">
+              <span>✅</span> <span>TaskRow</span>
+            </div>
+            <div onclick="selectStorybookComponent('summarycard')" class="storybook-sidebar-item" data-component="summarycard">
+              <span>📊</span> <span>SummaryCard</span>
+            </div>
+          </div>
+
+          <!-- Center: Live Canvas & Code (6 cols) -->
+          <div class="lg:col-span-6 flex flex-col gap-3">
+            <!-- Preview Surface -->
+            <div class="flex-1 glass-panel rounded-2xl p-4 flex flex-col justify-between overflow-hidden">
+              <div class="flex items-center justify-between pb-2 border-b border-white/10 mb-2">
+                <div>
+                  <h4 id="sb-slide-component-title" class="text-sm font-bold text-white">VStack (Colonne)</h4>
+                  <p id="sb-slide-component-desc" class="text-[11px] text-gray-400">Conteneur vertical avec alignement paramétrable.</p>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">Rendu iOS</span>
+              </div>
+
+              <!-- Visual Canvas -->
+              <div id="sb-slide-preview-surface" class="storybook-preview-surface dark-mode flex-1">
+                <!-- Dynamically injected -->
+              </div>
+            </div>
+
+            <!-- Swift Code Output -->
+            <div class="code-container h-44 flex flex-col">
+              <div class="code-header py-1.5 px-3">
+                <span class="text-[11px] font-mono text-gray-300">SwiftUI Code</span>
+                <button class="copy-code-btn text-[11px] text-gray-400 hover:text-white transition">Copier</button>
+              </div>
+              <pre class="p-3 text-[11px] leading-relaxed overflow-y-auto flex-1"><code id="sb-slide-code-output" class="language-swift">VStack { ... }</code></pre>
+            </div>
+          </div>
+
+          <!-- Right: Inspector Props (3 cols) -->
+          <div class="lg:col-span-3 glass-panel rounded-2xl p-4 flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="text-xs font-bold text-white uppercase tracking-wider pb-2 border-b border-white/10">
+                Inspecteur de Props
+              </div>
+
+              <!-- Spacing Slider -->
+              <div>
+                <div class="flex justify-between text-xs text-gray-300 mb-1">
+                  <span>spacing</span>
+                  <span id="sb-val-spacing" class="font-mono text-orange-400">12px</span>
+                </div>
+                <input id="sb-ctrl-spacing" type="range" min="0" max="32" step="4" value="12" class="w-full accent-orange-500 cursor-pointer" oninput="document.getElementById('sb-val-spacing').innerText = this.value + 'px'; updateSbProp('spacing', parseInt(this.value))">
+              </div>
+
+              <!-- Corner Radius Slider -->
+              <div>
+                <div class="flex justify-between text-xs text-gray-300 mb-1">
+                  <span>cornerRadius</span>
+                  <span id="sb-val-corner" class="font-mono text-blue-400">16px</span>
+                </div>
+                <input id="sb-ctrl-corner" type="range" min="0" max="32" step="4" value="16" class="w-full accent-blue-500 cursor-pointer" oninput="document.getElementById('sb-val-corner').innerText = this.value + 'px'; updateSbProp('cornerRadius', parseInt(this.value))">
+              </div>
+
+              <!-- Padding Slider -->
+              <div>
+                <div class="flex justify-between text-xs text-gray-300 mb-1">
+                  <span>padding</span>
+                  <span id="sb-val-padding" class="font-mono text-purple-400">16px</span>
+                </div>
+                <input id="sb-ctrl-padding" type="range" min="8" max="28" step="2" value="16" class="w-full accent-purple-500 cursor-pointer" oninput="document.getElementById('sb-val-padding').innerText = this.value + 'px'; updateSbProp('padding', parseInt(this.value))">
+              </div>
+
+              <!-- Alignment Selector -->
+              <div>
+                <div class="text-xs text-gray-300 mb-1">alignment</div>
+                <div class="grid grid-cols-3 gap-1">
+                  <button onclick="updateSbProp('alignment', 'leading')" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-gray-300 border border-white/10">.leading</button>
+                  <button onclick="updateSbProp('alignment', 'center')" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-gray-300 border border-white/10">.center</button>
+                  <button onclick="updateSbProp('alignment', 'trailing')" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-gray-300 border border-white/10">.trailing</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-white/10 text-[11px] text-gray-400 text-center">
+              Raccourci : <span class="key-badge">S</span> pour le Storybook modal plein écran !
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SLIDE 14 : DEMO SIMULATEUR IPHONE 15       -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full flex flex-col justify-between h-full">
@@ -899,7 +1215,7 @@ struct ProductivityHomeView: View {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 12 : VISITE GUIDEE DE XCODE          -->
+    <!-- SLIDE 15 : VISITE GUIDEE DE XCODE          -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -977,7 +1293,7 @@ struct ProductivityHomeView: View {
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 13 : QUIZ FLASH #2                    -->
+    <!-- SLIDE 16 : QUIZ FLASH #2                    -->
     <!-- ========================================== -->
     <section class="slide justify-center items-center">
       <div class="max-w-2xl w-full glass-panel rounded-3xl p-8 border border-white/20 shadow-2xl">
@@ -1017,7 +1333,7 @@ print("Bonjour, \(displayName) !")</code></pre>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 14 : LE DEFI DU TP                    -->
+    <!-- SLIDE 17 : LE DEFI DU TP                    -->
     <!-- ========================================== -->
     <section class="slide">
       <div class="max-w-6xl mx-auto w-full">
@@ -1088,7 +1404,7 @@ print("Bonjour, \(displayName) !")</code></pre>
     </section>
 
     <!-- ========================================== -->
-    <!-- SLIDE 15 : CONCLUSION & Q&A                 -->
+    <!-- SLIDE 18 : CONCLUSION & Q&A                 -->
     <!-- ========================================== -->
     <section class="slide justify-center items-center text-center">
       <div class="max-w-3xl flex flex-col items-center">
@@ -1162,6 +1478,10 @@ print("Bonjour, \(displayName) !")</code></pre>
           <div class="flex gap-1"><span class="key-badge">←</span><span class="key-badge">↑</span></div>
         </div>
         <div class="flex justify-between items-center py-1">
+          <span class="text-gray-300">Ouvrir le Storybook</span>
+          <span class="key-badge text-orange-300 border-orange-500/40">S</span>
+        </div>
+        <div class="flex justify-between items-center py-1">
           <span class="text-gray-300">Mode Plein Écran</span>
           <span class="key-badge">F</span>
         </div>
@@ -1176,6 +1496,138 @@ print("Bonjour, \(displayName) !")</code></pre>
         <div class="flex justify-between items-center py-1">
           <span class="text-gray-300">Fermer les fenêtres modales</span>
           <span class="key-badge">Échap</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL : STORYBOOK FULLSCREEN OVERLAY       -->
+  <!-- ========================================== -->
+  <div id="storybook-modal" class="p-8">
+    <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-lg">
+          🎨
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-white">SwiftUI Component Storybook</h2>
+          <p class="text-xs text-gray-400">Catalogue des composants fondamentaux & du TP CoursProductivite</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSbDarkMode()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs text-white transition flex items-center gap-1.5">
+          <span>🌓</span>
+          <span>Bascule Thème</span>
+        </button>
+        <button onclick="toggleStorybook()" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 overflow-hidden">
+      <!-- Sidebar Components (3 cols) -->
+      <div class="lg:col-span-3 glass-panel rounded-2xl p-4 overflow-y-auto space-y-1">
+        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 py-1">Mise en Page</div>
+        <div onclick="selectStorybookComponent('vstack')" class="storybook-sidebar-item active" data-component="vstack">
+          <span>📐</span> <span>VStack (Colonne)</span>
+        </div>
+        <div onclick="selectStorybookComponent('hstack')" class="storybook-sidebar-item" data-component="hstack">
+          <span>↔️</span> <span>HStack (Ligne)</span>
+        </div>
+        <div onclick="selectStorybookComponent('zstack')" class="storybook-sidebar-item" data-component="zstack">
+          <span>📑</span> <span>ZStack (Superposition)</span>
+        </div>
+
+        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 pt-3 py-1">Typographie & Contrôles</div>
+        <div onclick="selectStorybookComponent('text')" class="storybook-sidebar-item" data-component="text">
+          <span>✍️</span> <span>Text Hierarchy</span>
+        </div>
+        <div onclick="selectStorybookComponent('label')" class="storybook-sidebar-item" data-component="label">
+          <span>🏷️</span> <span>Label & SF Symbols</span>
+        </div>
+        <div onclick="selectStorybookComponent('button')" class="storybook-sidebar-item" data-component="button">
+          <span>🔘</span> <span>Button Prominent</span>
+        </div>
+
+        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 pt-3 py-1">Composants du TP</div>
+        <div onclick="selectStorybookComponent('taskrow')" class="storybook-sidebar-item" data-component="taskrow">
+          <span>✅</span> <span>TaskRow</span>
+        </div>
+        <div onclick="selectStorybookComponent('summarycard')" class="storybook-sidebar-item" data-component="summarycard">
+          <span>📊</span> <span>SummaryCard</span>
+        </div>
+      </div>
+
+      <!-- Preview Canvas & Code (6 cols) -->
+      <div class="lg:col-span-6 flex flex-col gap-3 overflow-hidden">
+        <div class="flex-1 glass-panel rounded-2xl p-4 flex flex-col justify-between overflow-hidden">
+          <div class="flex items-center justify-between pb-2 border-b border-white/10 mb-2">
+            <div>
+              <h4 id="sb-component-title" class="text-sm font-bold text-white">VStack (Colonne)</h4>
+              <p id="sb-component-desc" class="text-[11px] text-gray-400">Conteneur vertical avec alignement paramétrable.</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">iOS Native</span>
+          </div>
+
+          <div id="sb-preview-surface" class="storybook-preview-surface dark-mode flex-1">
+            <!-- Dynamically injected -->
+          </div>
+        </div>
+
+        <div class="code-container h-44 flex flex-col">
+          <div class="code-header py-1.5 px-3">
+            <span class="text-[11px] font-mono text-gray-300">Code Swift Généré en Direct</span>
+            <button class="copy-code-btn text-[11px] text-gray-400 hover:text-white transition">Copier</button>
+          </div>
+          <pre class="p-3 text-[11px] leading-relaxed overflow-y-auto flex-1"><code id="sb-code-output" class="language-swift">VStack { ... }</code></pre>
+        </div>
+      </div>
+
+      <!-- Inspector (3 cols) -->
+      <div class="lg:col-span-3 glass-panel rounded-2xl p-4 flex flex-col justify-between overflow-y-auto">
+        <div class="space-y-4">
+          <div class="text-xs font-bold text-white uppercase tracking-wider pb-2 border-b border-white/10">
+            Propriétés & Modificateurs
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs text-gray-300 mb-1">
+              <span>spacing</span>
+              <span class="font-mono text-orange-400">Ajustable</span>
+            </div>
+            <input type="range" min="0" max="32" step="4" value="12" class="w-full accent-orange-500 cursor-pointer" oninput="updateSbProp('spacing', parseInt(this.value))">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs text-gray-300 mb-1">
+              <span>cornerRadius</span>
+              <span class="font-mono text-blue-400">Ajustable</span>
+            </div>
+            <input type="range" min="0" max="32" step="4" value="16" class="w-full accent-blue-500 cursor-pointer" oninput="updateSbProp('cornerRadius', parseInt(this.value))">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs text-gray-300 mb-1">
+              <span>padding</span>
+              <span class="font-mono text-purple-400">Ajustable</span>
+            </div>
+            <input type="range" min="8" max="28" step="2" value="16" class="w-full accent-purple-500 cursor-pointer" oninput="updateSbProp('padding', parseInt(this.value))">
+          </div>
+
+          <div>
+            <div class="text-xs text-gray-300 mb-1">alignment</div>
+            <div class="grid grid-cols-3 gap-1">
+              <button onclick="updateSbProp('alignment', 'leading')" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-gray-300 border border-white/10">.leading</button>
+              <button onclick="updateSbProp('alignment', 'center')" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-gray-300 border border-white/10">.center</button>
+              <button onclick="updateSbProp('alignment', 'trailing')" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-gray-300 border border-white/10">.trailing</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-white/10 text-[11px] text-gray-400 text-center">
+          Touche <span class="key-badge">Échap</span> pour fermer
         </div>
       </div>
     </div>

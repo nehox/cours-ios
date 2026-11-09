@@ -89,6 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'T':
         toggleTimer();
         break;
+      case 's':
+      case 'S':
+        toggleStorybook();
+        break;
       case '?':
       case 'h':
       case 'H':
@@ -97,6 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'Escape':
         if (overviewModal && overviewModal.classList.contains('active')) toggleOverview();
         if (helpModal && helpModal.classList.contains('active')) toggleHelp();
+        const sbModal = document.getElementById('storybook-modal');
+        if (sbModal && sbModal.classList.contains('active')) toggleStorybook();
         break;
     }
   });
@@ -107,12 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const overviewBtn = document.getElementById('overview-btn');
   const fullscreenBtn = document.getElementById('fullscreen-btn');
   const helpBtn = document.getElementById('help-btn');
+  const storybookBtn = document.getElementById('storybook-header-btn');
 
   if (prevBtn) prevBtn.addEventListener('click', prevSlide);
   if (nextBtn) nextBtn.addEventListener('click', nextSlide);
   if (overviewBtn) overviewBtn.addEventListener('click', toggleOverview);
   if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
   if (helpBtn) helpBtn.addEventListener('click', toggleHelp);
+  if (storybookBtn) storybookBtn.addEventListener('click', toggleStorybook);
 
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -469,7 +477,324 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  // --- Interactive Widget 6: SwiftUI Stacks Switcher (VStack, HStack, ZStack) ---
+  window.setStackMode = function(mode) {
+    const stage = document.getElementById('stacks-demo-stage');
+    const codeEl = document.getElementById('stacks-code-snippet');
+    const titleEl = document.getElementById('stacks-demo-title');
+    const descEl = document.getElementById('stacks-demo-desc');
+
+    const btnV = document.getElementById('btn-stack-v');
+    const btnH = document.getElementById('btn-stack-h');
+    const btnZ = document.getElementById('btn-stack-z');
+
+    [btnV, btnH, btnZ].forEach(b => {
+      if (b) b.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition";
+    });
+
+    if (stage) {
+      stage.classList.remove('is-vstack', 'is-hstack', 'is-zstack');
+      stage.classList.add(`is-${mode}`);
+    }
+
+    if (mode === 'vstack') {
+      if (btnV) btnV.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/40 shadow-lg shadow-orange-500/10";
+      if (titleEl) titleEl.innerText = "VStack (Vertical Stack &bull; Colonne)";
+      if (descEl) descEl.innerText = "Empile les composants de haut en bas sur l'axe vertical Y. Idéal pour structurer les formulaires, écrans et listes.";
+      if (codeEl) {
+        codeEl.innerHTML = `VStack(alignment: .leading, spacing: 12) {\n    Text("Titre de la tâche")\n        .font(.headline)\n    Text("Priorité Haute")\n        .font(.subheadline)\n        .foregroundStyle(.secondary)\n    Button("Marquer comme fait") { ... }\n}`;
+      }
+    } else if (mode === 'hstack') {
+      if (btnH) btnH.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-lg shadow-blue-500/10";
+      if (titleEl) titleEl.innerText = "HStack (Horizontal Stack &bull; Ligne)";
+      if (descEl) descEl.innerText = "Aligne les composants de gauche à droite sur l'axe horizontal X. Parfait pour les barres de statut, boutons avec icônes et cartes résumées.";
+      if (codeEl) {
+        codeEl.innerHTML = `HStack(spacing: 12) {\n    Image(systemName: "flag.fill")\n        .foregroundStyle(.orange)\n    Text("Tâche prioritaire")\n    Spacer()\n    Image(systemName: "checkmark.circle")\n}`;
+      }
+    } else if (mode === 'zstack') {
+      if (btnZ) btnZ.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-lg shadow-purple-500/10";
+      if (titleEl) titleEl.innerText = "ZStack (Depth Stack &bull; Superposition)";
+      if (descEl) descEl.innerText = "Superpose les composants d'arrière en avant sur l'axe de profondeur Z. Idéal pour ajouter un fond dégradé sous un contenu ou des badges de notification.";
+      if (codeEl) {
+        codeEl.innerHTML = `ZStack {\n    RoundedRectangle(cornerRadius: 16)\n        .fill(.ultraThinMaterial)\n    VStack {\n        Text("Contenu flottant")\n    }\n}`;
+      }
+    }
+
+    if (window.Prism && codeEl) {
+      Prism.highlightElement(codeEl);
+    }
+  };
+
+  // --- Interactive Widget 7: SwiftUI Storybook Engine ---
+  const storybookComponents = {
+    vstack: {
+      name: "VStack (Colonne)",
+      category: "Layout",
+      description: "Conteneur vertical avec alignement et espacement paramétrables.",
+      defaultProps: { spacing: 12, alignment: 'leading', padding: 16, cornerRadius: 16 }
+    },
+    hstack: {
+      name: "HStack (Ligne)",
+      category: "Layout",
+      description: "Conteneur horizontal idéal pour les rangées et les barres d'outils avec Spacer().",
+      defaultProps: { spacing: 12, alignment: 'center', padding: 16, cornerRadius: 16 }
+    },
+    zstack: {
+      name: "ZStack (Superposition)",
+      category: "Layout",
+      description: "Superposition de couches sur l'axe Z (fond, carte, badge flottant).",
+      defaultProps: { padding: 16, cornerRadius: 16 }
+    },
+    text: {
+      name: "Text & Hiérarchie",
+      category: "Typography",
+      description: "Textes typographiques Apple avec styles sémantiques (.largeTitle, .headline, .subheadline).",
+      defaultProps: { spacing: 6, alignment: 'leading', padding: 16, cornerRadius: 16 }
+    },
+    label: {
+      name: "Label & SF Symbols",
+      category: "Typography",
+      description: "Association harmonieuse d'un titre et d'une icône vectorielle SF Symbol.",
+      defaultProps: { spacing: 8, padding: 12, cornerRadius: 12, icon: 'checkmark.seal.fill' }
+    },
+    button: {
+      name: "Button & Styles",
+      category: "Controls",
+      description: "Bouton SwiftUI moderne avec modificateurs .buttonStyle(.borderedProminent).",
+      defaultProps: { padding: 14, cornerRadius: 12, buttonVariant: 'prominent' }
+    },
+    taskrow: {
+      name: "TaskRow (TP)",
+      category: "CoursProductivite",
+      description: "Ligne de tâche interactive du cours avec puce de priorité et indicateur d'état.",
+      defaultProps: { isDone: false, priority: "Haute", padding: 14, cornerRadius: 16 }
+    },
+    summarycard: {
+      name: "SummaryCard (TP)",
+      category: "CoursProductivite",
+      description: "Carte récapitulative de productivité affichant le total complété et restant.",
+      defaultProps: { completed: 3, pending: 1, padding: 18, cornerRadius: 20 }
+    }
+  };
+
+  let currentSbComponent = 'vstack';
+  let sbProps = { ...storybookComponents['vstack'].defaultProps };
+  let sbDarkMode = true;
+
+  window.toggleStorybook = function() {
+    const sbModal = document.getElementById('storybook-modal');
+    if (!sbModal) return;
+    const isActive = sbModal.classList.contains('active');
+    if (!isActive) {
+      sbModal.classList.add('active');
+      renderStorybook();
+    } else {
+      sbModal.classList.remove('active');
+    }
+  };
+
+  window.selectStorybookComponent = function(compKey) {
+    if (!storybookComponents[compKey]) return;
+    currentSbComponent = compKey;
+    sbProps = { ...storybookComponents[compKey].defaultProps };
+    
+    // Update sidebar UI
+    document.querySelectorAll('.storybook-sidebar-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.component === compKey);
+    });
+
+    renderStorybook();
+  };
+
+  window.toggleSbDarkMode = function() {
+    sbDarkMode = !sbDarkMode;
+    renderStorybook();
+  };
+
+  window.updateSbProp = function(propKey, value) {
+    sbProps[propKey] = value;
+    renderStorybook();
+  };
+
+  function renderStorybook() {
+    const comp = storybookComponents[currentSbComponent];
+    if (!comp) return;
+
+    // Render Preview Surface
+    const surfaces = [document.getElementById('sb-preview-surface'), document.getElementById('sb-slide-preview-surface')];
+    const codeBlocks = [document.getElementById('sb-code-output'), document.getElementById('sb-slide-code-output')];
+    const titleEls = [document.getElementById('sb-component-title'), document.getElementById('sb-slide-component-title')];
+    const descEls = [document.getElementById('sb-component-desc'), document.getElementById('sb-slide-component-desc')];
+
+    titleEls.forEach(el => { if (el) el.innerText = comp.name; });
+    descEls.forEach(el => { if (el) el.innerText = comp.description; });
+
+    surfaces.forEach(surface => {
+      if (!surface) return;
+      surface.className = `storybook-preview-surface ${sbDarkMode ? 'dark-mode' : 'light-mode'}`;
+      surface.innerHTML = generateComponentHTML(currentSbComponent, sbProps, sbDarkMode);
+    });
+
+    const swiftCode = generateSwiftCode(currentSbComponent, sbProps);
+    codeBlocks.forEach(block => {
+      if (!block) return;
+      block.innerText = swiftCode;
+      if (window.Prism) Prism.highlightElement(block);
+    });
+
+    // Update Controls Panel
+    updateControlsUI();
+  }
+
+  function generateComponentHTML(key, props, isDark) {
+    const cardBg = isDark ? 'rgba(255,255,255,0.06)' : '#ffffff';
+    const cardBorder = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)';
+    const textPrimary = isDark ? '#ffffff' : '#0f172a';
+    const textSecondary = isDark ? '#94a3b8' : '#64748b';
+
+    switch (key) {
+      case 'vstack':
+        return `
+          <div style="background:${cardBg}; border:1px solid ${cardBorder}; border-radius:${props.cornerRadius}px; padding:${props.padding}px; display:flex; flex-direction:column; gap:${props.spacing}px; align-items:${props.alignment === 'center' ? 'center' : (props.alignment === 'trailing' ? 'flex-end' : 'flex-start')}; width:280px; box-shadow:0 8px 24px rgba(0,0,0,0.2);">
+            <div style="font-size:15px; font-weight:700; color:${textPrimary};">Objectif du Cours</div>
+            <div style="font-size:12px; color:${textSecondary};">Apprendre à structurer les composants.</div>
+            <div style="padding:6px 12px; background:#f05138; color:#fff; border-radius:8px; font-size:12px; font-weight:600;">Commencer le TP</div>
+          </div>
+        `;
+      case 'hstack':
+        return `
+          <div style="background:${cardBg}; border:1px solid ${cardBorder}; border-radius:${props.cornerRadius}px; padding:${props.padding}px; display:flex; flex-direction:row; align-items:center; gap:${props.spacing}px; width:310px; box-shadow:0 8px 24px rgba(0,0,0,0.2);">
+            <div style="width:36px; height:36px; border-radius:10px; background:rgba(41,151,255,0.15); color:#2997ff; display:flex; align-items:center; justify-content:center; font-size:16px;">⚡️</div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:600; color:${textPrimary};">Statut du Test</div>
+              <div style="font-size:11px; color:${textSecondary};">12 tests validés</div>
+            </div>
+            <div style="font-size:12px; font-weight:700; color:#30d158;">100%</div>
+          </div>
+        `;
+      case 'zstack':
+        return `
+          <div style="position:relative; width:280px; height:180px; border-radius:${props.cornerRadius}px; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow:0 12px 32px rgba(0,0,0,0.25);">
+            <!-- Fond dégradé en Z -->
+            <div style="position:absolute; inset:0; background:linear-gradient(135deg, #f05138 0%, #bf5af2 100%); opacity:0.85;"></div>
+            <!-- Carte au dessus -->
+            <div style="position:relative; z-index:10; background:${cardBg}; backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.2); border-radius:14px; padding:16px; text-align:center; color:#fff;">
+              <div style="font-size:14px; font-weight:700;">Badge Flottant (ZStack)</div>
+              <div style="font-size:11px; opacity:0.85; margin-top:2px;">Calque au premier plan</div>
+            </div>
+          </div>
+        `;
+      case 'text':
+        return `
+          <div style="background:${cardBg}; border:1px solid ${cardBorder}; border-radius:${props.cornerRadius}px; padding:${props.padding}px; width:280px; display:flex; flex-direction:column; gap:${props.spacing}px;">
+            <div style="font-size:22px; font-weight:800; color:${textPrimary};">.largeTitle.bold()</div>
+            <div style="font-size:15px; font-weight:600; color:${textPrimary};">.headline</div>
+            <div style="font-size:12px; color:${textSecondary};">.subheadline (.secondary)</div>
+            <div style="font-size:10px; color:#2997ff; font-weight:600; text-transform:uppercase;">.caption.semibold()</div>
+          </div>
+        `;
+      case 'label':
+        return `
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="background:${cardBg}; border:1px solid ${cardBorder}; border-radius:${props.cornerRadius}px; padding:${props.padding}px 18px; display:flex; align-items:center; gap:${props.spacing}px; color:${textPrimary}; font-size:13px; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+              <span style="color:#f05138; font-size:16px;">★</span>
+              <span>Priorité Haute</span>
+            </div>
+            <div style="background:${cardBg}; border:1px solid ${cardBorder}; border-radius:${props.cornerRadius}px; padding:${props.padding}px 18px; display:flex; align-items:center; gap:${props.spacing}px; color:${textPrimary}; font-size:13px; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+              <span style="color:#30d158; font-size:16px;">✓</span>
+              <span>Tâche Terminée</span>
+            </div>
+          </div>
+        `;
+      case 'button':
+        return `
+          <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+            <button style="padding:${props.padding}px 24px; background:#f05138; color:#fff; font-size:13px; font-weight:600; border-radius:${props.cornerRadius}px; border:none; box-shadow:0 4px 14px rgba(240,81,56,0.4); cursor:pointer;">
+              .buttonStyle(.borderedProminent)
+            </button>
+            <button style="padding:${props.padding - 4}px 20px; background:rgba(41,151,255,0.12); color:#2997ff; font-size:12px; font-weight:600; border-radius:${props.cornerRadius}px; border:1px solid rgba(41,151,255,0.3); cursor:pointer;">
+              .buttonStyle(.bordered)
+            </button>
+          </div>
+        `;
+      case 'taskrow':
+        return `
+          <div style="background:${cardBg}; border:1px solid ${cardBorder}; border-radius:${props.cornerRadius}px; padding:${props.padding}px; display:flex; align-items:center; justify-content:space-between; width:300px; box-shadow:0 8px 20px rgba(0,0,0,0.15); cursor:pointer;" onclick="updateSbProp('isDone', !sbProps.isDone)">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:12px; height:12px; border-radius:50%; background:${props.isDone ? '#30d158' : '#f05138'};"></div>
+              <div>
+                <div style="font-size:13px; font-weight:600; color:${textPrimary}; text-decoration:${props.isDone ? 'line-through' : 'none'}; opacity:${props.isDone ? 0.6 : 1};">Créer le ViewModel</div>
+                <div style="font-size:11px; color:${textSecondary};">Priorité ${props.priority || 'Haute'}</div>
+              </div>
+            </div>
+            <div style="width:22px; height:22px; border-radius:50%; background:${props.isDone ? '#30d158' : 'transparent'}; border:${props.isDone ? 'none' : '2px solid ' + textSecondary}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700;">
+              ${props.isDone ? '✓' : ''}
+            </div>
+          </div>
+        `;
+      case 'summarycard':
+        return `
+          <div style="background:${cardBg}; border:1px solid ${cardBorder}; border-radius:${props.cornerRadius}px; padding:${props.padding}px; width:300px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 12px 28px rgba(0,0,0,0.18);">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:${textPrimary};">Progression du TP</div>
+              <div style="font-size:11px; color:${textSecondary};">Écran lisible et testable</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:16px; font-weight:800; color:#30d158;">${props.completed || 3} finie(s)</div>
+              <div style="font-size:11px; color:${textSecondary};">${props.pending || 1} en cours</div>
+            </div>
+          </div>
+        `;
+      default:
+        return `<div style="color:${textSecondary};">Composant SwiftUI</div>`;
+    }
+  }
+
+  function generateSwiftCode(key, props) {
+    switch (key) {
+      case 'vstack':
+        return `VStack(alignment: .${props.alignment || 'leading'}, spacing: ${props.spacing || 12}) {\n    Text("Objectif du Cours")\n        .font(.headline)\n    Text("Apprendre à structurer les composants.")\n        .font(.subheadline)\n        .foregroundStyle(.secondary)\n    Button("Commencer le TP") {\n        // Action\n    }\n    .buttonStyle(.borderedProminent)\n}\n.padding(${props.padding || 16})\n.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ${props.cornerRadius || 16}))`;
+
+      case 'hstack':
+        return `HStack(spacing: ${props.spacing || 12}) {\n    Image(systemName: "bolt.fill")\n        .font(.title3)\n        .foregroundStyle(.blue)\n    VStack(alignment: .leading) {\n        Text("Statut du Test")\n            .font(.subheadline.bold())\n        Text("12 tests validés")\n            .font(.caption)\n            .foregroundStyle(.secondary)\n    }\n    Spacer()\n    Text("100%")\n        .font(.subheadline.bold())\n        .foregroundStyle(.green)\n}\n.padding(${props.padding || 16})\n.background(.white, in: RoundedRectangle(cornerRadius: ${props.cornerRadius || 16}))`;
+
+      case 'zstack':
+        return `ZStack {\n    // Calque d'arrière-plan\n    LinearGradient(\n        colors: [.orange, .purple],\n        startPoint: .topLeading,\n        endPoint: .bottomTrailing\n    )\n    .ignoresSafeArea()\n\n    // Calque de contenu superposé\n    VStack {\n        Text("Badge Flottant")\n            .font(.headline.bold())\n    }\n    .padding(${props.padding || 16})\n    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ${props.cornerRadius || 14}))\n}`;
+
+      case 'text':
+        return `VStack(alignment: .leading, spacing: ${props.spacing || 6}) {\n    Text("Titre Principal")\n        .font(.largeTitle.bold())\n    Text("Sous-titre de section")\n        .font(.headline)\n    Text("Description détaillée du composant.")\n        .font(.subheadline)\n        .foregroundStyle(.secondary)\n    Text("Badge d'état")\n        .font(.caption.weight(.semibold))\n        .foregroundStyle(.blue)\n}`;
+
+      case 'label':
+        return `VStack(spacing: 10) {\n    Label("Priorité Haute", systemImage: "star.fill")\n        .font(.subheadline.weight(.semibold))\n        .foregroundStyle(.orange)\n\n    Label("Tâche Terminée", systemImage: "checkmark.circle.fill")\n        .font(.subheadline.weight(.semibold))\n        .foregroundStyle(.green)\n}\n.padding(${props.padding || 12})\n.background(.thinMaterial, in: RoundedRectangle(cornerRadius: ${props.cornerRadius || 12}))`;
+
+      case 'button':
+        return `Button(action: {\n    print("Action déclenchée !")\n}) {\n    Label("Ajouter une tâche", systemImage: "plus.circle.fill")\n}\n.buttonStyle(.borderedProminent)\n.tint(.orange)\n.clipShape(RoundedRectangle(cornerRadius: ${props.cornerRadius || 12}))`;
+
+      case 'taskrow':
+        return `HStack(spacing: 12) {\n    Circle()\n        .fill(${props.isDone ? 'Color.green' : 'Color.orange'})\n        .frame(width: 12, height: 12)\n    VStack(alignment: .leading, spacing: 2) {\n        Text("Créer le ViewModel")\n            .font(.body.weight(.semibold))\n            .strikethrough(${props.isDone})\n        Text("Priorité ${props.priority || 'Haute'}")\n            .font(.caption)\n            .foregroundStyle(.secondary)\n    }\n    Spacer()\n    if ${props.isDone} {\n        Image(systemName: "checkmark.circle.fill")\n            .foregroundStyle(.green)\n    }\n}\n.padding(${props.padding || 14})\n.background(.white, in: RoundedRectangle(cornerRadius: ${props.cornerRadius || 16}))`;
+
+      case 'summarycard':
+        return `HStack {\n    VStack(alignment: .leading, spacing: 4) {\n        Text("Progression du TP")\n            .font(.headline)\n        Text("Écran lisible et testable")\n            .font(.caption)\n            .foregroundStyle(.secondary)\n    }\n    Spacer()\n    VStack(alignment: .trailing, spacing: 2) {\n        Text("${props.completed || 3} finie(s)")\n            .font(.title3.bold())\n            .foregroundStyle(.green)\n        Text("${props.pending || 1} en cours")\n            .font(.caption)\n            .foregroundStyle(.secondary)\n    }\n}\n.padding(${props.padding || 18})\n.background(.white, in: RoundedRectangle(cornerRadius: ${props.cornerRadius || 20}))`;
+
+      default:
+        return `// Composant SwiftUI`;
+    }
+  }
+
+  function updateControlsUI() {
+    const spacingSlider = document.getElementById('sb-ctrl-spacing');
+    const cornerSlider = document.getElementById('sb-ctrl-corner');
+    const paddingSlider = document.getElementById('sb-ctrl-padding');
+    const isDoneToggle = document.getElementById('sb-ctrl-isdone');
+
+    if (spacingSlider && sbProps.spacing !== undefined) spacingSlider.value = sbProps.spacing;
+    if (cornerSlider && sbProps.cornerRadius !== undefined) cornerSlider.value = sbProps.cornerRadius;
+    if (paddingSlider && sbProps.padding !== undefined) paddingSlider.value = sbProps.padding;
+    if (isDoneToggle && sbProps.isDone !== undefined) isDoneToggle.checked = sbProps.isDone;
+  }
+
   // Initial call
   updateSlide(currentIndex);
   renderSimulator();
+  renderStorybook();
 });
