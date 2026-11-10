@@ -115,9 +115,29 @@
           <span class="gradient-text-swift">Swift, Architecture MVVM & TDD</span>
         </h1>
 
-        <p class="text-base sm:text-lg text-gray-300 font-light leading-relaxed mb-8">
+        <p class="text-base sm:text-lg text-gray-300 font-light leading-relaxed mb-6">
           Bienvenue dans votre atelier pratique ! Le projet de départ démarre avec <strong class="text-white font-semibold">une erreur de compilation intentionnelle</strong>, suivie d'une suite de <strong class="text-orange-400 font-semibold">tests unitaires au rouge</strong>. Suivez ce guide pour ressusciter l'application pas à pas avec le cycle TDD !
         </p>
+
+        <!-- Download Project Callout Banner -->
+        <div class="mb-8 p-5 rounded-2xl bg-gradient-to-r from-orange-500/15 via-rose-500/10 to-transparent border border-orange-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">📦</span>
+              <span class="text-sm font-bold text-white">Projet Xcode à corriger</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-orange-500/20 text-orange-300 border border-orange-500/30">Prêt pour le TP</span>
+            </div>
+            <p class="text-xs text-gray-300">
+              Téléchargez l'archive du projet à fixer ou clonez le dépôt Git pour commencer l'atelier.
+            </p>
+          </div>
+          <div class="flex items-center gap-2.5 shrink-0">
+            <a href="CoursProductivite-Etudiant.zip" download="CoursProductivite-Etudiant.zip" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-xs font-bold text-white transition shadow-lg shadow-orange-500/25 flex items-center gap-2">
+              <span>📥</span>
+              <span>Télécharger le projet (.zip)</span>
+            </a>
+          </div>
+        </div>
 
         <!-- Stats Bar -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
@@ -248,6 +268,13 @@
       <p class="text-sm text-gray-300 leading-relaxed">
         À l'ouverture du projet dans Xcode, tentez une première compilation avec <span class="key-badge">Cmd + B</span>. Le compilateur refuse catégoriquement d'aller plus loin : une erreur de typage statique a été délibérément insérée au démarrage.
       </p>
+
+      <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+        <span class="text-gray-300">Vous n'avez pas encore le projet sur votre Mac ?</span>
+        <a href="CoursProductivite-Etudiant.zip" download="CoursProductivite-Etudiant.zip" class="text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1">
+          <span>📥 Télécharger l'archive du projet (.zip)</span>
+        </a>
+      </div>
 
       <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-200 font-mono">
         ❌ Error: cannot convert value of type 'String' to specified type 'Int'
