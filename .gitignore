@@ -2,6 +2,10 @@
 DerivedData/
 build/
 *.xcuserstate
-xcuserdata/
+userdata/
 *.xcworkspace/xcuserdata/
 *.swiftpm/xcode/xcuserdata/
+
+# Ne pas publier la correction sur le dépôt public
+correction/
+

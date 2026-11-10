@@ -1,37 +1,67 @@
-# Cours iOS SwiftUI et TDD
+# Cours iOS : Swift, SwiftUI & TDD
 
-Ce projet sert de support de TP pour apprendre Swift, les bonnes pratiques iOS et le TDD.
+Ce projet sert de support de TP pour apprendre Swift, les bonnes pratiques iOS, l'architecture MVVM et le Test-Driven Development (TDD).
 
-## Objectif
+---
 
-- comprendre les bases du langage Swift
-- structurer une petite application iOS de productivité
-- écrire des tests unitaires avant ou pendant l'implémentation
-- apprendre à corriger une base de code dégradée étape par étape
+## 🧭 Guide Interactif du TP & Présentation
 
-## Démarrage
+Pour vous guider pas à pas dans la réalisation des exercices, deux outils web interactifs sont mis à votre disposition :
 
-1. Ouvre le projet `CoursProductivite.xcodeproj`
-2. Lance les tests unitaires
-3. Commence par corriger l'erreur de compilation volontairement laissée dans l'application
+- **Guide pas à pas du TP :** Ouvrez [`../guide/index.html`](../guide/index.html) dans votre navigateur pour accéder à la feuille de route étape par étape, avec cases à cocher, indices, solutions déroulantes et simulateur interactif.
+- **Présentation de cours :** Ouvrez [`../presentation/index.html`](../presentation/index.html) pour revoir les concepts clés (optionnels, `guard let`, protocoles, `VStack/HStack/ZStack`, Storybook).
 
-## Parcours pédagogique
+---
 
-Chaque fichier Swift de `CoursProductivite/Lessons` correspond à une étape du cours.
+## 🎯 Objectifs Pédagogiques
 
-- `Lesson01_Basics.swift`: types, structures, propriétés et initialisation
-- `Lesson02_Optionals.swift`: optionnels et sécurisation des données
-- `Lesson03_Protocols.swift`: protocoles et injection de dépendances
-- `Lesson04_ViewModel.swift`: état de l'interface et logique de présentation
-- `Lesson05_HomeScreenViewModel.swift`: premier écran SwiftUI du cours
+1. **Maîtriser les bases de Swift :** types immuables (`let` vs `var`), structures (`struct`), optionnels sécurisés avec `guard let`.
+2. **Pratiquer le cycle TDD :** Rouge ➔ Vert ➔ Refactor.
+3. **Structurer en architecture MVVM :** découplage fort avec protocoles, injection de dépendances et modèles de domaine.
+4. **Construire une interface SwiftUI réactive :** synchronisation automatique entre `@Published` et la vue.
 
-Les tests correspondants sont dans `CoursProductiviteTests`.
+---
 
-## Exécution des tests
+## 🚀 Démarrage Rapide
 
-- dans Xcode: `Product > Test`
-- en ligne de commande: `xcodebuild test -project CoursProductivite.xcodeproj -scheme CoursProductivite -destination 'platform=iOS Simulator,name=iPhone 15'`
+1. Ouvrez le projet dans Xcode :
+   ```bash
+   open CoursProductivite.xcodeproj
+   ```
+2. **Étape 0 (Compilation) :** Pressez `Cmd + B`. Le projet refuse de compiler en raison d'une erreur de typage volontaire dans `CoursProductivite/App/CourseBootstrap.swift`. Corrigez-la !
+3. **Cycle TDD (Tests) :** Une fois le projet compilé, pressez `Cmd + U`. Les tests unitaires s'exécutent et sont au rouge : c'est votre feuille de route !
+4. Complétez chaque fichier de leçon et de domaine jusqu'à obtenir **18 tests au vert**.
+5. **Rendu Visuel :** Pressez `Cmd + R` pour lancer l'application sur le simulateur iPhone.
 
-## Règle du cours
+---
 
-Le projet commence avec une erreur de compilation unique et volontaire. Une fois cette erreur corrigée, les tests servent d'auto-évaluation à chaque étape.
+## 📚 Parcours des Fichiers
+
+| Étape | Fichier à implémenter | Test unitaire associé | Notion clé |
+| :--- | :--- | :--- | :--- |
+| **0** | `App/CourseBootstrap.swift` | *(Compilation)* | Typage statique `String` vs `Int` |
+| **1** | `Lessons/Lesson01_Basics.swift` | `LessonTests.swift` | Structures et interpolation |
+| **2** | `Lessons/Lesson02_Optionals.swift` | `LessonTests.swift` | `guard let` et nettoyage |
+| **3** | `Domain/Task.swift`<br>`Domain/TaskPolicy.swift`<br>`Domain/TaskList.swift` | `TaskTests.swift`<br>`TaskPolicyTests.swift`<br>`TaskListTests.swift` | `mutating func`, Value Types |
+| **4** | `Lessons/Lesson03_Protocols.swift`<br>`Lessons/Lesson04_ViewModel.swift` | `MainViewModelTests.swift` | Protocoles, Mocks, Injection |
+| **5** | `Lessons/Lesson05_HomeScreenViewModel.swift` | `Lesson05_HomeScreenTests.swift` | `ObservableObject`, `@Published` |
+| **6** | `App/ProductivityHomeView.swift` | *(Simulateur iPhone)* | Vue SwiftUI réactive |
+
+---
+
+## ⌨️ Raccourcis Clés dans Xcode
+
+- `Cmd + B` : Compiler le projet (*Build*)
+- `Cmd + U` : Lancer les tests unitaires (*Test*)
+- `Cmd + R` : Lancer sur le Simulateur (*Run*)
+- `Cmd + Shift + K` : Nettoyer le cache (*Clean Build Folder*)
+
+---
+
+## 🧪 Ligne de Commande (Optionnel)
+
+Si vous préférez exécuter les tests depuis votre terminal :
+
+```bash
+xcodebuild test -project CoursProductivite.xcodeproj -scheme CoursProductivite -destination 'platform=iOS Simulator,name=iPhone 17'
+```

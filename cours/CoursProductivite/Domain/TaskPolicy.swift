@@ -6,6 +6,7 @@ protocol TaskPolicy {
 
 struct DefaultTaskPolicy: TaskPolicy {
     func canCreateTask(title: String) -> Bool {
-        title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        // TODO: Retourner true uniquement si le titre une fois nettoyé de ses espaces n'est pas vide
+        false
     }
 }

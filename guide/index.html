@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide de TP : Swift, SwiftUI & TDD — CoursProductivite</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Prism.js pour Coloration Syntaxique Swift -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
+
+  <!-- Styles personnalisés -->
+  <link rel="stylesheet" href="style.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            swift: {
+              DEFAULT: '#F05138',
+              glow: 'rgba(240, 81, 56, 0.4)',
+              dark: '#C83822'
+            },
+            apple: {
+              blue: '#2997FF',
+              green: '#30D158',
+              purple: '#BF5AF2',
+              card: 'rgba(20, 22, 34, 0.7)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#05050A] text-white">
+
+  <!-- Ambient Glow & Subtle Grid Background -->
+  <div class="ambient-glow"></div>
+  <div class="subtle-grid"></div>
+
+  <!-- Header / Navigation Top Bar -->
+  <header class="fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-6 sm:px-10 bg-black/50 backdrop-blur-xl border-b border-white/10">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#F05138] to-[#FF8C69] flex items-center justify-center font-bold text-white shadow-lg shadow-orange-500/20">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M21.9 14.8c-.2 1.4-1.1 2.8-2.3 3.8-1.5 1.3-3.4 1.8-5.3 1.4 1.6-.9 2.7-2.3 3.1-4-.2.1-.5.3-.7.4-2.1 1.1-4.7 1.1-6.8-.2-1.7-1-2.8-2.6-3.2-4.5-.1-.7-.1-1.4 0-2.1.3 1.3.9 2.5 1.8 3.5 1.2 1.3 2.7 2.2 4.4 2.6-1.5-.4-2.9-1.2-4-2.3-1.4-1.4-2.2-3.3-2.2-5.3 0-.6.1-1.2.2-1.8 1.1 2.2 2.8 4 5 5.2 2.1 1.1 4.5 1.5 6.9 1 1.2-.2 2.3-.7 3.3-1.4-.4.8-1 1.6-1.8 2.2 1-.3 1.9-.8 2.7-1.4-.2.9-.6 1.8-1.1 2.5 1.1-.3 2.1-.9 3-1.7-.6 1-1.4 1.8-2.4 2.4z"/>
+        </svg>
+      </div>
+      <div>
+        <span class="text-sm font-bold tracking-tight text-white">Guide de TP iOS</span>
+        <span class="text-xs text-gray-400 hidden sm:inline ml-2 pl-2 border-l border-white/20">CoursProductivite.xcodeproj</span>
+      </div>
+    </div>
+
+    <!-- Center Progress Bar -->
+    <div class="hidden md:flex flex-col items-center w-1/3 max-w-xs">
+      <div class="flex items-center justify-between w-full text-[11px] font-mono text-gray-400 mb-1">
+        <span>Progression TP</span>
+        <span id="header-progress-count" class="text-orange-400 font-bold">0/7</span>
+      </div>
+      <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+        <div id="header-progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-emerald-400 transition-all duration-300 w-0"></div>
+      </div>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2.5">
+      <!-- Theme Toggle Button -->
+      <button id="theme-toggle-btn" onclick="toggleAppTheme()" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition flex items-center gap-1.5" title="Basculer Thème Clair/Sombre">
+        <span id="theme-icon">🌓</span>
+        <span id="theme-label" class="hidden sm:inline">Thème</span>
+      </button>
+
+      <!-- Solutions Password Lock Button -->
+      <button id="lock-toggle-btn" onclick="toggleLockState()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition flex items-center gap-1.5" title="Déverrouiller les solutions">
+        <span id="lock-icon">🔒</span>
+        <span id="lock-label" class="hidden sm:inline">Solutions protégées</span>
+      </button>
+
+      <a href="../presentation/index.html" class="px-3 py-1.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-orange-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold shadow-lg shadow-orange-500/10">
+        <span>📊</span>
+        <span class="hidden sm:inline">Présentation</span>
+      </a>
+
+      <button onclick="resetAllProgress()" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-rose-400 transition text-xs" title="Réinitialiser la progression">
+        ↺
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="relative z-10 max-w-5xl mx-auto px-6 sm:px-10 pt-28 pb-24 space-y-12">
+
+    <!-- ========================================== -->
+    <!-- HERO SECTION                               -->
+    <!-- ========================================== -->
+    <section class="glass-panel rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-white/15 shadow-2xl">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/15 backdrop-blur-xl mb-6">
+          <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping"></span>
+          <span class="text-xs font-semibold tracking-wide text-orange-300 uppercase">Feuille de Route TP</span>
+          <span class="text-xs text-white/30">&bull;</span>
+          <span class="text-xs text-gray-300">Xcode 15+ &bull; iOS 17</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
+          Guide Pratique : <br/>
+          <span class="gradient-text-swift">Swift, Architecture MVVM & TDD</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-gray-300 font-light leading-relaxed mb-8">
+          Bienvenue dans votre atelier pratique ! Le projet de départ démarre avec <strong class="text-white font-semibold">une erreur de compilation intentionnelle</strong>, suivie d'une suite de <strong class="text-orange-400 font-semibold">tests unitaires au rouge</strong>. Suivez ce guide pour ressusciter l'application pas à pas avec le cycle TDD !
+        </p>
+
+        <!-- Stats Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-xl mb-1">🛠️</div>
+            <div class="text-xs font-bold text-white">Étape 0</div>
+            <div class="text-[11px] text-rose-400">Erreur de type à corriger</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-xl mb-1">🧪</div>
+            <div class="text-xs font-bold text-white">18 Tests</div>
+            <div class="text-[11px] text-emerald-400">Cycle Rouge ➔ Vert</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-xl mb-1">🏛️</div>
+            <div class="text-xs font-bold text-white">5 Leçons</div>
+            <div class="text-[11px] text-blue-300">Architecture MVVM</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-xl mb-1">📱</div>
+            <div class="text-xs font-bold text-white">SwiftUI Live</div>
+            <div class="text-[11px] text-purple-300">Rendu sur Simulateur</div>
+          </div>
+        </div>
+
+        <!-- Overall Progress Box -->
+        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="w-full sm:w-2/3">
+            <div class="flex justify-between text-xs text-gray-300 mb-1.5">
+              <span class="font-medium">Votre avancement global</span>
+              <span id="hero-progress-text" class="font-mono text-orange-400 font-bold">0 sur 7 validée(s) (0%)</span>
+            </div>
+            <div class="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
+              <div id="hero-progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-emerald-400 transition-all duration-300 w-0"></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="completeAllSteps()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-xs transition border border-white/10">
+              Tout valider
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- XCODE SURVIVAL CHEATSHEET                  -->
+    <!-- ========================================== -->
+    <section class="p-6 rounded-2xl bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-transparent border border-blue-500/25">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">⌨️</span>
+        <div>
+          <h3 class="text-sm font-bold text-white">Mémo des 4 Raccourcis Vitaux dans Xcode</h3>
+          <p class="text-xs text-gray-400">Gardez ces commandes en mémoire tout au long du TP :</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
+          <span class="text-gray-300">Compiler</span>
+          <span class="key-badge text-orange-300 border-orange-500/30">Cmd + B</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
+          <span class="text-gray-300">Tester (TDD)</span>
+          <span class="key-badge text-emerald-300 border-emerald-500/30">Cmd + U</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
+          <span class="text-gray-300">Simulateur</span>
+          <span class="key-badge text-blue-300 border-blue-500/30">Cmd + R</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
+          <span class="text-gray-300">Nettoyer (Clean)</span>
+          <span class="key-badge text-rose-300 border-rose-500/30">Cmd + Shift + K</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- CATEGORY FILTERS                           -->
+    <!-- ========================================== -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-2">
+      <button onclick="filterCategory('all', this)" class="filter-btn active px-4 py-2 rounded-xl text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/40 shadow-lg shadow-orange-500/10">
+        Toutes les étapes (7)
+      </button>
+      <button onclick="filterCategory('fondations', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        Fondations (0-2)
+      </button>
+      <button onclick="filterCategory('domaine', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        Cœur Métier & TDD (3)
+      </button>
+      <button onclick="filterCategory('architecture', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        Architecture & Protocoles (4)
+      </button>
+      <button onclick="filterCategory('swiftui', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        SwiftUI & Rendu (5-6)
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ALL DONE CONGRATS BANNER                   -->
+    <!-- ========================================== -->
+    <div id="all-done-banner" class="hidden p-6 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-blue-500/20 border-2 border-emerald-500/40 text-center shadow-2xl">
+      <div class="text-4xl mb-2">🎉 🏆</div>
+      <h2 class="text-2xl font-extrabold text-white mb-1">Félicitations ! Vous avez validé 100% du TP !</h2>
+      <p class="text-xs text-gray-300 max-w-lg mx-auto">
+        Tous les tests sont au vert, l'écran d'accueil est réactif et votre architecture est parfaitement découplée. Vous maîtrisez désormais les bases fondamentales du développement iOS moderne !
+      </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- STEP 0 : LE BAPTÊME DU COMPILATEUR         -->
+    <!-- ========================================== -->
+    <article id="card-step0" data-category="fondations" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step0" onchange="toggleStep('step0')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                Étape 0
+              </span>
+              <span class="text-xs font-mono text-gray-400">cours/CoursProductivite/App/CourseBootstrap.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Le Baptême du Compilateur Swift</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        À l'ouverture du projet dans Xcode, tentez une première compilation avec <span class="key-badge">Cmd + B</span>. Le compilateur refuse catégoriquement d'aller plus loin : une erreur de typage statique a été délibérément insérée au démarrage.
+      </p>
+
+      <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-200 font-mono">
+        ❌ Error: cannot convert value of type 'String' to specified type 'Int'
+      </div>
+
+      <!-- Accordion Hint -->
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step0', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step0" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+            Observez la ligne 7 de <code class="text-orange-300 font-mono">CourseBootstrap.swift</code> : la constante <code class="text-orange-300">message</code> reçoit une chaîne de caractères entre guillemets mais a été annotée <code class="text-rose-400">: Int</code>. En Swift, le typage est strict : changez l'annotation de type pour que le compilateur soit satisfait !
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion Solution -->
+      <div>
+        <button onclick="toggleAccordion('sol-step0', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step0" class="accordion-content">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">CourseBootstrap.swift</span>
+              <button onclick="copySnippet(this, 'code-step0')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step0" class="language-swift">enum CourseBootstrap {
+    // Correction : annoter avec String (ou laisser l'inférence faire son travail !)
+    static let message: String = "Corrige la base, puis fais évoluer l’écran avec le TDD."
+    ...
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>Pressez <span class="key-badge">Cmd + B</span> : le projet doit afficher <strong class="text-white">Build Succeeded</strong> !</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- STEP 1 : LESSON 01 BASICS                  -->
+    <!-- ========================================== -->
+    <article id="card-step1" data-category="fondations" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step1" onchange="toggleStep('step1')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/30">
+                Étape 1
+              </span>
+              <span class="text-xs font-mono text-gray-400">cours/CoursProductivite/Lessons/Lesson01_Basics.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Lesson 01 : Structures & Immuabilité</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Lancez maintenant la suite de tests avec <span class="key-badge">Cmd + U</span>. Le premier test unitaire à faire passer est <code class="text-orange-300 font-mono">testLesson01SummaryFormatsTitleAndObjective</code> dans <code class="text-gray-300 font-mono">LessonTests.swift</code>.
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span class="text-xs text-gray-400 font-mono">LessonTests.swift (L'attente métier)</span>
+        </div>
+        <pre class="p-3 text-xs overflow-x-auto"><code class="language-swift">func testLesson01SummaryFormatsTitleAndObjective() {
+    let lesson = Lesson01Basics(title: "Lesson 1", objective: "Structures")
+    XCTAssertEqual(lesson.summary(), "Lesson 1 - Structures")
+}</code></pre>
+      </div>
+
+      <!-- Accordion Hint -->
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step1', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step1" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+            Utilisez l'interpolation de chaînes en Swift : <code class="text-orange-300 font-mono">"\(variableA) - \(variableB)"</code>. En Swift moderne, si une fonction n'est composée que d'une seule expression, le mot-clé <code class="text-blue-300 font-mono">return</code> est optionnel !
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion Solution -->
+      <div>
+        <button onclick="toggleAccordion('sol-step1', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step1" class="accordion-content">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">Lesson01_Basics.swift</span>
+              <button onclick="copySnippet(this, 'code-step1')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step1" class="language-swift">struct Lesson01Basics {
+    let title: String
+    let objective: String
+
+    init(title: String, objective: String) {
+        self.title = title
+        self.objective = objective
+    }
+
+    func summary() -> String {
+        "\(title) - \(objective)"
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span><code class="font-mono text-white">testLesson01SummaryFormatsTitleAndObjective</code> passe au vert (Cmd + U) !</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- STEP 2 : LESSON 02 OPTIONALS               -->
+    <!-- ========================================== -->
+    <article id="card-step2" data-category="fondations" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step2" onchange="toggleStep('step2')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                Étape 2
+              </span>
+              <span class="text-xs font-mono text-gray-400">cours/CoursProductivite/Lessons/Lesson02_Optionals.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Lesson 02 : Sécuriser les Optionnels sans Crash</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Les optionnels (<code class="text-orange-300 font-mono">T?</code>) représentent l'absence potentielle de valeur. Implémentez la fonction de nettoyage <code class="text-emerald-300 font-mono">trimmedTitle(from title: String?)</code> afin de satisfaire les tests <code class="text-white font-mono">testLesson02TrimsOptionalTitle</code> et <code class="text-white font-mono">testLesson02ReturnsNilForEmptyValue</code>.
+      </p>
+
+      <!-- Accordion Hint -->
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step2', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step2" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed space-y-2">
+            <div>1. Utilisez la sortie précoce : <code class="text-purple-300 font-mono">guard let title else { return nil }</code>.</div>
+            <div>2. Nettoyez les espaces : <code class="text-blue-300 font-mono">let candidate = title.trimmingCharacters(in: .whitespacesAndNewlines)</code>.</div>
+            <div>3. Si <code class="text-blue-300 font-mono">candidate.isEmpty</code> vaut <code class="text-rose-300 font-mono">true</code>, retournez <code class="text-rose-300 font-mono">nil</code>, sinon retournez <code class="text-emerald-300 font-mono">candidate</code>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion Solution -->
+      <div>
+        <button onclick="toggleAccordion('sol-step2', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step2" class="accordion-content">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">Lesson02_Optionals.swift</span>
+              <button onclick="copySnippet(this, 'code-step2')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step2" class="language-swift">enum Lesson02Optionals {
+    static func trimmedTitle(from title: String?) -> String? {
+        guard let title else {
+            return nil
+        }
+
+        let candidate = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        return candidate.isEmpty ? nil : candidate
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>Les deux tests de <code class="font-mono text-white">Lesson02</code> passent au vert !</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- STEP 3 : DOMAINE METIER (TASK & LIST)      -->
+    <!-- ========================================== -->
+    <article id="card-step3" data-category="domaine" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step3" onchange="toggleStep('step3')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                Étape 3
+              </span>
+              <span class="text-xs font-mono text-gray-400">cours/CoursProductivite/Domain/*</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Le Cœur Métier : Task, TaskPolicy & TaskList</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Les modèles de données en Swift sont construits avec des <code class="text-orange-400 font-bold">struct</code> (Value Types). Pour modifier une propriété interne d'une structure, la méthode doit être annotée <code class="text-purple-300 font-bold">mutating</code>.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="font-bold text-white mb-1">Task.swift</div>
+          <div class="text-gray-400 text-[11px]">Priorité par défaut : <code class="text-orange-300">.medium</code>, et méthode <code class="text-emerald-300">markDone()</code> qui passe <code class="text-white">isDone = true</code>.</div>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="font-bold text-white mb-1">TaskPolicy.swift</div>
+          <div class="text-gray-400 text-[11px]">Valide que le titre nettoyé de ses espaces n'est pas vide (<code class="text-emerald-300">canCreateTask</code>).</div>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="font-bold text-white mb-1">TaskList.swift</div>
+          <div class="text-gray-400 text-[11px]">Implémenter <code class="text-blue-300">add(_:)</code>, <code class="text-blue-300">completeTask(withID:)</code> et le filtre calculé <code class="text-blue-300">pendingTasks</code>.</div>
+        </div>
+      </div>
+
+      <!-- Accordion Solution -->
+      <div class="pt-2">
+        <button onclick="toggleAccordion('sol-step3', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution complète du Domaine</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step3" class="accordion-content space-y-3">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">Domain/Task.swift</span>
+              <button onclick="copySnippet(this, 'code-step3-task')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-3 text-xs overflow-x-auto"><code id="code-step3-task" class="language-swift">init(id: UUID = UUID(), title: String, isDone: Bool = false, priority: Priority = .medium) {
+    self.id = id
+    self.title = title
+    self.isDone = isDone
+    self.priority = priority
+}
+
+mutating func markDone() {
+    isDone = true
+}</code></pre>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">Domain/TaskPolicy.swift</span>
+              <button onclick="copySnippet(this, 'code-step3-policy')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-3 text-xs overflow-x-auto"><code id="code-step3-policy" class="language-swift">struct DefaultTaskPolicy: TaskPolicy {
+    func canCreateTask(title: String) -> Bool {
+        title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+    }
+}</code></pre>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">Domain/TaskList.swift</span>
+              <button onclick="copySnippet(this, 'code-step3-list')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-3 text-xs overflow-x-auto"><code id="code-step3-list" class="language-swift">var pendingTasks: [ProductivityTask] {
+    tasks.filter { $0.isDone == false }
+}
+
+mutating func add(_ task: ProductivityTask) {
+    tasks.append(task)
+}
+
+mutating func completeTask(withID id: UUID) {
+    guard let index = tasks.firstIndex(where: { $0.id == id }) else {
+        return
+    }
+    tasks[index].markDone()
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span><code class="font-mono text-white">TaskTests</code>, <code class="font-mono text-white">TaskPolicyTests</code> et <code class="font-mono text-white">TaskListTests</code> passent au vert !</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- STEP 4 : LESSON 03 & 04 (PROTOCOLS & DI)   -->
+    <!-- ========================================== -->
+    <article id="card-step4" data-category="architecture" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step4" onchange="toggleStep('step4')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                Étape 4
+              </span>
+              <span class="text-xs font-mono text-gray-400">cours/CoursProductivite/Lessons/Lesson04_ViewModel.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Lesson 04 : Protocoles & ViewModel Isolé</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Grâce au protocole <code class="text-orange-300 font-mono">Lesson03TaskProviding</code>, le ViewModel ne connaît pas la vraie base de données : il reçoit son fournisseur de données par injection dans son <code class="text-blue-300 font-mono">init(provider:)</code>.
+      </p>
+
+      <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200">
+        🎯 <strong>Règle de présentation :</strong> La propriété calculée <code class="font-mono">taskCountText</code> doit renvoyer <code class="font-mono">"Aucune tâche"</code> lorsque le tableau est vide, ou <code class="font-mono">"\(count) tâche(s)"</code> s'il y a des tâches.
+      </div>
+
+      <!-- Accordion Solution -->
+      <div class="pt-2">
+        <button onclick="toggleAccordion('sol-step4', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step4" class="accordion-content">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">Lesson04_ViewModel.swift</span>
+              <button onclick="copySnippet(this, 'code-step4')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step4" class="language-swift">@MainActor
+final class Lesson04ViewModel {
+    private let provider: Lesson03TaskProviding
+
+    init(provider: Lesson03TaskProviding) {
+        self.provider = provider
+    }
+
+    var taskCountText: String {
+        let count = provider.currentTasks().count
+        return count == 0 ? "Aucune tâche" : "\(count) tâche(s)"
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span><code class="font-mono text-white">MainViewModelTests</code> passe à 100% au vert !</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- STEP 5 : LESSON 05 HOME SCREEN VIEWMODEL   -->
+    <!-- ========================================== -->
+    <article id="card-step5" data-category="swiftui" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step5" onchange="toggleStep('step5')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                Étape 5
+              </span>
+              <span class="text-xs font-mono text-gray-400">cours/CoursProductivite/Lessons/Lesson05_HomeScreenViewModel.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Lesson 05 : Le Cerveau de l'Écran d'Accueil</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Ce ViewModel est conforme à <code class="text-blue-300 font-mono">ObservableObject</code> et annoté <code class="text-blue-300 font-mono">@MainActor</code>. Il expose une liste observable <code class="text-emerald-300 font-mono">@Published private(set) var tasks</code> et des propriétés calculées pour afficher la progression.
+      </p>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex justify-between">
+          <span class="font-mono text-orange-300">completedCount</span>
+          <span class="text-gray-400">Nombre de tâches avec isDone == true</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex justify-between">
+          <span class="font-mono text-orange-300">pendingCount</span>
+          <span class="text-gray-400">tasks.count - completedCount</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex justify-between">
+          <span class="font-mono text-orange-300">pendingCountText</span>
+          <span class="text-gray-400">"Tout est fini" si 0, sinon "\(pendingCount) en cours"</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex justify-between">
+          <span class="font-mono text-orange-300">markTaskDone(withID:)</span>
+          <span class="text-gray-400">Trouve la tâche ciblée et appelle sa méthode markDone()</span>
+        </div>
+      </div>
+
+      <!-- Accordion Solution -->
+      <div class="pt-2">
+        <button onclick="toggleAccordion('sol-step5', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step5" class="accordion-content">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">Lesson05_HomeScreenViewModel.swift</span>
+              <button onclick="copySnippet(this, 'code-step5')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step5" class="language-swift">var completedCount: Int {
+    tasks.filter { $0.isDone }.count
+}
+
+var pendingCount: Int {
+    tasks.count - completedCount
+}
+
+var completedCountText: String {
+    "\(completedCount) terminée(s)"
+}
+
+var pendingCountText: String {
+    pendingCount == 0 ? "Tout est fini" : "\(pendingCount) en cours"
+}
+
+func markTaskDone(withID id: UUID) {
+    guard let index = tasks.firstIndex(where: { $0.id == id }) else {
+        return
+    }
+
+    tasks[index].markDone()
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>Les 4 tests de <code class="font-mono text-white">Lesson05_HomeScreenTests</code> passent au vert !</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- STEP 6 : LE GRAND FINAL SWIFTUI & SIMULATEUR-->
+    <!-- ========================================== -->
+    <article id="card-step6" data-category="swiftui" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-6">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step6" onchange="toggleStep('step6')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                Étape 6
+              </span>
+              <span class="text-xs font-mono text-gray-400">Simulateur iOS & Rendu SwiftUI</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Le Grand Final : Lancement sur iPhone !</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Pressez <span class="key-badge">Cmd + U</span> : les <strong class="text-emerald-400">18 tests unitaires</strong> sont maintenant au vert ! Vous pouvez savourer le résultat en lançant l'application sur le simulateur iPhone (<span class="key-badge">Cmd + R</span>).
+      </p>
+
+      <!-- Interactive Mini iPhone Simulator Widget in Guide -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pt-2">
+        <div class="lg:col-span-6 space-y-3">
+          <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-orange-500">
+            <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <span>📱</span> Testez le rendu attendu en direct ci-contre :
+            </h3>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              Dans l'iPhone interactif, cliquez sur les tâches pour les cocher ou ajoutez de nouvelles tâches. Observez comment la carte de résumé recalcule instantanément le compteur sans recharger la page. C'est exactement le comportement réactif de votre <code class="text-orange-300 font-mono">ProductivityHomeView</code> !
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2 text-xs">
+            <div class="font-bold text-white">🚀 Défis Bonus pour aller plus loin :</div>
+            <div class="text-gray-300 flex items-start gap-2">
+              <span>1.</span>
+              <span>Ajoutez un Picker SwiftUI pour filtrer par statut (Toutes, En cours, Terminées).</span>
+            </div>
+            <div class="text-gray-300 flex items-start gap-2">
+              <span>2.</span>
+              <span>Intégrez un formulaire de saisie pour ajouter une tâche avec validation de titre.</span>
+            </div>
+            <div class="text-gray-300 flex items-start gap-2">
+              <span>3.</span>
+              <span>Colorez les puces en fonction de la priorité (Haute = Rouge, Moyenne = Orange, Faible = Bleu).</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 flex justify-center">
+          <div class="guide-iphone">
+            <div class="guide-island">
+              <div class="w-2 h-2 rounded-full bg-neutral-900 border border-neutral-800"></div>
+              <span class="text-[9px] font-bold text-orange-400 font-mono">TP SwiftUI</span>
+              <div class="w-1.5 h-1.5 rounded-full bg-neutral-900"></div>
+            </div>
+
+            <div class="guide-screen">
+              <div class="text-lg font-extrabold text-gray-900 tracking-tight">Productivité</div>
+              <div class="text-[10px] text-gray-500">Tableau de bord de cours</div>
+              <div class="text-[10px] font-semibold text-blue-600 mt-0.5">SwiftUI & MVVM</div>
+
+              <!-- Summary Card in iPhone -->
+              <div class="mt-3 p-3 rounded-2xl bg-white shadow-sm border border-gray-100">
+                <div class="text-[10px] font-bold text-gray-800">Progression du TP</div>
+                <div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-gray-100">
+                  <span id="guide-sim-completed" class="text-xs font-extrabold text-gray-900">1 terminée(s)</span>
+                  <span id="guide-sim-pending" class="text-[11px] text-gray-500">2 en cours</span>
+                </div>
+              </div>
+
+              <!-- Tasks List in iPhone -->
+              <div class="text-[11px] font-bold text-gray-800 mt-4 mb-1.5">Tâches du cours</div>
+              <div id="guide-sim-tasks" class="space-y-1.5 flex-1">
+                <!-- Injected via JavaScript -->
+              </div>
+
+              <!-- Add Task Bar -->
+              <div class="mt-3 pt-2 border-t border-gray-200 flex gap-1">
+                <input id="guide-sim-input" type="text" placeholder="Nouvelle tâche..." class="flex-1 px-2 py-1 rounded-lg bg-white border border-gray-200 text-xs text-gray-900 focus:outline-none focus:border-blue-500" onkeydown="if(event.key==='Enter') addGuideTask()">
+                <button onclick="addGuideTask()" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-500">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-white/10 py-8 text-center text-xs text-gray-500 bg-black/40 backdrop-blur-xl">
+    <div class="flex items-center justify-center gap-2 mb-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      <span class="text-gray-300 font-semibold">Support de TP iOS Moderne</span>
+      <span class="text-gray-600">&bull;</span>
+      <a href="../presentation/index.html" class="text-orange-400 hover:underline">Accéder à la Présentation Interactive</a>
+    </div>
+    <p>Conçu pour accompagner les étudiants pas à pas dans l'apprentissage de Swift, de SwiftUI et du TDD.</p>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- MODAL : MOT DE PASSE SOLUTIONS            -->
+  <!-- ========================================== -->
+  <div id="password-modal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] hidden items-center justify-center p-6">
+    <div class="glass-panel max-w-md w-full rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-lg">
+            🔐
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Corrections Protégées</h3>
+            <p class="text-[11px] text-gray-400">Accès enseignant / sur consigne</p>
+          </div>
+        </div>
+        <button onclick="closePasswordModal()" class="text-gray-400 hover:text-white transition text-sm">✕</button>
+      </div>
+
+      <p class="text-xs text-gray-300 leading-relaxed mb-4">
+        Les solutions complètes de chaque étape sont verrouillées. Saisissez le mot de passe pour les déverrouiller :
+      </p>
+
+      <form onsubmit="event.preventDefault(); checkCorrectionPassword();" class="space-y-3">
+        <div>
+          <input id="pwd-input" type="password" placeholder="Mot de passe..." autocomplete="off"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 font-mono transition">
+          <div id="pwd-error" class="hidden mt-2 text-[11px] text-rose-400 flex items-center gap-1 font-medium">
+            <span>⚠️ Mot de passe incorrect. Demandez à votre enseignant.</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closePasswordModal()" class="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-gray-300 hover:text-white transition border border-white/10">
+            Annuler
+          </button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-xs font-bold text-white transition shadow-lg shadow-orange-500/20">
+            Déverrouiller
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

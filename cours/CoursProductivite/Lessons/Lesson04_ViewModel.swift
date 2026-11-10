@@ -9,7 +9,9 @@ final class Lesson04ViewModel {
     }
 
     var taskCountText: String {
-        let count = provider.currentTasks().count
-        return count == 0 ? "Aucune tâche" : "\(count) tâche(s)"
+        // TODO: Étape 4 - Calculer le texte d'état :
+        // Si le nombre de tâches fournies est 0, retourner "Aucune tâche",
+        // sinon retourner "\(count) tâche(s)".
+        ""
     }
 }

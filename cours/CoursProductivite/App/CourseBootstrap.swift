@@ -1,7 +1,10 @@
 import Foundation
 
 enum CourseBootstrap {
-    static let message = "Corrige la base, puis fais évoluer l’écran avec le TDD."
+    // ERREUR VOLONTAIRE DE DÉMARRAGE DU COURS :
+    // Le message doit être de type String mais a été annoté en Int !
+    // Corrigez ce type pour permettre la première compilation du projet (Cmd + B).
+    static let message: Int = "Corrige la base, puis fais évoluer l’écran avec le TDD."
 
     @MainActor
     static func makeHomeViewModel() -> Lesson05HomeScreenViewModel {

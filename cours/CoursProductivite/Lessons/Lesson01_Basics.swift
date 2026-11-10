@@ -10,6 +10,7 @@ struct Lesson01Basics {
     }
 
     func summary() -> String {
-        "\(title) - \(objective)"
+        // TODO: Étape 1 - Retourner une chaîne formatée sous la forme "\(title) - \(objective)"
+        ""
     }
 }

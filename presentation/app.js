@@ -24,6 +24,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Theme Management (Light / Dark) ---
+  const THEME_STORAGE_KEY = 'cours_ios_theme';
+  let currentTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'dark';
+
+  function applyTheme(theme) {
+    currentTheme = theme;
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    const themeIcon = document.getElementById('theme-icon');
+
+    if (theme === 'light') {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      if (themeIcon) themeIcon.innerText = '☀️';
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+      if (themeIcon) themeIcon.innerText = '🌙';
+    }
+  }
+
+  function toggleAppTheme() {
+    applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  }
+  window.toggleAppTheme = toggleAppTheme;
+  applyTheme(currentTheme);
+
   function updateSlide(index) {
     if (index < 0) index = 0;
     if (index >= totalSlides) index = totalSlides - 1;
@@ -40,6 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (progressBar) progressBar.style.width = `${progressPercent}%`;
     if (slideCounter) slideCounter.innerText = `${index + 1} / ${totalSlides}`;
 
+    // Update Next Button on the final slide
+    if (nextBtn) {
+      if (index === totalSlides - 1) {
+        nextBtn.innerHTML = '<span class="hidden sm:inline">Passer au TP</span> <span>🚀</span>';
+      } else {
+        nextBtn.innerHTML = '<span class="hidden sm:inline">Suivant</span> <span>→</span>';
+      }
+    }
+
     // Update active state in overview if opened
     document.querySelectorAll('.overview-card').forEach((card, i) => {
       card.classList.toggle('current', i === index);
@@ -49,6 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function nextSlide() {
     if (currentIndex < totalSlides - 1) {
       updateSlide(currentIndex + 1);
+    } else if (currentIndex === totalSlides - 1) {
+      // Sur la dernière page du diaporama, le bouton suivant emmène vers le guide d'exercice
+      window.location.href = '../guide/index.html';
     }
   }
 
@@ -132,6 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
       case 's':
       case 'S':
         toggleStorybook();
+        break;
+      case 'l':
+      case 'L':
+        toggleAppTheme();
         break;
       case '?':
       case 'h':

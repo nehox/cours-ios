@@ -8,17 +8,15 @@ struct TaskList: Equatable {
     }
 
     var pendingTasks: [ProductivityTask] {
-        tasks.filter { $0.isDone == false }
+        // TODO: Retourner uniquement les tâches dont isDone vaut false
+        []
     }
 
     mutating func add(_ task: ProductivityTask) {
-        tasks.append(task)
+        // TODO: Ajouter la nouvelle tâche à la liste tasks
     }
 
     mutating func completeTask(withID id: UUID) {
-        guard let index = tasks.firstIndex(where: { $0.id == id }) else {
-            return
-        }
-        tasks[index].markDone()
+        // TODO: Trouver la tâche correspondante à l'id et appeler sa méthode markDone()
     }
 }

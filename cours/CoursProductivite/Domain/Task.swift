@@ -6,7 +6,8 @@ struct ProductivityTask: Identifiable, Equatable, Codable {
     var isDone: Bool
     var priority: Priority
 
-    init(id: UUID = UUID(), title: String, isDone: Bool = false, priority: Priority = .medium) {
+    init(id: UUID = UUID(), title: String, isDone: Bool = false, priority: Priority = .low) {
+        // TODO: Ajuster la priorité par défaut (elle doit être .medium selon TaskTests)
         self.id = id
         self.title = title
         self.isDone = isDone
@@ -14,6 +15,6 @@ struct ProductivityTask: Identifiable, Equatable, Codable {
     }
 
     mutating func markDone() {
-        isDone = true
+        // TODO: Marquer la tâche comme terminée (passer isDone à true)
     }
 }
