@@ -661,7 +661,7 @@ final class Lesson04ViewModel {
       </div>
 
       <p class="text-sm text-gray-300 leading-relaxed">
-        Ce ViewModel est conforme à <code class="text-blue-300 font-mono">ObservableObject</code> et annoté <code class="text-blue-300 font-mono">@MainActor</code>. Il expose une liste observable <code class="text-emerald-300 font-mono">@Published private(set) var tasks</code> et des propriétés calculées pour afficher la progression.
+        Ce ViewModel est conforme à <code class="text-blue-300 font-mono">ObservableObject</code> et annoté <code class="text-blue-300 font-mono">@MainActor</code>. Il expose une liste observable <code class="text-emerald-300 font-mono">@Published private(set) var tasks</code> et des propriétés calculées pour afficher la progression. <code class="text-emerald-300">@Published</code> signale les changements de la liste à la vue; <code class="text-blue-300">@MainActor</code> réserve les accès au ViewModel au contexte principal de l'interface.
       </p>
 
       <div class="space-y-2 text-xs">
@@ -680,6 +680,22 @@ final class Lesson04ViewModel {
         <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex justify-between">
           <span class="font-mono text-orange-300">markTaskDone(withID:)</span>
           <span class="text-gray-400">Trouve la tâche ciblée et appelle sa méthode markDone()</span>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step5', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indices progressifs</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step5" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed space-y-2">
+            <div><strong class="text-white">1. Compter les tâches terminées :</strong> filtrez <code class="text-blue-300">tasks</code> avec <code class="text-blue-300">isDone == true</code>, puis lisez le nombre d'éléments. <code class="text-blue-300">filter</code> prend une condition et renvoie un nouveau tableau. Dans <code class="text-blue-300">{ task in ... }</code>, <code class="text-blue-300">task</code> désigne chaque élément examiné.</div>
+            <div><strong class="text-white">2. Compter les tâches en cours :</strong> partez du nombre total et retirez le nombre de tâches terminées.</div>
+            <div><strong class="text-white">3. Préparer les libellés :</strong> utilisez l'interpolation <code class="text-blue-300">\(valeur)</code> pour insérer un nombre dans une chaîne. Pour choisir entre deux textes, une condition <code class="text-blue-300">condition ? texteA : texteB</code> convient.</div>
+            <div><strong class="text-white">4. Terminer une tâche :</strong> <code class="text-blue-300">firstIndex(where:)</code> cherche la position du premier élément qui satisfait une condition et renvoie un index optionnel. Comparez son <code class="text-blue-300">id</code> à l'identifiant reçu dans une condition du type <code class="text-blue-300">{ task in task.id == id }</code>; si aucun index n'existe, ne faites rien. Sinon, appelez <code class="text-blue-300">markDone()</code> sur l'élément du tableau.</div>
+            <div><strong class="text-white">5. Avancez par petits pas :</strong> complétez les compteurs, lancez les tests, puis ajoutez les libellés et la méthode d'action. Le test d'identifiant inconnu vérifie que la méthode ne modifie rien.</div>
+          </div>
         </div>
       </div>
 
@@ -743,7 +759,7 @@ func markTaskDone(withID id: UUID) {
               </span>
               <span class="text-xs font-mono text-gray-400">Simulateur iOS & Rendu SwiftUI</span>
             </div>
-            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Le Grand Final : Lancement sur iPhone !</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Vérifier l'écran sur le simulateur</h2>
           </div>
         </div>
       </div>
@@ -757,10 +773,10 @@ func markTaskDone(withID id: UUID) {
         <div class="lg:col-span-6 space-y-3">
           <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-orange-500">
             <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-              <span>📱</span> Testez le rendu attendu en direct ci-contre :
+              <span>📱</span> Comparez la maquette du guide avec l'application iOS :
             </h3>
             <p class="text-xs text-gray-300 leading-relaxed">
-              Dans l'iPhone interactif, cliquez sur les tâches pour les cocher ou ajoutez de nouvelles tâches. Observez comment la carte de résumé recalcule instantanément le compteur sans recharger la page. C'est exactement le comportement réactif de votre <code class="text-orange-300 font-mono">ProductivityHomeView</code> !
+              La maquette interactive du guide est un démonstrateur web séparé : elle permet de cocher et d'ajouter des tâches. Dans l'application SwiftUI fournie, les tâches sont préchargées et le bouton <strong class="text-white">Terminer</strong> permet d'en valider une. Lancez l'application avec <span class="key-badge">Cmd + R</span>, appuyez sur ce bouton et vérifiez que le résumé se met à jour. <code class="text-orange-300 font-mono">ProductivityHomeView</code> est déjà implémentée : aucun nouveau code n'est demandé à cette étape.
             </p>
           </div>
 

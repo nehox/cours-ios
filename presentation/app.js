@@ -312,13 +312,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (optBox) {
         optBox.className = "w-36 h-36 rounded-2xl border-2 border-emerald-400 bg-emerald-500/10 flex flex-col items-center justify-center p-4 transition-all duration-300 shadow-xl shadow-emerald-500/20";
       }
-      if (optValueText) optValueText.innerHTML = `📦 <div class="mt-1 font-mono text-xs font-bold text-emerald-300">"Swift 5.10"</div>`;
-      if (optStateBadge) optStateBadge.innerHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">.some("Swift 5.10")</span>`;
+      if (optValueText) optValueText.innerHTML = `📦 <div class="mt-1 font-mono text-xs font-bold text-emerald-300">"Cours iOS"</div>`;
+      if (optStateBadge) optStateBadge.innerHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">.some("Cours iOS")</span>`;
 
-      if (optIfLetOutput) optIfLetOutput.innerHTML = `<span class="text-emerald-400 font-bold">✓ Exécuté :</span> "Le titre est Swift 5.10"`;
-      if (optGuardOutput) optGuardOutput.innerHTML = `<span class="text-emerald-400 font-bold">✓ Passe le garde :</span> continue avec "Swift 5.10"`;
-      if (optNilCoalOutput) optNilCoalOutput.innerHTML = `"Swift 5.10" <span class="text-gray-400">(valeur déballée)</span>`;
-      if (optCrashOutput) optCrashOutput.innerHTML = `<span class="text-emerald-400">"Swift 5.10" (OK mais risqué)</span>`;
+      if (optIfLetOutput) optIfLetOutput.innerHTML = `<span class="text-emerald-400 font-bold">✓ Exécuté :</span> "Le titre est Cours iOS"`;
+      if (optGuardOutput) optGuardOutput.innerHTML = `<span class="text-emerald-400 font-bold">✓ Passe le garde :</span> continue avec "Cours iOS"`;
+      if (optNilCoalOutput) optNilCoalOutput.innerHTML = `"Cours iOS" <span class="text-gray-400">(valeur déballée)</span>`;
+      if (optCrashOutput) optCrashOutput.innerHTML = `<span class="text-emerald-400">"Cours iOS" (OK mais risqué)</span>`;
     } else {
       if (valBtn) valBtn.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition";
       if (nilBtn) nilBtn.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-lg shadow-rose-500/10 transition";

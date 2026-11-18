@@ -18,7 +18,7 @@ Pour vous guider pas à pas dans la réalisation des exercices, deux outils web 
 1. **Maîtriser les bases de Swift :** types immuables (`let` vs `var`), structures (`struct`), optionnels sécurisés avec `guard let`.
 2. **Pratiquer le cycle TDD :** Rouge ➔ Vert ➔ Refactor.
 3. **Structurer en architecture MVVM :** découplage fort avec protocoles, injection de dépendances et modèles de domaine.
-4. **Construire une interface SwiftUI réactive :** synchronisation automatique entre `@Published` et la vue.
+4. **Comprendre une interface SwiftUI réactive :** relier un ViewModel observable à la vue et vérifier la mise à jour de l'écran.
 
 ---
 
@@ -45,7 +45,7 @@ Pour vous guider pas à pas dans la réalisation des exercices, deux outils web 
 | **3** | `Domain/Task.swift`<br>`Domain/TaskPolicy.swift`<br>`Domain/TaskList.swift` | `TaskTests.swift`<br>`TaskPolicyTests.swift`<br>`TaskListTests.swift` | `mutating func`, Value Types |
 | **4** | `Lessons/Lesson03_Protocols.swift`<br>`Lessons/Lesson04_ViewModel.swift` | `MainViewModelTests.swift` | Protocoles, Mocks, Injection |
 | **5** | `Lessons/Lesson05_HomeScreenViewModel.swift` | `Lesson05_HomeScreenTests.swift` | `ObservableObject`, `@Published` |
-| **6** | `App/ProductivityHomeView.swift` | *(Simulateur iPhone)* | Vue SwiftUI réactive |
+| **6** | `App/ProductivityHomeView.swift` *(déjà fournie)* | Vérification manuelle sur le simulateur | `@ObservedObject`, `@Published` et mise à jour de l'écran |
 
 ---
 

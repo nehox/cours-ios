@@ -1,6 +1,6 @@
 # Cours iOS Moderne : Swift, SwiftUI & TDD
 
-Support pédagogique complet pour l'apprentissage du développement iOS moderne avec **Swift 5.10+**, **SwiftUI**, l'**architecture MVVM** et le **Test-Driven Development (TDD)**.
+Support pédagogique pour apprendre le développement iOS avec **SwiftUI**, l'**architecture MVVM** et le **Test-Driven Development (TDD)**. Le projet utilise le mode de langage **Swift 5**, nécessite **Xcode 15 ou supérieur** et cible **iOS 17**.
 
 ---
 
