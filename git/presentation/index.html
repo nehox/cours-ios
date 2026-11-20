@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git — Commits conventionnels & commandes essentielles</title>
+  <meta name="description" content="Diaporama Git pour débutants : commits conventionnels, push, pull, amend, cherry-pick, rebase, tags et worktrees.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#05050A] text-white antialiased">
+  <div class="ambient-glow"></div>
+  <div class="subtle-grid"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 backdrop-blur-xl bg-black/60 border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <a href="../../index.html" class="flex items-center gap-2.5 group min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-rose-500 flex items-center justify-center font-black text-black text-xs shadow-lg shadow-rose-500/20 group-hover:scale-105 transition shrink-0">
+          git
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-bold text-white truncate">Git &amp; commits conventionnels</p>
+          <p class="text-[10px] text-gray-500 uppercase tracking-widest">Module 3 · Diaporama</p>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span id="slide-counter" class="text-[11px] font-mono text-gray-300">1 / 22</span>
+        </div>
+        <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-sm transition" aria-label="Changer de thème">
+          <span id="theme-icon">🌙</span>
+        </button>
+        <a href="../../index.html" class="hidden sm:inline-flex px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-semibold text-gray-300 transition">
+          Accueil
+        </a>
+      </div>
+    </div>
+    <div class="h-0.5 bg-white/5">
+      <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 transition-all duration-300" style="width: 4.55%"></div>
+    </div>
+  </header>
+
+  <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1 : COUVERTURE -->
+    <!-- ============================================================ -->
+    <section class="slide active glass-panel rounded-3xl p-6 md:p-10 relative overflow-hidden">
+      <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-rose-500/15 blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-amber-500/10 blur-3xl pointer-events-none"></div>
+
+      <div class="relative space-y-6">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-bold uppercase tracking-wider">Module 3</span>
+          <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-semibold">Diaporama seul · aucun TP</span>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-[10px] font-semibold">Débutant</span>
+        </div>
+
+        <h1 class="text-4xl md:text-6xl font-black tracking-tight leading-[1.05]">
+          Git sans peur
+          <span class="block gradient-text-git mt-1">commits conventionnels &amp; commandes essentielles</span>
+        </h1>
+
+        <p class="text-gray-300 text-sm md:text-base max-w-3xl leading-relaxed font-light">
+          Comprendre ce que vous faites quand vous écrivez <code class="text-amber-300">git commit</code>, <code class="text-amber-300">git push</code> ou <code class="text-amber-300">git rebase</code>. Un message clair, un historique lisible, et les bons réflexes pour travailler à plusieurs.
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-xl mb-2">📝</div>
+            <p class="text-xs font-bold text-white">Commits</p>
+            <p class="text-[11px] text-gray-400 mt-1">Un message qui explique l'intention.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-xl mb-2">🔁</div>
+            <p class="text-xs font-bold text-white">Push / Pull</p>
+            <p class="text-[11px] text-gray-400 mt-1">Synchroniser avec le dépôt distant.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-xl mb-2">🧹</div>
+            <p class="text-xs font-bold text-white">Rebase</p>
+            <p class="text-[11px] text-gray-400 mt-1">Nettoyer une branche locale.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-xl mb-2">🌿</div>
+            <p class="text-xs font-bold text-white">Tags &amp; worktrees</p>
+            <p class="text-[11px] text-gray-400 mt-1">Versionner et travailler en parallèle.</p>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="text-[11px] font-mono text-gray-400">terminal</span>
+            <span class="text-[10px] text-gray-500">un commit lisible</span>
+          </div>
+          <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500">$</span> <span class="text-emerald-300">git commit -m</span> <span class="text-amber-300">"feat(auth): add login screen"</span></code></pre>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 text-[11px] text-gray-500">
+          <span>⌨️ Flèches ← → pour naviguer</span>
+          <span class="w-1 h-1 rounded-full bg-gray-600"></span>
+          <span>🌗 Thème clair / sombre</span>
+          <span class="w-1 h-1 rounded-full bg-gray-600"></span>
+          <span>🧪 Quiz à la fin</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2 : MODÈLE MENTAL -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Fondations</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Le modèle mental : 4 zones</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Un fichier ne passe pas directement de votre éditeur à GitHub. Il traverse plusieurs zones. Comprendre ce trajet évite 90 % des confusions.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div class="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25">
+            <p class="text-[10px] font-mono text-blue-300 mb-1">01</p>
+            <p class="text-sm font-bold text-white">Dossier de travail</p>
+            <p class="text-[11px] text-gray-400 mt-1">Vos fichiers modifiés, pas encore indexés.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25">
+            <p class="text-[10px] font-mono text-amber-300 mb-1">02</p>
+            <p class="text-sm font-bold text-white">Index / staging</p>
+            <p class="text-[11px] text-gray-400 mt-1">Ce que vous préparez pour le prochain commit.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+            <p class="text-[10px] font-mono text-emerald-300 mb-1">03</p>
+            <p class="text-sm font-bold text-white">Dépôt local</p>
+            <p class="text-[11px] text-gray-400 mt-1">Vos commits, stockés dans <code>.git</code>.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-[10px] font-mono text-rose-300 mb-1">04</p>
+            <p class="text-sm font-bold text-white">Dépôt distant</p>
+            <p class="text-[11px] text-gray-400 mt-1">GitHub, GitLab… souvent appelé <code>origin</code>.</p>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="text-[11px] font-mono text-gray-400">le trajet d'une modification</span>
+          </div>
+          <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-blue-300">Dossier de travail</span>  <span class="text-gray-500">-- git add --&gt;</span>  <span class="text-amber-300">Index</span>  <span class="text-gray-500">-- git commit --&gt;</span>  <span class="text-emerald-300">Dépôt local</span>  <span class="text-gray-500">-- git push --&gt;</span>  <span class="text-rose-300">origin</span>
+                          <span class="text-gray-500">&lt;-- git restore --</span>          <span class="text-gray-500">&lt;-- git reset --</span>          <span class="text-gray-500">&lt;-- git fetch / pull --</span></code></pre>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-100 leading-relaxed">
+          <strong class="text-amber-300">Un commit n'est pas un fichier.</strong> C'est un snapshot de votre projet + un message + un auteur + une date + un ou plusieurs parents. Git conserve l'historique, pas une copie de chaque fichier à chaque fois.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3 : CYCLE QUOTIDIEN -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Le réflexe</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Le cycle quotidien</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">La boucle que vous répétez toute la journée. <code>git status</code> est votre tableau de bord : lancez-le avant et après chaque action.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-[11px] font-mono text-gray-400">boucle de base</span>
+            </div>
+            <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500"># 1. Voir où j'en suis</span>
+<span class="text-emerald-300">git status</span>
+
+<span class="text-gray-500"># 2. Préparer les changements</span>
+<span class="text-emerald-300">git add</span> src/AuthView.swift
+
+<span class="text-gray-500"># 3. Enregistrer un snapshot</span>
+<span class="text-emerald-300">git commit -m</span> <span class="text-amber-300">"feat(auth): add login screen"</span>
+
+<span class="text-gray-500"># 4. Publier</span>
+<span class="text-emerald-300">git push</span></code></pre>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <p class="text-xs font-bold text-white">Visualiser l'historique</p>
+              <p class="text-[11px] text-gray-400 mt-1">La commande à garder sous la main :</p>
+              <pre class="mt-2 p-2 rounded-lg bg-black/40 border border-white/10 text-[11px] overflow-x-auto text-emerald-300"><code>git log --oneline --graph --decorate --all</code></pre>
+            </div>
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <p class="text-xs font-bold text-white">Indexer par petits morceaux</p>
+              <p class="text-[11px] text-gray-400 mt-1"><code>git add -p</code> permet de choisir les hunks à inclure. Parfait pour ne pas mélanger deux intentions dans un même commit.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+              <p class="text-xs font-bold text-rose-300">À éviter</p>
+              <p class="text-[11px] text-rose-100/80 mt-1"><code>git add .</code> sans regarder : vous risquez d'ajouter des fichiers temporaires, des secrets ou du bruit.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 4 : BON COMMIT -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Qualité</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Anatomie d'un bon commit</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Un commit n'est pas une sauvegarde automatique. C'est un message pour la personne qui lira l'historique dans six mois — souvent vous.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-lg mb-2">🎯</p>
+            <p class="text-xs font-bold text-white">Atomique</p>
+            <p class="text-[11px] text-gray-400 mt-1">Une seule intention par commit. Pas de mélange refactor + feature.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-lg mb-2">✅</p>
+            <p class="text-xs font-bold text-white">Qui compile</p>
+            <p class="text-[11px] text-gray-400 mt-1">Chaque commit doit laisser le projet dans un état fonctionnel.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-lg mb-2">💬</p>
+            <p class="text-xs font-bold text-white">Qui explique</p>
+            <p class="text-[11px] text-gray-400 mt-1">Le message dit <em>pourquoi</em>, pas seulement <em>quoi</em>.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-lg mb-2">📏</p>
+            <p class="text-xs font-bold text-white">Court et précis</p>
+            <p class="text-[11px] text-gray-400 mt-1">Sujet ≤ 50 caractères, corps à 72 caractères par ligne.</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+            <p class="text-xs font-bold text-emerald-300 mb-2">✓ Bons réflexes</p>
+            <ul class="space-y-1.5 text-[11px] text-emerald-100/80">
+              <li>• Verbe à l'impératif : <code>add</code>, <code>fix</code>, <code>remove</code>.</li>
+              <li>• Pas de point final dans le sujet.</li>
+              <li>• Contexte dans le corps si nécessaire.</li>
+              <li>• Référencer l'issue : <code>Refs: #42</code>.</li>
+            </ul>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300 mb-2">✗ À bannir</p>
+            <ul class="space-y-1.5 text-[11px] text-rose-100/80">
+              <li>• <code>update</code>, <code>fix</code>, <code>wip</code>, <code>modif</code>.</li>
+              <li>• <code>final final v2</code>.</li>
+              <li>• Un commit fourre-tout de 40 fichiers.</li>
+              <li>• Un message qui ne dit pas pourquoi.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5 : FORMAT CONVENTIONNEL -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Conventional Commits</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Le format qui parle tout seul</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Une convention simple, adoptée par de nombreux projets open source. Elle rend l'historique lisible par les humains et exploitable par les outils.</p>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="text-[11px] font-mono text-gray-400">structure</span>
+            <span class="text-[10px] text-gray-500">type(scope)!: description</span>
+          </div>
+          <pre class="p-5 text-sm leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-amber-300">&lt;type&gt;</span><span class="text-gray-500">(</span><span class="text-blue-300">&lt;scope&gt;</span><span class="text-gray-500">)</span><span class="text-rose-300">!</span><span class="text-gray-500">:</span> <span class="text-emerald-300">&lt;description&gt;</span>
+
+<span class="text-gray-500">[corps optionnel]</span>
+
+<span class="text-gray-500">[footer(s) optionnel(s)]</span></code></pre>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <p class="text-xs font-bold text-white">Exemples</p>
+            <div class="p-3 rounded-xl bg-black/40 border border-white/10 font-mono text-[11px] space-y-2">
+              <p class="text-emerald-300">feat(auth): add Google sign-in</p>
+              <p class="text-emerald-300">fix(profile): correct avatar upload</p>
+              <p class="text-emerald-300">docs(readme): explain setup</p>
+              <p class="text-emerald-300">refactor(cart): extract total calculation</p>
+              <p class="text-rose-300">feat(api)!: remove v1 endpoints</p>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <p class="text-xs font-bold text-white">Pourquoi c'est utile</p>
+            <ul class="space-y-2 text-[11px] text-gray-300">
+              <li class="flex gap-2"><span class="text-emerald-400">✓</span> Historique scannable en un coup d'œil.</li>
+              <li class="flex gap-2"><span class="text-emerald-400">✓</span> Génération automatique de changelog.</li>
+              <li class="flex gap-2"><span class="text-emerald-400">✓</span> Versionnement sémantique plus simple.</li>
+              <li class="flex gap-2"><span class="text-emerald-400">✓</span> Filtrage : <code>git log --grep="^fix"</code>.</li>
+              <li class="flex gap-2"><span class="text-emerald-400">✓</span> Revue de code plus rapide.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-gray-500">
+          Référence : <a href="https://www.conventionalcommits.org/" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">conventionalcommits.org</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6 : TYPES -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Vocabulaire</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Les types de commits</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Choisissez le type qui décrit l'intention principale. En cas de doute, demandez-vous : « qu'est-ce que ce commit apporte au projet ? »</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+            <p class="font-mono text-sm font-bold text-emerald-300">feat</p>
+            <p class="text-[11px] text-gray-300 mt-1">Nouvelle fonctionnalité visible par l'utilisateur.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">feat(search): add filters</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="font-mono text-sm font-bold text-rose-300">fix</p>
+            <p class="text-[11px] text-gray-300 mt-1">Correction d'un bug.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">fix(cart): prevent double submit</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25">
+            <p class="font-mono text-sm font-bold text-blue-300">docs</p>
+            <p class="text-[11px] text-gray-300 mt-1">Documentation uniquement.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">docs(setup): add Firebase steps</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/25">
+            <p class="font-mono text-sm font-bold text-purple-300">style</p>
+            <p class="text-[11px] text-gray-300 mt-1">Formatage, espaces, virgules. Pas de logique.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">style(ui): format AuthView</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25">
+            <p class="font-mono text-sm font-bold text-amber-300">refactor</p>
+            <p class="text-[11px] text-gray-300 mt-1">Réorganisation sans changer le comportement.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">refactor(auth): extract validator</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/25">
+            <p class="font-mono text-sm font-bold text-cyan-300">perf</p>
+            <p class="text-[11px] text-gray-300 mt-1">Amélioration des performances.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">perf(list): cache decoded images</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/25">
+            <p class="font-mono text-sm font-bold text-indigo-300">test</p>
+            <p class="text-[11px] text-gray-300 mt-1">Ajout ou correction de tests.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">test(auth): cover invalid email</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/25">
+            <p class="font-mono text-sm font-bold text-orange-300">build</p>
+            <p class="text-[11px] text-gray-300 mt-1">Outillage, dépendances, configuration de build.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">build(spm): add Firebase package</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/25">
+            <p class="font-mono text-sm font-bold text-sky-300">ci</p>
+            <p class="text-[11px] text-gray-300 mt-1">Pipeline d'intégration continue.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">ci: run tests on pull request</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-gray-500/10 border border-gray-500/25">
+            <p class="font-mono text-sm font-bold text-gray-300">chore</p>
+            <p class="text-[11px] text-gray-300 mt-1">Tâches diverses qui ne rentrent pas ailleurs.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">chore: update .gitignore</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-red-500/10 border border-red-500/25">
+            <p class="font-mono text-sm font-bold text-red-300">revert</p>
+            <p class="text-[11px] text-gray-300 mt-1">Annulation d'un commit précédent.</p>
+            <p class="text-[10px] font-mono text-gray-500 mt-2">revert: feat(auth): add login</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-100">
+          <strong class="text-amber-300">À retenir :</strong> <code>feat</code> et <code>fix</code> sont les deux types qui influencent directement le versionnement sémantique. Les autres sont utiles pour la lisibilité et l'outillage.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7 : SCOPE / CORPS / FOOTER / BREAKING -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Aller plus loin</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Scope, corps, footer et breaking change</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Le sujet suffit souvent. Quand le commit est plus complexe, ajoutez du contexte sans noyer le lecteur.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-3">
+          <div class="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25">
+            <p class="text-xs font-bold text-blue-300">Scope</p>
+            <p class="text-[11px] text-gray-300 mt-1">Le module concerné, entre parenthèses : <code>auth</code>, <code>profile</code>, <code>api</code>.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+            <p class="text-xs font-bold text-emerald-300">Corps</p>
+            <p class="text-[11px] text-gray-300 mt-1">Explique le <em>pourquoi</em>, les compromis, le contexte. Ligne vide après le sujet.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">Breaking change</p>
+            <p class="text-[11px] text-gray-300 mt-1">Un <code>!</code> après le type/scope, et un footer <code>BREAKING CHANGE:</code>.</p>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="text-[11px] font-mono text-gray-400">exemple complet</span>
+          </div>
+          <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-emerald-300">feat(auth)!: replace session cookies with JWT</span>
+
+<span class="text-gray-300">The mobile client no longer stores cookies.
+Sessions now use short-lived access tokens.</span>
+
+<span class="text-rose-300">BREAKING CHANGE:</span> <span class="text-gray-300">/login no longer returns Set-Cookie.</span>
+<span class="text-blue-300">Refs:</span> <span class="text-gray-300">#128</span></code></pre>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-3 text-[11px] text-gray-400">
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p class="font-bold text-white mb-1">Le <code>!</code></p>
+            <p>Signale immédiatement une rupture de compatibilité. Les outils peuvent alors incrémenter la version MAJOR.</p>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p class="font-bold text-white mb-1">Le footer</p>
+            <p>Références d'issues, co-auteurs, breaking change. Une ligne par information, après une ligne vide.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8 : GÉNÉRATEUR -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Démo</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Générateur de message</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Jouez avec les champs pour voir le format se construire. Ce n'est pas un TP : juste un aperçu concret.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="space-y-3">
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label for="cb-type" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Type</label>
+                <select id="cb-type" onchange="buildCommitMessage()" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs text-white focus:outline-none focus:border-amber-500">
+                  <option value="feat">feat — fonctionnalité</option>
+                  <option value="fix">fix — correction</option>
+                  <option value="docs">docs — documentation</option>
+                  <option value="style">style — formatage</option>
+                  <option value="refactor">refactor — réorganisation</option>
+                  <option value="perf">perf — performance</option>
+                  <option value="test">test — tests</option>
+                  <option value="build">build — outillage</option>
+                  <option value="ci">ci — intégration continue</option>
+                  <option value="chore">chore — tâches diverses</option>
+                  <option value="revert">revert — annulation</option>
+                </select>
+              </div>
+              <div>
+                <label for="cb-scope" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Scope (optionnel)</label>
+                <input id="cb-scope" type="text" oninput="buildCommitMessage()" placeholder="auth, profile, api…" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-500">
+              </div>
+            </div>
+
+            <div>
+              <label for="cb-desc" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Description</label>
+              <input id="cb-desc" type="text" oninput="buildCommitMessage()" placeholder="add Google sign-in" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-500">
+            </div>
+
+            <div>
+              <label for="cb-body" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Corps (optionnel)</label>
+              <textarea id="cb-body" rows="2" oninput="buildCommitMessage()" placeholder="Explique le pourquoi, le contexte…" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 resize-none"></textarea>
+            </div>
+
+            <label class="flex items-center gap-2 text-xs text-gray-300">
+              <input id="cb-breaking" type="checkbox" onchange="buildCommitMessage()" class="rounded border-white/20 bg-black/40 text-rose-500 focus:ring-rose-500">
+              Breaking change
+            </label>
+
+            <div>
+              <label for="cb-breaking-text" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Détail du breaking change (optionnel)</label>
+              <input id="cb-breaking-text" type="text" oninput="buildCommitMessage()" placeholder="décrivez ce qui casse la compatibilité" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-rose-500">
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="code-container">
+              <div class="code-header">
+                <span class="text-[11px] font-mono text-gray-400">message généré</span>
+                <button type="button" id="cb-copy" onclick="copyCommitMessage()" class="text-[10px] font-semibold text-amber-400 hover:text-amber-300 transition">Copier</button>
+              </div>
+              <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto min-h-[140px] text-emerald-300"><code id="cb-output">feat: &lt;description&gt;</code></pre>
+            </div>
+            <button type="button" onclick="resetCommitBuilder()" class="w-full px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-semibold text-gray-300 transition">
+              Réinitialiser
+            </button>
+            <p class="text-[10px] text-gray-500 leading-relaxed">
+              Astuce : le sujet doit rester court. Si vous avez besoin de plusieurs phrases, utilisez le corps du commit.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 9 : BONS VS MAUVAIS -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Comparaison</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Bons vs mauvais messages</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Le même changement peut être raconté de deux façons. La bonne version permet de comprendre l'intention sans ouvrir le diff.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-sm font-bold text-rose-300 mb-3">✗ Difficile à relire</p>
+            <div class="space-y-2 font-mono text-[12px] text-rose-100/80">
+              <p class="p-2 rounded-lg bg-black/30 border border-rose-500/20">update</p>
+              <p class="p-2 rounded-lg bg-black/30 border border-rose-500/20">fix bug</p>
+              <p class="p-2 rounded-lg bg-black/30 border border-rose-500/20">WIP</p>
+              <p class="p-2 rounded-lg bg-black/30 border border-rose-500/20">modif</p>
+              <p class="p-2 rounded-lg bg-black/30 border border-rose-500/20">final final v2</p>
+            </div>
+            <p class="text-[11px] text-rose-100/70 mt-3">Impossible de savoir quoi, où, ni pourquoi. Le diff devient la seule source de vérité.</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+            <p class="text-sm font-bold text-emerald-300 mb-3">✓ Clair et actionnable</p>
+            <div class="space-y-2 font-mono text-[12px] text-emerald-100/80">
+              <p class="p-2 rounded-lg bg-black/30 border border-emerald-500/20">fix(cart): prevent double submit</p>
+              <p class="p-2 rounded-lg bg-black/30 border border-emerald-500/20">feat(search): add debounce to query input</p>
+              <p class="p-2 rounded-lg bg-black/30 border border-emerald-500/20">docs(setup): document Firebase configuration</p>
+              <p class="p-2 rounded-lg bg-black/30 border border-emerald-500/20">refactor(auth): extract password validator</p>
+              <p class="p-2 rounded-lg bg-black/30 border border-emerald-500/20">test(profile): cover empty display name</p>
+            </div>
+            <p class="text-[11px] text-emerald-100/70 mt-3">On sait immédiatement quel module est touché et quelle intention est servie.</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-gray-300">
+          <strong class="text-white">Test simple :</strong> si vous devez ouvrir le diff pour comprendre votre propre message, c'est qu'il n'est pas assez précis.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10 : GIT COMMIT -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Commande</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git commit</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Enregistre le contenu de l'index dans un nouveau commit. C'est une action locale : rien n'est encore publié.</p>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="text-[11px] font-mono text-gray-400">les variantes utiles</span>
+          </div>
+          <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500"># Message sur une ligne</span>
+<span class="text-emerald-300">git commit -m</span> <span class="text-amber-300">"feat(auth): add login screen"</span>
+
+<span class="text-gray-500"># Ouvre l'éditeur pour un message multi-ligne</span>
+<span class="text-emerald-300">git commit</span>
+
+<span class="text-gray-500"># Ajoute les fichiers déjà suivis ET commit (pas les nouveaux fichiers)</span>
+<span class="text-emerald-300">git commit -am</span> <span class="text-amber-300">"fix(ui): correct spacing"</span>
+
+<span class="text-gray-500"># Commit vide, utile pour déclencher une CI</span>
+<span class="text-emerald-300">git commit --allow-empty -m</span> <span class="text-amber-300">"ci: trigger pipeline"</span></code></pre>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-3">
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-xs font-bold text-white">Inspecter</p>
+            <pre class="mt-2 p-2 rounded-lg bg-black/40 border border-white/10 text-[11px] overflow-x-auto text-emerald-300"><code>git show HEAD
+git log -1 --stat</code></pre>
+            <p class="text-[11px] text-gray-400 mt-2"><code>HEAD</code> pointe sur le commit courant.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">Attention à <code>-a</code></p>
+            <p class="text-[11px] text-rose-100/80 mt-1"><code>-a</code> ne prend pas les fichiers non suivis. Faites <code>git add</code> pour les nouveaux fichiers, puis <code>git commit</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 11 : AMEND -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Corriger</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git commit --amend</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Remplace le dernier commit par un nouveau. Pratique pour corriger un message ou ajouter un fichier oublié… tant que le commit n'est pas partagé.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-[11px] font-mono text-gray-400">corriger le dernier commit</span>
+            </div>
+            <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500"># Ajouter un fichier oublié, sans changer le message</span>
+<span class="text-emerald-300">git add</span> src/AuthView.swift
+<span class="text-emerald-300">git commit --amend --no-edit</span>
+
+<span class="text-gray-500"># Corriger le message</span>
+<span class="text-emerald-300">git commit --amend -m</span> <span class="text-amber-300">"fix(auth): correct typo"</span></code></pre>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <p class="text-xs font-bold text-white">Ce qui se passe</p>
+              <pre class="mt-2 p-2 rounded-lg bg-black/40 border border-white/10 text-[11px] overflow-x-auto text-gray-300"><code>Avant : A -- B -- C
+Après : A -- B -- C'</code></pre>
+              <p class="text-[11px] text-gray-400 mt-2">Le commit <code>C</code> est remplacé par <code>C'</code> : le hash change.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+              <p class="text-xs font-bold text-rose-300">Règle d'or</p>
+              <p class="text-[11px] text-rose-100/80 mt-1">Uniquement sur un commit local non poussé. Si le commit est déjà sur le remote, prévenez l'équipe et utilisez <code>git push --force-with-lease</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 12 : PUSH -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Publier</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git push</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Envoie vos commits locaux vers le dépôt distant. <code>push</code> ne fusionne rien : il publie votre historique.</p>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="text-[11px] font-mono text-gray-400">publier proprement</span>
+          </div>
+          <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500"># Première fois : lie la branche locale à origin/main</span>
+<span class="text-emerald-300">git push -u origin main</span>
+
+<span class="text-gray-500"># Ensuite, si l'upstream est configuré</span>
+<span class="text-emerald-300">git push</span>
+
+<span class="text-gray-500"># Pousser une branche de fonctionnalité</span>
+<span class="text-emerald-300">git push origin feature/login</span>
+
+<span class="text-gray-500"># Après un rebase ou un amend sur VOTRE branche</span>
+<span class="text-emerald-300">git push --force-with-lease</span>
+
+<span class="text-gray-500"># Pousser les tags</span>
+<span class="text-emerald-300">git push --tags</span></code></pre>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-3">
+          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+            <p class="text-xs font-bold text-emerald-300">-u / --set-upstream</p>
+            <p class="text-[11px] text-gray-300 mt-1">Retient la branche distante. Les prochains <code>git push</code> et <code>git pull</code> sauront où aller.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25">
+            <p class="text-xs font-bold text-amber-300">--force-with-lease</p>
+            <p class="text-[11px] text-gray-300 mt-1">Force le push seulement si personne n'a poussé entre-temps. Plus sûr que <code>--force</code>.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">Jamais sur main</p>
+            <p class="text-[11px] text-rose-100/80 mt-1">Ne forcez pas un push sur une branche partagée. Vous écraseriez le travail des autres.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 13 : PULL -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Synchroniser</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git pull</code> et <code>git fetch</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl"><code>fetch</code> télécharge les nouveautés sans toucher à votre travail. <code>pull</code> télécharge puis intègre dans votre branche courante.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-[11px] font-mono text-gray-400">les commandes</span>
+            </div>
+            <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500"># Met à jour origin/main sans modifier vos fichiers</span>
+<span class="text-emerald-300">git fetch</span>
+
+<span class="text-gray-500"># fetch + merge dans la branche courante</span>
+<span class="text-emerald-300">git pull</span>
+
+<span class="text-gray-500"># fetch + rejoue vos commits locaux par-dessus</span>
+<span class="text-emerald-300">git pull --rebase</span>
+
+<span class="text-gray-500"># Refuse si ce n'est pas un fast-forward</span>
+<span class="text-emerald-300">git pull --ff-only</span></code></pre>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <p class="text-xs font-bold text-white">En cas de conflit</p>
+              <ol class="text-[11px] text-gray-300 mt-2 space-y-1 list-decimal list-inside">
+                <li>Ouvrez les fichiers en conflit.</li>
+                <li>Gardez / fusionnez les bonnes lignes.</li>
+                <li><code>git add</code> les fichiers résolus.</li>
+                <li><code>git commit</code> (merge) ou <code>git rebase --continue</code>.</li>
+              </ol>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+              <p class="text-xs font-bold text-emerald-300">Bonne habitude</p>
+              <p class="text-[11px] text-gray-300 mt-1">Faites un <code>git pull --rebase</code> avant de commencer à travailler. Vous éviterez les merge commits inutiles.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 14 : CHERRY-PICK -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Copier un commit</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git cherry-pick</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Prend les changements d'un commit existant et les rejoue sur la branche courante, sous la forme d'un nouveau commit.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-[11px] font-mono text-gray-400">exemple</span>
+            </div>
+            <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500"># Se placer sur la branche cible</span>
+<span class="text-emerald-300">git switch</span> release
+
+<span class="text-gray-500"># Rejouer un commit précis</span>
+<span class="text-emerald-300">git cherry-pick</span> 3f2a9c1
+
+<span class="text-gray-500"># En cas de conflit</span>
+<span class="text-emerald-300">git add</span> .
+<span class="text-emerald-300">git cherry-pick --continue</span>
+
+<span class="text-gray-500"># Tout annuler</span>
+<span class="text-emerald-300">git cherry-pick --abort</span></code></pre>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+              <p class="text-xs font-bold text-emerald-300">Quand l'utiliser</p>
+              <ul class="text-[11px] text-gray-300 mt-2 space-y-1">
+                <li>• Récupérer un hotfix de <code>main</code> vers <code>release</code>.</li>
+                <li>• Récupérer un commit isolé d'une autre branche.</li>
+                <li>• Sauver un commit avant de supprimer une branche.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25">
+              <p class="text-xs font-bold text-amber-300">À savoir</p>
+              <p class="text-[11px] text-gray-300 mt-1">Le nouveau commit a un hash différent. L'original reste où il est. Ne cherry-pickez pas une branche entière : utilisez merge ou rebase.</p>
+              <p class="text-[11px] text-gray-400 mt-2"><code>git switch</code> est la commande moderne pour changer de branche ; <code>git checkout</code> reste valable mais fait aussi d'autres choses.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 15 : REBASE -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Réécrire</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git rebase</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Rejoue les commits de votre branche par-dessus une autre base. Résultat : un historique linéaire, plus facile à lire.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-[11px] font-mono text-gray-400">rebaser sa branche sur main</span>
+            </div>
+            <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-emerald-300">git switch</span> feature/login
+<span class="text-emerald-300">git rebase</span> main
+
+<span class="text-gray-500"># En cas de conflit</span>
+<span class="text-emerald-300">git add</span> fichier.swift
+<span class="text-emerald-300">git rebase --continue</span>
+
+<span class="text-gray-500"># Annuler le rebase</span>
+<span class="text-emerald-300">git rebase --abort</span></code></pre>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-xs font-bold text-white mb-3">Avant / après</p>
+            <pre class="p-3 rounded-lg bg-black/40 border border-white/10 text-[11px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500">Avant :</span>
+main    A -- B
+              \
+feature        C -- D
+
+<span class="text-gray-500">Après rebase :</span>
+main    A -- B -- C' -- D'
+                      <span class="text-emerald-300">feature</span></code></pre>
+            <p class="text-[11px] text-gray-400 mt-2">Les commits <code>C</code> et <code>D</code> sont réécrits en <code>C'</code> et <code>D'</code>. Les hashes changent.</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-100/80">
+          <strong class="text-rose-300">Règle absolue :</strong> ne rebasez jamais une branche que d'autres personnes ont déjà récupérée. Vous réécririez leur historique.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 16 : REBASE INTERACTIF -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Nettoyer</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git rebase -i</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Le rebase interactif ouvre la liste de vos commits dans un éditeur. Vous choisissez quoi garder, renommer, fusionner ou supprimer.</p>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="text-[11px] font-mono text-gray-400">git rebase -i HEAD~4</span>
+            <span class="text-[10px] text-gray-500">les 4 derniers commits</span>
+          </div>
+          <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-amber-300">pick</span>   1a2b3c4 <span class="text-gray-300">feat(auth): add login form</span>
+<span class="text-amber-300">squash</span> 5d6e7f8 <span class="text-gray-300">fix typo</span>
+<span class="text-amber-300">reword</span> 9a0b1c2 <span class="text-gray-300">docs: update setup</span>
+<span class="text-amber-300">drop</span>   3c4d5e6 <span class="text-gray-300">debug print</span></code></pre>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p class="font-mono text-xs font-bold text-emerald-300">pick</p>
+            <p class="text-[11px] text-gray-400 mt-1">Garder le commit tel quel.</p>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p class="font-mono text-xs font-bold text-blue-300">reword</p>
+            <p class="text-[11px] text-gray-400 mt-1">Garder le commit, changer le message.</p>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p class="font-mono text-xs font-bold text-amber-300">edit</p>
+            <p class="text-[11px] text-gray-400 mt-1">S'arrêter pour modifier le contenu.</p>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p class="font-mono text-xs font-bold text-purple-300">squash</p>
+            <p class="text-[11px] text-gray-400 mt-1">Fusionner avec le précédent, garder le message.</p>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p class="font-mono text-xs font-bold text-cyan-300">fixup</p>
+            <p class="text-[11px] text-gray-400 mt-1">Fusionner en jetant le message.</p>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <p class="font-mono text-xs font-bold text-rose-300">drop</p>
+            <p class="text-[11px] text-gray-400 mt-1">Supprimer le commit.</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-100/80">
+          <strong class="text-emerald-300">Cas d'usage :</strong> avant d'ouvrir une pull request, fusionnez les commits « wip », « fix typo » et « debug » pour ne garder que des commits propres et lisibles.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 17 : RÈGLES D'OR REBASE -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Sécurité</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Les règles d'or du rebase</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Le rebase est puissant, mais il réécrit l'histoire. Ces règles vous évitent de casser le travail de l'équipe.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+            <p class="text-xs font-bold text-emerald-300">✓ Branche personnelle</p>
+            <p class="text-[11px] text-gray-300 mt-1">Rebasez librement une branche de fonctionnalité que vous seul utilisez.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">✗ Branche partagée</p>
+            <p class="text-[11px] text-gray-300 mt-1">Jamais sur <code>main</code>, <code>develop</code> ou une branche que d'autres ont pull.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25">
+            <p class="text-xs font-bold text-amber-300">↺ Après rebase</p>
+            <p class="text-[11px] text-gray-300 mt-1">Poussez avec <code>--force-with-lease</code>, jamais <code>--force</code> seul.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25">
+            <p class="text-xs font-bold text-blue-300">⎇ Sauvegarde</p>
+            <p class="text-[11px] text-gray-300 mt-1">En cas de doute : <code>git branch backup-avant-rebase</code>.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/25">
+            <p class="text-xs font-bold text-purple-300">⇄ Merge vs rebase</p>
+            <p class="text-[11px] text-gray-300 mt-1">Merge préserve l'histoire. Rebase la linéarise. Choisissez selon la convention de l'équipe.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-xs font-bold text-white">🧠 En cas de doute</p>
+            <p class="text-[11px] text-gray-400 mt-1">Ne rebasez pas. Un merge est toujours plus sûr qu'un historique cassé.</p>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="text-[11px] font-mono text-gray-400">filet de sécurité</span>
+          </div>
+          <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-emerald-300">git branch</span> backup-avant-rebase
+<span class="text-emerald-300">git rebase</span> main
+<span class="text-gray-500"># Si tout va bien, supprimez la sauvegarde</span>
+<span class="text-emerald-300">git branch -D</span> backup-avant-rebase</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 18 : TAGS -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Versionner</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git tag</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Un tag est une étiquette fixe sur un commit. Contrairement à une branche, il ne bouge pas. Parfait pour marquer une release.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-[11px] font-mono text-gray-400">créer et publier</span>
+            </div>
+            <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500"># Lister les tags</span>
+<span class="text-emerald-300">git tag</span>
+
+<span class="text-gray-500"># Tag léger (simple pointeur)</span>
+<span class="text-emerald-300">git tag</span> v1.2.0
+
+<span class="text-gray-500"># Tag annoté (recommandé pour une release)</span>
+<span class="text-emerald-300">git tag -a</span> v1.2.0 <span class="text-emerald-300">-m</span> <span class="text-amber-300">"Release 1.2.0"</span>
+
+<span class="text-gray-500"># Inspecter</span>
+<span class="text-emerald-300">git show</span> v1.2.0
+
+<span class="text-gray-500"># Pousser un tag (les tags ne partent pas avec git push)</span>
+<span class="text-emerald-300">git push origin</span> v1.2.0
+<span class="text-emerald-300">git push --tags</span></code></pre>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <p class="text-xs font-bold text-white">Semver : MAJOR.MINOR.PATCH</p>
+              <div class="mt-2 space-y-1 text-[11px] text-gray-300">
+                <p><span class="font-mono text-rose-300">MAJOR</span> : rupture de compatibilité.</p>
+                <p><span class="font-mono text-amber-300">MINOR</span> : nouvelle fonctionnalité compatible.</p>
+                <p><span class="font-mono text-emerald-300">PATCH</span> : correction compatible.</p>
+              </div>
+            </div>
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <p class="text-xs font-bold text-white">Supprimer un tag</p>
+              <pre class="mt-2 p-2 rounded-lg bg-black/40 border border-white/10 text-[11px] overflow-x-auto text-gray-300"><code><span class="text-emerald-300">git tag -d</span> v1.2.0
+<span class="text-emerald-300">git push origin --delete</span> v1.2.0</code></pre>
+            </div>
+            <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25">
+              <p class="text-xs font-bold text-amber-300">Tag ≠ branche</p>
+              <p class="text-[11px] text-gray-300 mt-1">Un tag ne reçoit pas de nouveaux commits. Pour continuer à développer, créez une branche à partir du tag.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 19 : WORKTREES -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Travailler en parallèle</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white"><code>git worktree</code></h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Un seul dépôt, plusieurs dossiers de travail. Chaque worktree a sa propre branche, sans clone ni stash.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-[11px] font-mono text-gray-400">commandes</span>
+            </div>
+            <pre class="p-4 text-[12px] leading-relaxed overflow-x-auto text-gray-300"><code><span class="text-gray-500"># Ajouter un worktree sur une branche existante</span>
+<span class="text-emerald-300">git worktree add</span> ../hotfix hotfix
+
+<span class="text-gray-500"># Créer une branche + un worktree</span>
+<span class="text-emerald-300">git worktree add -b</span> feature/search ../search main
+
+<span class="text-gray-500"># Lister les worktrees</span>
+<span class="text-emerald-300">git worktree list</span>
+
+<span class="text-gray-500"># Supprimer un worktree</span>
+<span class="text-emerald-300">git worktree remove</span> ../hotfix
+
+<span class="text-gray-500"># Nettoyer les références obsolètes</span>
+<span class="text-emerald-300">git worktree prune</span></code></pre>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <p class="text-xs font-bold text-white">Un dépôt, deux dossiers</p>
+              <pre class="mt-2 p-3 rounded-lg bg-black/40 border border-white/10 text-[11px] leading-relaxed overflow-x-auto text-gray-300"><code>mon-projet/          <span class="text-blue-300">← worktree principal (main)</span>
+├── .git/            <span class="text-gray-500">← un seul dépôt</span>
+└── src/
+
+../hotfix/           <span class="text-rose-300">← worktree secondaire (hotfix)</span>
+└── src/</code></pre>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+              <p class="text-xs font-bold text-emerald-300">Quand l'utiliser</p>
+              <ul class="text-[11px] text-gray-300 mt-2 space-y-1">
+                <li>• Corriger un bug urgent sans perdre votre travail en cours.</li>
+                <li>• Comparer deux branches côte à côte.</li>
+                <li>• Lancer des tests en parallèle sur deux versions.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+              <p class="text-xs font-bold text-rose-300">Limite</p>
+              <p class="text-[11px] text-rose-100/80 mt-1">Une même branche ne peut pas être checkout dans deux worktrees en même temps.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 20 : ERREURS FRÉQUENTES -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Pièges</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Les erreurs fréquentes</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">La plupart des problèmes Git viennent de trois causes : aller trop vite, réécrire une branche partagée, ou ne pas regarder ce qu'on ajoute.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">🔑 Committer un secret</p>
+            <p class="text-[11px] text-gray-300 mt-1">Clé API, <code>.env</code>, certificat… Si c'est poussé, considérez-le comme compromis et changez-le.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">📦 <code>git add .</code> aveugle</p>
+            <p class="text-[11px] text-gray-300 mt-1">Vérifiez <code>git status</code> et <code>git diff</code> avant de committer.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">💥 Force push partagé</p>
+            <p class="text-[11px] text-gray-300 mt-1">Vous écrasez les commits des autres. Sur une branche partagée, ne forcez jamais.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">🧹 Rebase après pull</p>
+            <p class="text-[11px] text-gray-300 mt-1">Si quelqu'un a déjà récupéré la branche, le rebase casse son historique.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">✏️ Amend après push</p>
+            <p class="text-[11px] text-gray-300 mt-1">Le commit distant ne correspond plus. Coordonnez-vous avant de réécrire.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <p class="text-xs font-bold text-rose-300">🗑️ Commit fourre-tout</p>
+            <p class="text-[11px] text-gray-300 mt-1">Refactor + feature + formatting dans un seul commit : impossible à relire ou à revert.</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-100/80">
+          <strong class="text-emerald-300">Réflexe :</strong> avant chaque commit, demandez-vous « est-ce que je pourrais annuler ce commit seul sans casser autre chose ? ». Si la réponse est non, découpez-le.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 21 : QUIZ -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Vérification</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Quiz express</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Quatre questions pour vérifier les réflexes essentiels. Cliquez sur une réponse.</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="quiz-block p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-sm font-semibold text-white mb-3">1. Quelle commande corrige le dernier commit ?</p>
+            <div class="grid sm:grid-cols-2 gap-2">
+              <button type="button" onclick="answerQuiz(this, true)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] font-mono text-gray-300 hover:border-emerald-500/50">git commit --amend</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] font-mono text-gray-300 hover:border-rose-500/50">git rebase</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] font-mono text-gray-300 hover:border-rose-500/50">git cherry-pick</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] font-mono text-gray-300 hover:border-rose-500/50">git tag</button>
+            </div>
+            <p class="quiz-feedback hidden mt-3 text-xs font-semibold"></p>
+          </div>
+
+          <div class="quiz-block p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-sm font-semibold text-white mb-3">2. Quelle commande copie un commit précis sur la branche courante ?</p>
+            <div class="grid sm:grid-cols-2 gap-2">
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] font-mono text-gray-300 hover:border-rose-500/50">git merge &lt;hash&gt;</button>
+              <button type="button" onclick="answerQuiz(this, true)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] font-mono text-gray-300 hover:border-emerald-500/50">git cherry-pick &lt;hash&gt;</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] font-mono text-gray-300 hover:border-rose-500/50">git pull &lt;hash&gt;</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] font-mono text-gray-300 hover:border-rose-500/50">git worktree add</button>
+            </div>
+            <p class="quiz-feedback hidden mt-3 text-xs font-semibold"></p>
+          </div>
+
+          <div class="quiz-block p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-sm font-semibold text-white mb-3">3. Quand faut-il éviter <code>git rebase</code> ?</p>
+            <div class="grid sm:grid-cols-2 gap-2">
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-gray-300 hover:border-rose-500/50">Sur une branche locale personnelle</button>
+              <button type="button" onclick="answerQuiz(this, true)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-gray-300 hover:border-emerald-500/50">Sur une branche partagée déjà récupérée par d'autres</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-gray-300 hover:border-rose-500/50">Avant d'ouvrir une pull request</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-gray-300 hover:border-rose-500/50">Pour nettoyer ses propres commits</button>
+            </div>
+            <p class="quiz-feedback hidden mt-3 text-xs font-semibold"></p>
+          </div>
+
+          <div class="quiz-block p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-sm font-semibold text-white mb-3">4. À quoi sert <code>git worktree</code> ?</p>
+            <div class="grid sm:grid-cols-2 gap-2">
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-gray-300 hover:border-rose-500/50">Créer un tag de version</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-gray-300 hover:border-rose-500/50">Réécrire l'historique</button>
+              <button type="button" onclick="answerQuiz(this, true)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-gray-300 hover:border-emerald-500/50">Avoir plusieurs dossiers de travail sur le même dépôt</button>
+              <button type="button" onclick="answerQuiz(this, false)" class="quiz-option px-3 py-2 rounded-xl bg-black/30 border border-white/10 text-[11px] text-gray-300 hover:border-rose-500/50">Pousser une branche sur le remote</button>
+            </div>
+            <p class="quiz-feedback hidden mt-3 text-xs font-semibold"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 22 : RÉCAP -->
+    <!-- ============================================================ -->
+    <section class="slide glass-panel rounded-3xl p-6 md:p-10">
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Aide-mémoire</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Le récap' à garder</h2>
+          <p class="text-sm text-gray-400 mt-2 max-w-3xl">Les commandes essentielles, classées par intention. Pas besoin de tout retenir : sachez quoi chercher.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-xs font-bold text-emerald-300 mb-2">Au quotidien</p>
+            <pre class="text-[11px] leading-relaxed overflow-x-auto text-gray-300"><code>git status
+git add -p
+git commit -m "feat(scope): description"
+git log --oneline --graph --decorate --all</code></pre>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-xs font-bold text-blue-300 mb-2">Synchroniser</p>
+            <pre class="text-[11px] leading-relaxed overflow-x-auto text-gray-300"><code>git push -u origin main
+git pull --rebase
+git fetch
+git push --force-with-lease</code></pre>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-xs font-bold text-amber-300 mb-2">Corriger / nettoyer</p>
+            <pre class="text-[11px] leading-relaxed overflow-x-auto text-gray-300"><code>git commit --amend --no-edit
+git cherry-pick &lt;hash&gt;
+git rebase -i HEAD~4
+git branch backup-avant-rebase</code></pre>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+            <p class="text-xs font-bold text-rose-300 mb-2">Versionner / paralléliser</p>
+            <pre class="text-[11px] leading-relaxed overflow-x-auto text-gray-300"><code>git tag -a v1.2.0 -m "Release 1.2.0"
+git push origin v1.2.0
+git worktree add ../hotfix hotfix
+git worktree list</code></pre>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 border border-amber-500/25">
+          <p class="text-sm font-bold text-white">La règle qui résume tout</p>
+          <p class="text-xs text-gray-300 mt-1">Un commit clair vaut mieux qu'un historique parfait. Écrivez pour la personne qui lira dans six mois — souvent vous.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 text-[11px]">
+          <a href="https://www.conventionalcommits.org/" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-amber-300 font-semibold transition">Conventional Commits ↗</a>
+          <a href="https://git-scm.com/docs" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-blue-300 font-semibold transition">Documentation Git ↗</a>
+          <a href="../../index.html" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 font-semibold transition">← Retour à l'accueil</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation -->
+    <div class="flex items-center justify-between gap-3 pt-2">
+      <button type="button" onclick="prevSlide()" class="nav-btn px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 flex items-center gap-2">
+        <span>←</span>
+        <span>Précédent</span>
+      </button>
+      <div class="hidden sm:flex items-center gap-2 text-[10px] text-gray-500">
+        <span class="key-badge">←</span>
+        <span class="key-badge">→</span>
+        <span>pour naviguer</span>
+      </div>
+      <button type="button" onclick="nextSlide()" class="nav-btn px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-xs font-bold text-black flex items-center gap-2">
+        <span>Suivant</span>
+        <span>→</span>
+      </button>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

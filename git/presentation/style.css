@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --git-orange: #f05138;
+  --git-amber: #f59e0b;
+  --apple-blue: #2997ff;
+  --apple-green: #30d158;
+  --apple-purple: #bf5af2;
+  --bg-deep: #05050a;
+  --bg-card: rgba(20, 22, 34, 0.72);
+  --border-glass: rgba(255, 255, 255, 0.1);
+  --border-glass-hover: rgba(255, 255, 255, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-deep);
+  color: #f5f5f7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.ambient-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(240, 81, 56, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 88% 72%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 50% 45%, rgba(191, 90, 242, 0.07) 0%, transparent 55%),
+    linear-gradient(180deg, #07080f 0%, #030407 100%);
+}
+
+.subtle-grid {
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.gradient-text-git {
+  background: linear-gradient(135deg, #ffca28 0%, #f59e0b 40%, #f05138 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-blue {
+  background: linear-gradient(135deg, #64d2ff 0%, #2997ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.key-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  line-height: 1.2;
+}
+
+pre code, code {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+.code-container {
+  position: relative;
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1.15rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Slides */
+.slide {
+  display: none;
+  animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide.active {
+  display: block;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Quiz */
+.quiz-option {
+  text-align: left;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+.quiz-option.correct {
+  background: rgba(48, 209, 88, 0.16) !important;
+  border-color: rgba(48, 209, 88, 0.5) !important;
+  color: #bbf7d0 !important;
+}
+.quiz-option.incorrect {
+  background: rgba(244, 63, 94, 0.14) !important;
+  border-color: rgba(244, 63, 94, 0.5) !important;
+  color: #fecdd3 !important;
+}
+
+/* Nav */
+.nav-btn {
+  transition: all 0.2s ease;
+}
+.nav-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Light theme */
+html:not(.dark), html.light {
+  --bg-deep: #f5f5f7;
+  --bg-card: rgba(255, 255, 255, 0.92);
+  --border-glass: rgba(0, 0, 0, 0.08);
+  --border-glass-hover: rgba(0, 0, 0, 0.16);
+}
+
+html:not(.dark) body, html.light body {
+  background-color: var(--bg-deep);
+  color: #1d1d1f;
+}
+
+html:not(.dark) .ambient-glow, html.light .ambient-glow {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(240, 81, 56, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 88% 72%, rgba(245, 158, 11, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 45%, rgba(191, 90, 242, 0.05) 0%, transparent 55%),
+    linear-gradient(180deg, #ffffff 0%, #f0f2f5 100%);
+}
+
+html:not(.dark) .subtle-grid, html.light .subtle-grid {
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+
+html:not(.dark) header, html.light header {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not(.dark) .glass-panel, html.light .glass-panel {
+  background: var(--bg-card);
+  border-color: var(--border-glass);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+html:not(.dark) .text-white, html.light .text-white {
+  color: #111827 !important;
+}
+
+html:not(.dark) .text-gray-200, html.light .text-gray-200 {
+  color: #1f2937 !important;
+}
+
+html:not(.dark) .text-gray-300, html.light .text-gray-300 {
+  color: #374151 !important;
+}
+
+html:not(.dark) .text-gray-400, html.light .text-gray-400 {
+  color: #4b5563 !important;
+}
+
+html:not(.dark) .bg-white\/5, html.light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+html:not(.dark) .bg-white\/10, html.light .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.07) !important;
+}
+
+html:not(.dark) .bg-black\/30, html:not(.dark) .bg-black\/40, html:not(.dark) .bg-black\/50,
+html.light .bg-black\/30, html.light .bg-black\/40, html.light .bg-black\/50 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+html:not(.dark) .text-amber-100, html.light .text-amber-100 {
+  color: #92400e !important;
+}
+
+html:not(.dark) .text-amber-100\/80, html.light .text-amber-100\/80 {
+  color: #a16207 !important;
+}
+
+html:not(.dark) .text-rose-100, html.light .text-rose-100 {
+  color: #9f1239 !important;
+}
+
+html:not(.dark) .text-rose-100\/80, html.light .text-rose-100\/80 {
+  color: #be123c !important;
+}
+
+html:not(.dark) .text-emerald-100, html.light .text-emerald-100 {
+  color: #065f46 !important;
+}
+
+html:not(.dark) .text-emerald-100\/80, html.light .text-emerald-100\/80 {
+  color: #047857 !important;
+}
+
+html:not(.dark) .border-white\/10, html:not(.dark) .border-white\/15, html:not(.dark) .border-white\/20,
+html.light .border-white\/10, html.light .border-white\/15, html.light .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.09) !important;
+}
+
+html:not(.dark) .key-badge, html.light .key-badge {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+html:not(.dark) .code-container, html.light .code-container {
+  background: #0d1117 !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+html:not(.dark) .code-container .text-white, html.light .code-container .text-white {
+  color: #f3f4f6 !important;
+}
+
+html:not(.dark) .code-container .text-gray-300, html.light .code-container .text-gray-300,
+html:not(.dark) .code-container .text-gray-400, html.light .code-container .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+html:not(.dark) .code-header, html.light .code-header {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
