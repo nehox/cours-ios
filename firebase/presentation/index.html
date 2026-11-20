@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diaporama Firebase Auth : Email, Google et Apple — Projet iOS</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Prism.js pour la coloration syntaxique Swift -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            swift: {
+              DEFAULT: '#F05138',
+              glow: 'rgba(240, 81, 56, 0.4)',
+              dark: '#C83822'
+            },
+            apple: {
+              blue: '#2997FF',
+              green: '#30D158',
+              purple: '#BF5AF2',
+              card: 'rgba(20, 22, 34, 0.7)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#05050A] text-white">
+
+  <div class="ambient-glow"></div>
+  <div class="subtle-grid"></div>
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4 sm:px-8 bg-black/50 backdrop-blur-xl border-b border-white/10">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#F05138] to-[#FF8C69] flex items-center justify-center font-bold text-white shadow-lg shadow-orange-500/20 shrink-0">
+        <span class="text-sm">🔥</span>
+      </div>
+      <div class="min-w-0">
+        <span class="text-sm font-bold tracking-tight text-white truncate block">Firebase Auth</span>
+        <span class="text-xs text-gray-400 hidden sm:inline">Email &bull; Google &bull; Apple</span>
+      </div>
+    </div>
+
+    <div class="hidden md:flex flex-col items-center w-1/3 max-w-xs">
+      <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-blue-500 transition-all duration-300 w-0"></div>
+      </div>
+      <span id="slide-counter" class="text-[11px] font-mono text-gray-400 mt-1">1 / 20</span>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button onclick="toggleTheme()" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition" title="Basculer le thème">
+        <span id="theme-icon">🌓</span>
+      </button>
+
+      <a href="../guide/index.html" class="px-3 py-1.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-orange-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold shadow-lg shadow-orange-500/10">
+        <span>🛠️</span>
+        <span class="hidden sm:inline">Guide du TP</span>
+      </a>
+
+      <a href="../../index.html" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition text-xs font-semibold hidden sm:flex items-center gap-1.5">
+        <span>←</span>
+        <span>Portail</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Slides -->
+  <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 pt-24 pb-28">
+
+    <!-- SLIDE 1 : COUVERTURE -->
+    <section class="slide active">
+      <div class="glass-panel rounded-3xl p-8 sm:p-14 text-center min-h-[calc(100vh-13rem)] flex flex-col items-center justify-center">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/25 text-xs font-semibold text-orange-300 mb-6">
+          <span>🔥</span>
+          <span>Module 2 &bull; Authentification</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight mb-4">
+          Firebase Auth <br/>
+          <span class="gradient-text-firebase">dans votre app iOS</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-gray-300 font-light max-w-2xl mb-8">
+          Ajoutez l'inscription, la connexion et la déconnexion à votre projet SwiftUI personnel, avec trois fournisseurs : email/mot de passe, Google et Apple.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-8">
+          <span class="provider-badge provider-email">✉️ Email / Mot de passe</span>
+          <span class="provider-badge provider-google">🔴 Google</span>
+          <span class="provider-badge provider-apple">🍎 Apple</span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="../guide/index.html" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-sm font-bold text-white transition shadow-lg shadow-orange-500/25">
+            🛠️ Ouvrir le guide pratique
+          </a>
+          <button onclick="nextSlide()" class="px-6 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-sm font-semibold text-gray-200 transition">
+            Commencer le diaporama →
+          </button>
+        </div>
+
+        <p class="text-[11px] text-gray-500 mt-8">Utilisez les flèches ← → du clavier pour naviguer.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 2 : POURQUOI FIREBASE -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">01 &bull; Concepts</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Pourquoi Firebase Authentication ?</h2>
+        <p class="text-sm text-gray-300 mb-8 max-w-3xl">Gérer soi-même les mots de passe, les sessions et la sécurité est difficile. Firebase fournit un service prêt à l'emploi, utilisé par des milliers d'applications.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-3xl mb-3">⚡</div>
+            <h3 class="font-bold text-white mb-1">Rapide à intégrer</h3>
+            <p class="text-xs text-gray-400 leading-relaxed">Quelques lignes de Swift suffisent pour créer un compte et connecter un utilisateur.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-3xl mb-3">🔐</div>
+            <h3 class="font-bold text-white mb-1">Sécurisé par défaut</h3>
+            <p class="text-xs text-gray-400 leading-relaxed">Les mots de passe sont hachés et gérés par Google. Vous ne les stockez jamais vous-même.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <div class="text-3xl mb-3">🔗</div>
+            <h3 class="font-bold text-white mb-1">Multi-fournisseurs</h3>
+            <p class="text-xs text-gray-400 leading-relaxed">Un même utilisateur peut se connecter par email, Google ou Apple.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200 leading-relaxed">
+          💡 <strong>À retenir :</strong> Firebase Authentication gère l'identité. Il ne remplace pas une base de données : les données métier de votre app restent dans Firestore, une API ou un stockage local.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3 : CE QUE VOUS ALLEZ CONSTRUIRE -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">02 &bull; Objectif</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Ce que vous allez construire</h2>
+        <p class="text-sm text-gray-300 mb-8 max-w-3xl">Une seule classe <code class="text-orange-300 font-mono">AuthManager</code> pilote l'état de connexion. Les vues SwiftUI observent cet état et s'affichent automatiquement.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-3xl mb-2">📝</div>
+            <div class="font-bold text-white text-sm">AuthView</div>
+            <div class="text-[11px] text-gray-400 mt-1">Email, mot de passe, boutons Google et Apple.</div>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-3xl mb-2">🧠</div>
+            <div class="font-bold text-white text-sm">AuthManager</div>
+            <div class="text-[11px] text-gray-400 mt-1">Inscription, connexion, déconnexion et erreurs.</div>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-3xl mb-2">🔥</div>
+            <div class="font-bold text-white text-sm">Firebase</div>
+            <div class="text-[11px] text-gray-400 mt-1">Vérifie les identifiants et renvoie l'utilisateur.</div>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-3xl mb-2">🏠</div>
+            <div class="font-bold text-white text-sm">HomeView</div>
+            <div class="text-[11px] text-gray-400 mt-1">Écran connecté avec email et déconnexion.</div>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+          🔄 <strong class="text-white">Flux :</strong> l'utilisateur remplit le formulaire → <code class="text-orange-300 font-mono">AuthManager</code> appelle Firebase → Firebase répond → <code class="text-orange-300 font-mono">isAuthenticated</code> passe à <code class="text-emerald-300 font-mono">true</code> → SwiftUI affiche <code class="text-orange-300 font-mono">HomeView</code>.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4 : PRÉREQUIS -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">03 &bull; Avant de commencer</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Les prérequis</h2>
+        <p class="text-sm text-gray-300 mb-8 max-w-3xl">Chaque groupe travaille sur son projet personnel. Vérifiez ces points avant de toucher à Firebase.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💻</span><h3 class="font-bold text-white">Projet Xcode SwiftUI</h3></div>
+            <p class="text-xs text-gray-400 leading-relaxed">Votre app compile déjà avec <span class="key-badge">Cmd + B</span>. Vous connaissez son Bundle Identifier.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🌐</span><h3 class="font-bold text-white">Compte Google</h3></div>
+            <p class="text-xs text-gray-400 leading-relaxed">Gratuit, pour créer le projet Firebase et activer les fournisseurs.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <div class="flex items-center gap-3 mb-2"><span class="text-2xl">📱</span><h3 class="font-bold text-white">Simulateur ou iPhone</h3></div>
+            <p class="text-xs text-gray-400 leading-relaxed">Pour tester les connexions. Apple peut nécessiter un appareil réel.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+            <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🍎</span><h3 class="font-bold text-white">Apple Developer Program</h3></div>
+            <p class="text-xs text-amber-200 leading-relaxed">Payant, obligatoire pour Sign in with Apple. Sans lui, faites Email + Google d'abord.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5 : CRÉER LE PROJET -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">04 &bull; Console Firebase</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Créer le projet et enregistrer l'app iOS</h2>
+        <p class="text-sm text-gray-300 mb-8 max-w-3xl">Toute la configuration commence dans la console Firebase.</p>
+
+        <div class="space-y-3">
+          <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-300 flex items-center justify-center font-bold text-sm shrink-0">1</div>
+            <div><div class="font-semibold text-white text-sm">console.firebase.google.com</div><div class="text-xs text-gray-400 mt-0.5">Connectez-vous avec votre compte Google, puis « Créer un projet ».</div></div>
+          </div>
+          <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-300 flex items-center justify-center font-bold text-sm shrink-0">2</div>
+            <div><div class="font-semibold text-white text-sm">Ajouter une application iOS</div><div class="text-xs text-gray-400 mt-0.5">Cliquez sur l'icône iOS+ dans la vue d'ensemble du projet.</div></div>
+          </div>
+          <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-300 flex items-center justify-center font-bold text-sm shrink-0">3</div>
+            <div><div class="font-semibold text-white text-sm">Saisir le Bundle Identifier exact</div><div class="text-xs text-gray-400 mt-0.5">Xcode &gt; target &gt; Signing &amp; Capabilities &gt; Bundle Identifier. Un seul caractère différent = échec.</div></div>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-200">
+          ❌ Ne créez pas un Bundle Identifier « au hasard » pour Firebase : il doit être identique à celui de votre app Xcode.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6 : PLIST -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">05 &bull; Fichier de configuration</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Ajouter GoogleService-Info.plist</h2>
+        <p class="text-sm text-gray-300 mb-8 max-w-3xl">Ce fichier contient les identifiants publics de votre projet Firebase. Il doit être ajouté à la target de votre application.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <h3 class="font-bold text-white mb-3 text-sm">Procédure</h3>
+            <ol class="text-xs text-gray-300 space-y-2 list-decimal list-inside">
+              <li>Télécharger le fichier depuis la console Firebase.</li>
+              <li>Le glisser dans le navigateur de projet Xcode.</li>
+              <li>Cocher <strong class="text-white">Copy items if needed</strong>.</li>
+              <li>Vérifier la case de votre target dans <strong class="text-white">Add to targets</strong>.</li>
+            </ol>
+          </div>
+          <div class="p-5 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+            <h3 class="font-bold text-rose-200 mb-3 text-sm">Erreurs classiques</h3>
+            <ul class="text-xs text-rose-100 space-y-2">
+              <li>• Fichier nommé <code class="font-mono">GoogleService-Info (2).plist</code></li>
+              <li>• Fichier ajouté au projet mais pas à la target</li>
+              <li>• Ancien fichier conservé après activation de Google</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200">
+          💡 Le nom doit être exactement <code class="font-mono">GoogleService-Info.plist</code>. Firebase le cherche à cet emplacement au démarrage.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7 : SPM -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">06 &bull; Dépendances</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Installer Firebase avec SPM</h2>
+        <p class="text-sm text-gray-300 mb-8 max-w-3xl">Swift Package Manager est intégré à Xcode. Aucun outil externe n'est nécessaire.</p>
+
+        <div class="code-container mb-5">
+          <div class="code-header"><span class="text-xs text-gray-400 font-mono">File &gt; Add Package Dependencies...</span></div>
+          <pre class="p-4 text-xs overflow-x-auto"><code class="language-swift">https://github.com/firebase/firebase-ios-sdk.git</code></pre>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-2xl mb-2">📦</div>
+            <div class="font-bold text-white text-sm">FirebaseCore</div>
+            <div class="text-[11px] text-gray-400 mt-1">Initialisation de Firebase.</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-2xl mb-2">🔐</div>
+            <div class="font-bold text-white text-sm">FirebaseAuth</div>
+            <div class="text-[11px] text-gray-400 mt-1">Comptes et connexions.</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-2xl mb-2">🔴</div>
+            <div class="font-bold text-white text-sm">GoogleSignIn</div>
+            <div class="text-[11px] text-gray-400 mt-1">Ajouté à l'étape Google.</div>
+          </div>
+        </div>
+
+        <p class="text-xs text-gray-500 mt-5">La résolution peut prendre plusieurs minutes. Attendez la fin avant de compiler.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 8 : INITIALISER -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">07 &bull; Code</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Initialiser Firebase au démarrage</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">Dans une app SwiftUI, l'initialisation se fait dans le <code class="text-orange-300 font-mono">init()</code> de la structure <code class="text-orange-300 font-mono">@main</code>.</p>
+
+        <div class="code-container">
+          <div class="code-header"><span class="text-xs text-gray-400 font-mono">VotreApp.swift</span></div>
+          <pre class="p-4 text-xs overflow-x-auto"><code class="language-swift">import SwiftUI
+import FirebaseCore
+
+@main
+struct MonApp: App {
+    init() {
+        FirebaseApp.configure()
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}</code></pre>
+        </div>
+
+        <div class="mt-5 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-200">
+          ❌ Oublier <code class="font-mono">FirebaseApp.configure()</code> provoque l'erreur « FirebaseApp.configure() has not been called » dès la première requête d'authentification.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9 : FOURNISSEURS -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">08 &bull; Console Firebase</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Activer les trois fournisseurs</h2>
+        <p class="text-sm text-gray-300 mb-8 max-w-3xl">Authentication &gt; Sign-in method. Aucun fournisseur n'est actif par défaut.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <span class="provider-badge provider-email mb-3">✉️ Email / Mot de passe</span>
+            <p class="text-xs text-gray-400 leading-relaxed mt-3">Activer, puis enregistrer. C'est le fournisseur le plus simple à tester.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <span class="provider-badge provider-google mb-3">🔴 Google</span>
+            <p class="text-xs text-gray-400 leading-relaxed mt-3">Activer, enregistrer, puis retélécharger le fichier plist et remplacer l'ancien.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <span class="provider-badge provider-apple mb-3">🍎 Apple</span>
+            <p class="text-xs text-gray-400 leading-relaxed mt-3">Activer et configurer le Service ID, Team ID, Key ID et la clé privée Apple.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
+          ⚠️ Si Firebase renvoie <code class="font-mono">OPERATION_NOT_ALLOWED</code>, le fournisseur n'est pas activé. Ce n'est pas un bug de votre code Swift.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10 : INSCRIPTION -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">09 &bull; Email / Mot de passe</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Inscription : createUser</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">La méthode <code class="text-orange-300 font-mono">createUser(withEmail:password:)</code> crée un compte Firebase et connecte immédiatement l'utilisateur.</p>
+
+        <div class="code-container">
+          <div class="code-header"><span class="text-xs text-gray-400 font-mono">AuthManager.swift</span></div>
+          <pre class="p-4 text-xs overflow-x-auto"><code class="language-swift">func signUp(email: String, password: String) {
+    Task {
+        do {
+            let result = try await Auth.auth().createUser(
+                withEmail: email,
+                password: password
+            )
+            self.user = result.user
+            self.isAuthenticated = true
+            self.errorMessage = nil
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+    }
+}</code></pre>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-200">💡 <code class="font-mono">Task { }</code> lance une opération asynchrone : Firebase a besoin du réseau.</div>
+          <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-200">💡 <code class="font-mono">do / catch</code> évite de faire planter l'app en cas d'email déjà utilisé.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11 : CONNEXION -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">10 &bull; Email / Mot de passe</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Connexion : signIn</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">La méthode <code class="text-orange-300 font-mono">signIn(withEmail:password:)</code> vérifie les identifiants auprès de Firebase.</p>
+
+        <div class="code-container">
+          <div class="code-header"><span class="text-xs text-gray-400 font-mono">AuthManager.swift</span></div>
+          <pre class="p-4 text-xs overflow-x-auto"><code class="language-swift">func signIn(email: String, password: String) {
+    Task {
+        do {
+            let result = try await Auth.auth().signIn(
+                withEmail: email,
+                password: password
+            )
+            self.user = result.user
+            self.isAuthenticated = true
+            self.errorMessage = nil
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+    }
+}</code></pre>
+        </div>
+
+        <div class="mt-5 p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-gray-300">
+          🔐 Firebase exige un mot de passe d'au moins <strong class="text-white">6 caractères</strong>. Un email déjà utilisé renvoie une erreur explicite dans <code class="text-orange-300 font-mono">error.localizedDescription</code>.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12 : DÉCONNEXION -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">11 &bull; Email / Mot de passe</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Déconnexion : signOut</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">La déconnexion supprime l'utilisateur courant côté Firebase et remet l'état de l'app à zéro.</p>
+
+        <div class="code-container">
+          <div class="code-header"><span class="text-xs text-gray-400 font-mono">AuthManager.swift</span></div>
+          <pre class="p-4 text-xs overflow-x-auto"><code class="language-swift">func signOut() {
+    do {
+        try Auth.auth().signOut()
+        user = nil
+        isAuthenticated = false
+        errorMessage = nil
+    } catch {
+        errorMessage = error.localizedDescription
+    }
+}</code></pre>
+        </div>
+
+        <div class="mt-5 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-200">
+          ✅ Une fois <code class="font-mono">isAuthenticated</code> repassé à <code class="font-mono">false</code>, la vue racine SwiftUI réaffiche automatiquement l'écran de connexion.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13 : ARCHITECTURE + DÉMO -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">12 &bull; Architecture SwiftUI</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Relier l'état à l'interface</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">La vue racine observe <code class="text-orange-300 font-mono">AuthManager</code> et choisit l'écran à afficher. Testez le principe avec la démo ci-dessous.</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div class="code-container">
+            <div class="code-header"><span class="text-xs text-gray-400 font-mono">ContentView.swift</span></div>
+            <pre class="p-4 text-xs overflow-x-auto"><code class="language-swift">struct ContentView: View {
+    @StateObject private var authManager = AuthManager()
+
+    var body: some View {
+        Group {
+            if authManager.isAuthenticated {
+                HomeView(authManager: authManager)
+            } else {
+                AuthView(authManager: authManager)
+            }
+        }
+    }
+}</code></pre>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <h3 class="font-bold text-white text-sm mb-1">Démo visuelle (non connectée à Firebase)</h3>
+            <p class="text-[11px] text-gray-400 mb-3">Simulez le comportement du formulaire. Aucune donnée n'est envoyée.</p>
+            <div class="space-y-2">
+              <input id="demo-email" type="email" placeholder="email@exemple.com" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-orange-500">
+              <input id="demo-password" type="password" placeholder="Mot de passe (6 caractères min.)" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-orange-500">
+              <button onclick="demoSignIn()" class="w-full px-3 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 text-xs font-bold text-white hover:from-orange-400 hover:to-rose-500 transition">Simuler la connexion</button>
+            </div>
+            <div id="demo-result" class="hidden demo-result mt-3 p-3 rounded-xl text-xs"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14 : GOOGLE CONFIG -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">13 &bull; Google Sign-In</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Google Sign-In : configuration Xcode</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">Google utilise un package séparé et un URL Scheme pour rouvrir votre app après la connexion.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <h3 class="font-bold text-white text-sm mb-3">1. Package</h3>
+            <p class="text-xs text-gray-400 leading-relaxed">Ajouter <code class="font-mono text-orange-300">https://github.com/google/GoogleSignIn-iOS</code> puis les produits <strong class="text-white">GoogleSignIn</strong> et <strong class="text-white">GoogleSignInSwift</strong>.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <h3 class="font-bold text-white text-sm mb-3">2. Linker</h3>
+            <p class="text-xs text-gray-400 leading-relaxed">Build Settings &gt; Other Linker Flags &gt; ajouter <code class="font-mono text-orange-300">-ObjC</code>.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <h3 class="font-bold text-white text-sm mb-3">3. URL Scheme</h3>
+            <p class="text-xs text-gray-400 leading-relaxed">Copier <code class="font-mono text-orange-300">REVERSED_CLIENT_ID</code> depuis le plist, puis Target &gt; Info &gt; URL Types &gt; + &gt; URL Schemes.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+            <h3 class="font-bold text-white text-sm mb-3">4. onOpenURL</h3>
+            <p class="text-xs text-gray-400 leading-relaxed">Transmettre l'URL reçue à <code class="font-mono text-orange-300">GIDSignIn.sharedInstance.handle(url)</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15 : GOOGLE CODE -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">14 &bull; Google Sign-In</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Google Sign-In : le code</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">On récupère le jeton Google, puis on crée un credential Firebase.</p>
+
+        <div class="code-container">
+          <div class="code-header"><span class="text-xs text-gray-400 font-mono">AuthManager.swift</span></div>
+          <pre class="p-4 text-xs overflow-x-auto"><code class="language-swift">let googleResult = try await GIDSignIn.sharedInstance.signIn(
+    withPresenting: rootViewController
+)
+
+guard let idToken = googleResult.user.idToken?.tokenString else {
+    return
+}
+
+let credential = GoogleAuthProvider.credential(
+    withIDToken: idToken,
+    accessToken: googleResult.user.accessToken.tokenString
+)
+
+let authResult = try await Auth.auth().signIn(with: credential)
+user = authResult.user
+isAuthenticated = true</code></pre>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-200">❌ URL Scheme manquant = la fenêtre Google se ferme sans revenir dans l'app.</div>
+          <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-200">❌ <code class="font-mono">-ObjC</code> manquant = risque de crash au lancement.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16 : APPLE CONFIG -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">15 &bull; Sign in with Apple</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Apple : la configuration la plus exigeante</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">Apple exige un compte développeur payant, une capacité Xcode et une configuration dans Firebase.</p>
+
+        <div class="space-y-3">
+          <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-8 h-8 rounded-full bg-slate-500/20 border border-slate-500/40 text-slate-200 flex items-center justify-center font-bold text-sm shrink-0">1</div>
+            <div><div class="font-semibold text-white text-sm">Capability Xcode</div><div class="text-xs text-gray-400 mt-0.5">Signing &amp; Capabilities &gt; + Capability &gt; Sign in with Apple.</div></div>
+          </div>
+          <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-8 h-8 rounded-full bg-slate-500/20 border border-slate-500/40 text-slate-200 flex items-center justify-center font-bold text-sm shrink-0">2</div>
+            <div><div class="font-semibold text-white text-sm">Firebase Console</div><div class="text-xs text-gray-400 mt-0.5">Authentication &gt; Sign-in method &gt; Apple &gt; Activer.</div></div>
+          </div>
+          <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+            <div class="w-8 h-8 rounded-full bg-slate-500/20 border border-slate-500/40 text-slate-200 flex items-center justify-center font-bold text-sm shrink-0">3</div>
+            <div><div class="font-semibold text-white text-sm">Identifiants Apple</div><div class="text-xs text-gray-400 mt-0.5">Service ID, Team ID, Key ID, clé privée .p8 et URL de retour Firebase.</div></div>
+          </div>
+        </div>
+
+        <div class="mt-5 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
+          ⚠️ La clé privée Apple ne se télécharge qu'une seule fois. Conservez-la. Ne la partagez jamais et ne la commitez pas dans Git.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 17 : APPLE CODE -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">16 &bull; Sign in with Apple</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Apple : nonce et credential Firebase</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">Apple renvoie un jeton d'identité. On le combine au nonce brut pour créer le credential Firebase.</p>
+
+        <div class="code-container">
+          <div class="code-header"><span class="text-xs text-gray-400 font-mono">AuthManager.swift</span></div>
+          <pre class="p-4 text-xs overflow-x-auto"><code class="language-swift">let credential = OAuthProvider.appleCredential(
+    withIDToken: idTokenString,
+    rawNonce: nonce,
+    fullName: appleCredential.fullName
+)
+
+let authResult = try await Auth.auth().signIn(with: credential)
+user = authResult.user
+isAuthenticated = true</code></pre>
+        </div>
+
+        <div class="mt-5 p-4 rounded-2xl bg-purple-500/10 border border-purple-500/25 text-xs text-purple-200">
+          🔐 Le nonce brut reste dans l'app. C'est son hash <strong class="text-white">SHA-256</strong> qui part chez Apple. Firebase recalcule le hash et compare.
+        </div>
+        <div class="mt-3 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-200">
+          ❌ « Missing or invalid nonce » = le hash SHA-256 n'a pas été envoyé, ou le nonce brut a été perdu.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 18 : ERREURS FRÉQUENTES -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">17 &bull; Dépannage</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-3">Les erreurs les plus fréquentes</h2>
+        <p class="text-sm text-gray-300 mb-6 max-w-3xl">Lisez toujours le message complet dans la console Xcode : Firebase indique souvent la cause exacte.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10"><strong class="text-white">FirebaseApp.configure() has not been called</strong><div class="text-gray-400 mt-1">Initialisation absente ou plist hors target.</div></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10"><strong class="text-white">The supplied auth credential is malformed</strong><div class="text-gray-400 mt-1">Bundle Identifier différent de celui de Firebase.</div></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10"><strong class="text-white">OPERATION_NOT_ALLOWED</strong><div class="text-gray-400 mt-1">Fournisseur non activé dans la console.</div></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10"><strong class="text-white">Google ne revient pas dans l'app</strong><div class="text-gray-400 mt-1">URL Scheme ou onOpenURL manquant.</div></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10"><strong class="text-white">Missing or invalid nonce</strong><div class="text-gray-400 mt-1">Hash SHA-256 du nonce incorrect ou perdu.</div></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10"><strong class="text-white">Apple ne s'ouvre pas</strong><div class="text-gray-400 mt-1">Capability absente ou compte Apple Developer non configuré.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 19 : QUIZ -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)]">
+        <span class="text-xs font-mono text-orange-400">18 &bull; Quiz</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-6">Vérifiez vos acquis</h2>
+
+        <div class="space-y-6">
+          <div class="quiz-block">
+            <p class="text-sm font-semibold text-white mb-3">1. Où initialise-t-on Firebase dans une app SwiftUI ?</p>
+            <div class="space-y-2">
+              <button onclick="answerQuiz(this, true)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10">Dans le <code class="font-mono">init()</code> de la structure <code class="font-mono">@main</code></button>
+              <button onclick="answerQuiz(this, false)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10">Dans chaque vue SwiftUI</button>
+              <button onclick="answerQuiz(this, false)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10">Uniquement dans le fichier plist</button>
+            </div>
+            <div class="quiz-feedback hidden"></div>
+          </div>
+
+          <div class="quiz-block">
+            <p class="text-sm font-semibold text-white mb-3">2. Quel flag linker est nécessaire pour Google Sign-In ?</p>
+            <div class="space-y-2">
+              <button onclick="answerQuiz(this, false)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10"><code class="font-mono">-lFirebase</code></button>
+              <button onclick="answerQuiz(this, true)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10"><code class="font-mono">-ObjC</code></button>
+              <button onclick="answerQuiz(this, false)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10"><code class="font-mono">-ObjC++</code></button>
+            </div>
+            <div class="quiz-feedback hidden"></div>
+          </div>
+
+          <div class="quiz-block">
+            <p class="text-sm font-semibold text-white mb-3">3. Que faut-il envoyer à Apple concernant le nonce ?</p>
+            <div class="space-y-2">
+              <button onclick="answerQuiz(this, false)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10">Le nonce brut</button>
+              <button onclick="answerQuiz(this, true)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10">Le hash SHA-256 du nonce</button>
+              <button onclick="answerQuiz(this, false)" class="quiz-option px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10">Aucun nonce</button>
+            </div>
+            <div class="quiz-feedback hidden"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 20 : RÉCAP -->
+    <section class="slide">
+      <div class="glass-panel rounded-3xl p-8 sm:p-12 min-h-[calc(100vh-13rem)] flex flex-col justify-center">
+        <div class="text-center mb-8">
+          <div class="text-5xl mb-3">🎉</div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold">Vous avez terminé le diaporama !</h2>
+          <p class="text-sm text-gray-300 mt-2">Passez maintenant à la pratique sur votre projet personnel.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto w-full mb-8">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3"><span class="text-emerald-400 font-bold">✓</span><span class="text-xs text-gray-300">Projet Firebase et app iOS enregistrée</span></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3"><span class="text-emerald-400 font-bold">✓</span><span class="text-xs text-gray-300">SDK Firebase installé via SPM</span></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3"><span class="text-emerald-400 font-bold">✓</span><span class="text-xs text-gray-300">Email / mot de passe : inscription, connexion, déconnexion</span></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3"><span class="text-emerald-400 font-bold">✓</span><span class="text-xs text-gray-300">Google Sign-In configuré et fonctionnel</span></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3"><span class="text-emerald-400 font-bold">✓</span><span class="text-xs text-gray-300">Sign in with Apple configuré et fonctionnel</span></div>
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3"><span class="text-emerald-400 font-bold">✓</span><span class="text-xs text-gray-300">Écran connecté et bouton de déconnexion</span></div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="../guide/index.html" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-sm font-bold text-white transition shadow-lg shadow-orange-500/25">
+            🛠️ Ouvrir le guide pas à pas
+          </a>
+          <a href="../../index.html" class="px-6 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-sm font-semibold text-gray-200 transition">
+            ← Retour au portail
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer navigation -->
+  <footer class="fixed bottom-0 left-0 right-0 z-50 bg-black/60 backdrop-blur-xl border-t border-white/10 px-4 sm:px-8 py-3">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
+      <button onclick="prevSlide()" class="nav-btn px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition">
+        ← Précédent
+      </button>
+
+      <div class="text-[11px] text-gray-500 hidden sm:block">
+        <span class="key-badge">←</span> <span class="key-badge">→</span> pour naviguer
+      </div>
+
+      <button onclick="nextSlide()" class="nav-btn px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 border border-orange-500/30 text-xs font-bold text-white transition shadow-lg shadow-orange-500/20">
+        Suivant →
+      </button>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

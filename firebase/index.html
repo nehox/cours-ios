@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module Firebase Auth : Email, Google et Apple — Cours iOS</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      background-color: #05050A;
+      color: #f5f5f7;
+      min-height: 100vh;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(240, 81, 56, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(41, 151, 255, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(255, 193, 7, 0.08) 0%, transparent 55%),
+        linear-gradient(180deg, #07080f 0%, #030407 100%);
+    }
+
+    .subtle-grid {
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .glass-panel {
+      background: rgba(20, 22, 34, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-panel:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-4px);
+    }
+
+    .gradient-text-firebase {
+      background: linear-gradient(135deg, #ffca28 0%, #f57c00 45%, #ff5722 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .provider-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border: 1px solid;
+    }
+    .provider-email { background: rgba(41, 151, 255, 0.12); border-color: rgba(41, 151, 255, 0.35); color: #93c5fd; }
+    .provider-google { background: rgba(234, 67, 53, 0.12); border-color: rgba(234, 67, 53, 0.35); color: #fca5a5; }
+    .provider-apple { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.25); color: #e5e7eb; }
+  </style>
+</head>
+<body class="flex flex-col justify-between items-center p-6 sm:p-12 relative overflow-x-hidden">
+
+  <div class="ambient-glow"></div>
+  <div class="subtle-grid"></div>
+
+  <header class="relative z-10 w-full max-w-4xl flex items-center justify-between pb-8">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#F05138] to-[#FF8C69] flex items-center justify-center font-bold text-white shadow-lg shadow-orange-500/25">
+        <span class="text-lg">🔥</span>
+      </div>
+      <div>
+        <h2 class="text-base font-bold tracking-tight text-white">Module Firebase Auth</h2>
+        <p class="text-xs text-gray-400">SwiftUI &bull; Email &bull; Google &bull; Apple</p>
+      </div>
+    </div>
+
+    <a href="../index.html" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-gray-300 hover:text-white hover:bg-white/10 transition">
+      <span>←</span>
+      <span>Portail principal</span>
+    </a>
+  </header>
+
+  <main class="relative z-10 w-full max-w-4xl my-auto text-center space-y-10 py-6">
+    <div class="space-y-4 max-w-2xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/25 text-xs font-semibold text-orange-300">
+        <span>🔐</span>
+        <span>Module 2 &bull; Authentification</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight">
+        Authentification Firebase <br/>
+        <span class="gradient-text-firebase">pour votre projet iOS</span>
+      </h1>
+
+      <p class="text-base sm:text-lg text-gray-300 font-light leading-relaxed">
+        Choisissez votre parcours : découvrez les concepts dans le diaporama interactif ou passez directement au guide pratique pour implémenter l'authentification sur votre projet personnel.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <span class="provider-badge provider-email">✉️ Email / Mot de passe</span>
+        <span class="provider-badge provider-google">🔴 Google</span>
+        <span class="provider-badge provider-apple">🍎 Apple</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+      <a href="presentation/index.html" class="glass-panel rounded-3xl p-8 flex flex-col justify-between group cursor-pointer border border-white/10 hover:border-orange-500/50">
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-2xl text-orange-400 shadow-lg shadow-orange-500/10 group-hover:scale-110 transition">
+            📊
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white group-hover:text-orange-300 transition">Diaporama Firebase</h3>
+            <p class="text-xs text-gray-400 mt-1">20 diapositives interactives : concepts, configuration, code et quiz de validation.</p>
+          </div>
+          <ul class="text-xs text-gray-300 space-y-1.5 pt-2">
+            <li class="flex items-center gap-2"><span class="text-orange-400 font-bold">✓</span> Projet Firebase et fichier plist</li>
+            <li class="flex items-center gap-2"><span class="text-orange-400 font-bold">✓</span> SDK Firebase via Swift Package Manager</li>
+            <li class="flex items-center gap-2"><span class="text-orange-400 font-bold">✓</span> Email, Google et Apple expliqués pas à pas</li>
+          </ul>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-orange-400 group-hover:translate-x-1 transition">
+          <span>Ouvrir le diaporama</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <a href="guide/index.html" class="glass-panel rounded-3xl p-8 flex flex-col justify-between group cursor-pointer border border-white/10 hover:border-blue-500/50">
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-2xl text-blue-400 shadow-lg shadow-blue-500/10 group-hover:scale-110 transition">
+            🛠️
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white group-hover:text-blue-300 transition">Guide Interactif Firebase</h3>
+            <p class="text-xs text-gray-400 mt-1">Feuille de route en 13 étapes avec progression, indices et solutions protégées.</p>
+          </div>
+          <ul class="text-xs text-gray-300 space-y-1.5 pt-2">
+            <li class="flex items-center gap-2"><span class="text-blue-400 font-bold">✓</span> Configuration Firebase et Xcode</li>
+            <li class="flex items-center gap-2"><span class="text-blue-400 font-bold">✓</span> Inscription, connexion et déconnexion</li>
+            <li class="flex items-center gap-2"><span class="text-blue-400 font-bold">✓</span> Google Sign-In et Sign in with Apple</li>
+          </ul>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition">
+          <span>Ouvrir le guide pratique</span>
+          <span>→</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-black/40 border border-white/10 max-w-xl mx-auto text-xs text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono">
+      <span>Projet concerné : <strong class="text-white">votre projet iOS personnel</strong></span>
+      <span class="px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 font-sans font-semibold border border-amber-500/30">
+        🍎 Apple Developer requis
+      </span>
+    </div>
+  </main>
+
+  <footer class="relative z-10 w-full max-w-4xl text-center text-xs text-gray-500 pt-8 border-t border-white/10">
+    <p>Module Firebase Auth &bull; SwiftUI &bull; Email, Google et Apple &bull; Hébergé sur GitHub Pages</p>
+  </footer>
+
+</body>
+</html>

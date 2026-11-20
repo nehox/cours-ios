@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Firebase Auth : Email, Google et Apple — Projet iOS personnel</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Prism.js pour la coloration syntaxique Swift -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
+
+  <!-- Même feuille de style que le guide de TP existant -->
+  <link rel="stylesheet" href="../../guide/style.css">
+
+  <style>
+    .provider-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border: 1px solid;
+    }
+    .provider-email { background: rgba(41, 151, 255, 0.12); border-color: rgba(41, 151, 255, 0.35); color: #93c5fd; }
+    .provider-google { background: rgba(234, 67, 53, 0.12); border-color: rgba(234, 67, 53, 0.35); color: #fca5a5; }
+    .provider-apple { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.25); color: #e5e7eb; }
+    .warning-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fde68a;
+    }
+    .danger-box {
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #fecdd3;
+    }
+    .success-box {
+      background: rgba(48, 209, 88, 0.1);
+      border: 1px solid rgba(48, 209, 88, 0.3);
+      color: #bbf7d0;
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            swift: {
+              DEFAULT: '#F05138',
+              glow: 'rgba(240, 81, 56, 0.4)',
+              dark: '#C83822'
+            },
+            apple: {
+              blue: '#2997FF',
+              green: '#30D158',
+              purple: '#BF5AF2',
+              card: 'rgba(20, 22, 34, 0.7)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#05050A] text-white">
+
+  <div class="ambient-glow"></div>
+  <div class="subtle-grid"></div>
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-6 sm:px-10 bg-black/50 backdrop-blur-xl border-b border-white/10">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#F05138] to-[#FF8C69] flex items-center justify-center font-bold text-white shadow-lg shadow-orange-500/20">
+        <span class="text-sm">🔥</span>
+      </div>
+      <div>
+        <span class="text-sm font-bold tracking-tight text-white">Guide Firebase Auth</span>
+        <span class="text-xs text-gray-400 hidden sm:inline ml-2 pl-2 border-l border-white/20">Projet iOS personnel</span>
+      </div>
+    </div>
+
+    <div class="hidden md:flex flex-col items-center w-1/3 max-w-xs">
+      <div class="flex items-center justify-between w-full text-[11px] font-mono text-gray-400 mb-1">
+        <span>Progression Firebase</span>
+        <span id="header-progress-count" class="text-orange-400 font-bold">0/13</span>
+      </div>
+      <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+        <div id="header-progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-emerald-400 transition-all duration-300 w-0"></div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2.5">
+      <button id="theme-toggle-btn" onclick="toggleAppTheme()" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition flex items-center gap-1.5" title="Basculer Thème Clair/Sombre">
+        <span id="theme-icon">🌓</span>
+        <span id="theme-label" class="hidden sm:inline">Thème</span>
+      </button>
+
+      <button id="lock-toggle-btn" onclick="toggleLockState()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition flex items-center gap-1.5" title="Déverrouiller les solutions">
+        <span id="lock-icon">🔒</span>
+        <span id="lock-label" class="hidden sm:inline">Solutions protégées</span>
+      </button>
+
+      <a href="../presentation/index.html" class="px-3 py-1.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-orange-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold shadow-lg shadow-orange-500/10">
+        <span>📊</span>
+        <span class="hidden sm:inline">Diaporama</span>
+      </a>
+
+      <button onclick="resetAllProgress()" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-rose-400 transition text-xs" title="Réinitialiser la progression">
+        ↺
+      </button>
+    </div>
+  </header>
+
+  <main class="relative z-10 max-w-5xl mx-auto px-6 sm:px-10 pt-28 pb-24 space-y-12">
+
+    <!-- HERO -->
+    <section class="glass-panel rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-white/15 shadow-2xl">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/15 backdrop-blur-xl mb-6">
+          <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping"></span>
+          <span class="text-xs font-semibold tracking-wide text-orange-300 uppercase">Feuille de Route Firebase</span>
+          <span class="text-xs text-white/30">&bull;</span>
+          <span class="text-xs text-gray-300">Xcode &bull; SwiftUI &bull; SPM</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
+          Authentification Firebase : <br/>
+          <span class="gradient-text-swift">Email, Google et Apple</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-gray-300 font-light leading-relaxed mb-6">
+          Vous allez ajouter une authentification complète à <strong class="text-white font-semibold">votre propre projet iOS</strong>. Le parcours couvre l'inscription, la connexion et la déconnexion avec trois fournisseurs : email/mot de passe, Google et Apple.
+        </p>
+
+        <div class="mb-8 p-5 rounded-2xl warning-box flex flex-col sm:flex-row items-start gap-4">
+          <span class="text-2xl">⚠️</span>
+          <div class="space-y-1 text-xs leading-relaxed">
+            <div class="font-bold text-white">À lire avant de commencer</div>
+            <div>Chaque groupe travaille sur son projet personnel. Les noms de fichiers proposés (<code class="font-mono">AuthManager.swift</code>, <code class="font-mono">AuthView.swift</code>, etc.) sont des suggestions : adaptez-les à votre projet.</div>
+            <div>Sign in with Apple nécessite un <strong>compte Apple Developer Program payant</strong>. Si vous n'en avez pas, faites Email + Google et revenez à l'étape Apple plus tard.</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-xl mb-1">🧭</div>
+            <div class="text-xs font-bold text-white">13 Étapes</div>
+            <div class="text-[11px] text-orange-300">De zéro à la déconnexion</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-xl mb-1">🔐</div>
+            <div class="text-xs font-bold text-white">3 Méthodes</div>
+            <div class="text-[11px] text-blue-300">Email, Google, Apple</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-xl mb-1">📦</div>
+            <div class="text-xs font-bold text-white">SPM</div>
+            <div class="text-[11px] text-emerald-300">Swift Package Manager</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-xl mb-1">📱</div>
+            <div class="text-xs font-bold text-white">SwiftUI</div>
+            <div class="text-[11px] text-purple-300">Vues et état observables</div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="w-full sm:w-2/3">
+            <div class="flex justify-between text-xs text-gray-300 mb-1.5">
+              <span class="font-medium">Votre avancement global</span>
+              <span id="hero-progress-text" class="font-mono text-orange-400 font-bold">0 sur 13 validée(s) (0%)</span>
+            </div>
+            <div class="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
+              <div id="hero-progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-emerald-400 transition-all duration-300 w-0"></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="completeAllSteps()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-xs transition border border-white/10">
+              Tout valider
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRÉREQUIS -->
+    <section class="p-6 rounded-2xl bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-transparent border border-blue-500/25">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">✅</span>
+        <div>
+          <h3 class="text-sm font-bold text-white">Checklist des prérequis</h3>
+          <p class="text-xs text-gray-400">Vérifiez ces points avant l'étape 0 :</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span class="text-gray-300">Un projet Xcode SwiftUI qui compile déjà (<span class="key-badge">Cmd + B</span>).</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span class="text-gray-300">Xcode à jour et un Mac connecté à Internet.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span class="text-gray-300">Un compte Google gratuit pour accéder à la console Firebase.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span class="text-gray-300">Votre <strong class="text-white">Bundle Identifier</strong> (Xcode &gt; target &gt; Signing &amp; Capabilities).</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center gap-2">
+          <span class="text-amber-400 font-bold">!</span>
+          <span class="text-gray-300">Un compte <strong class="text-white">Apple Developer Program</strong> payant pour Sign in with Apple.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center gap-2">
+          <span class="text-amber-400 font-bold">!</span>
+          <span class="text-gray-300">Un iPhone ou un simulateur pour tester les connexions.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTRES -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-2">
+      <button onclick="filterCategory('all', this)" class="filter-btn active px-4 py-2 rounded-xl text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/40 shadow-lg shadow-orange-500/10">
+        Toutes les étapes (13)
+      </button>
+      <button onclick="filterCategory('config', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        Configuration (0-4)
+      </button>
+      <button onclick="filterCategory('email', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        Email (5-7)
+      </button>
+      <button onclick="filterCategory('google', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        Google (8-9)
+      </button>
+      <button onclick="filterCategory('apple', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        Apple (10-11)
+      </button>
+      <button onclick="filterCategory('final', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 transition">
+        Finalisation (12)
+      </button>
+    </div>
+
+    <!-- BANNIÈRE DE FIN -->
+    <div id="all-done-banner" class="hidden p-6 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-blue-500/20 border-2 border-emerald-500/40 text-center shadow-2xl">
+      <div class="text-4xl mb-2">🎉 🔐</div>
+      <h2 class="text-2xl font-extrabold text-white mb-1">Félicitations ! Vous avez validé 100% du module Firebase !</h2>
+      <p class="text-xs text-gray-300 max-w-lg mx-auto">
+        Inscription, connexion et déconnexion fonctionnent avec email, Google et Apple. Votre projet personnel dispose maintenant d'une authentification professionnelle.
+      </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 0 : CRÉER LE PROJET FIREBASE          -->
+    <!-- ========================================== -->
+    <article id="card-step0" data-category="config" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step0" onchange="toggleStep('step0')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">Étape 0</span>
+              <span class="text-xs font-mono text-gray-400">console.firebase.google.com</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Créer le projet Firebase et enregistrer votre app iOS</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Firebase est un ensemble de services proposés par Google. Ici, nous utilisons uniquement <strong class="text-white">Firebase Authentication</strong>, qui gère les comptes et les connexions à votre place.
+      </p>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">1.</span>
+          <span class="text-gray-300">Ouvrez <a href="https://console.firebase.google.com/" target="_blank" rel="noopener" class="text-orange-400 underline">console.firebase.google.com</a> et connectez-vous avec votre compte Google.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">2.</span>
+          <span class="text-gray-300">Cliquez sur <strong class="text-white">Créer un projet</strong>, donnez-lui un nom (par exemple le nom de votre app), puis validez. Google Analytics n'est pas nécessaire pour ce TP.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">3.</span>
+          <span class="text-gray-300">Dans la page du projet, cliquez sur l'icône <strong class="text-white">iOS+</strong> pour ajouter une application Apple.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">4.</span>
+          <span class="text-gray-300">Saisissez votre <strong class="text-white">Bundle Identifier</strong> exactement comme dans Xcode. Il ressemble à <code class="font-mono text-orange-300">com.votrenom.monapp</code>. Un caractère différent et Firebase refusera la connexion.</span>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200">
+        💡 <strong>Où trouver le Bundle Identifier ?</strong> Dans Xcode : cliquez sur le nom de votre projet &gt; target de l'app &gt; onglet <em>Signing &amp; Capabilities</em> &gt; champ <em>Bundle Identifier</em>. Copiez-le sans le modifier.
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step0', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step0" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+            Le Bundle Identifier est l'identité unique de votre application. Firebase l'utilise pour savoir à quelle app iOS appartiennent les requêtes d'authentification. Si vous créez plusieurs apps dans le même projet Firebase, chacune doit avoir son propre Bundle Identifier.
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>La console Firebase affiche votre application iOS dans <strong class="text-white">Vue d'ensemble du projet</strong>.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 1 : GOOGLESERVICE-INFO.PLIST          -->
+    <!-- ========================================== -->
+    <article id="card-step1" data-category="config" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step1" onchange="toggleStep('step1')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/30">Étape 1</span>
+              <span class="text-xs font-mono text-gray-400">GoogleService-Info.plist</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Télécharger et ajouter le fichier de configuration</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Firebase vous fournit un fichier <code class="text-orange-300 font-mono">GoogleService-Info.plist</code> qui contient les identifiants publics de votre projet. Sans ce fichier, l'application ne sait pas à quel projet Firebase se connecter.
+      </p>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">1.</span>
+          <span class="text-gray-300">Dans la console Firebase, cliquez sur <strong class="text-white">Télécharger GoogleService-Info.plist</strong>.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">2.</span>
+          <span class="text-gray-300">Glissez le fichier dans le navigateur de projet Xcode, à la racine de votre dossier de code.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">3.</span>
+          <span class="text-gray-300">Cochez <strong class="text-white">Copy items if needed</strong> et vérifiez que votre target d'application est cochée dans <strong class="text-white">Add to targets</strong>.</span>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl danger-box text-xs leading-relaxed">
+        ❌ <strong>Erreur classique :</strong> le fichier s'appelle <code class="font-mono">GoogleService-Info (2).plist</code> ou il n'est pas coché pour votre target. Firebase échouera alors au démarrage. Le nom doit être exactement <code class="font-mono">GoogleService-Info.plist</code>.
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step1', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step1" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+            Pour vérifier que le fichier est bien associé à votre application : sélectionnez-le dans Xcode, ouvrez l'inspecteur de fichiers à droite, et regardez la section <em>Target Membership</em>. La case de votre app doit être cochée.
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span><code class="font-mono text-white">GoogleService-Info.plist</code> apparaît dans Xcode et appartient à votre target.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 2 : INSTALLER FIREBASE VIA SPM        -->
+    <!-- ========================================== -->
+    <article id="card-step2" data-category="config" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step2" onchange="toggleStep('step2')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Étape 2</span>
+              <span class="text-xs font-mono text-gray-400">File &gt; Add Package Dependencies</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Installer le SDK Firebase avec Swift Package Manager</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Nous utilisons <strong class="text-white">Swift Package Manager (SPM)</strong>, intégré à Xcode. Aucun outil externe à installer, contrairement à CocoaPods.
+      </p>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">1.</span>
+          <span class="text-gray-300">Dans Xcode : <strong class="text-white">File &gt; Add Package Dependencies...</strong></span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">2.</span>
+          <span class="text-gray-300">Collez l'URL : <code class="font-mono text-orange-300">https://github.com/firebase/firebase-ios-sdk.git</code></span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">3.</span>
+          <span class="text-gray-300">Choisissez la version proposée par défaut (la plus récente), puis cliquez sur <strong class="text-white">Add Package</strong>.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">4.</span>
+          <span class="text-gray-300">Cochez au minimum <strong class="text-white">FirebaseAuth</strong> et <strong class="text-white">FirebaseCore</strong>. Pour Google, vous ajouterez un second package à l'étape 8.</span>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300">
+        📦 Packages à ajouter maintenant : <span class="provider-badge provider-email">FirebaseCore</span> <span class="provider-badge provider-email">FirebaseAuth</span>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step2', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step2" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+            La résolution du package peut prendre plusieurs minutes. Attendez que Xcode ait terminé avant de compiler. Si Xcode affiche une erreur de résolution, vérifiez votre connexion Internet puis <strong class="text-white">File &gt; Packages &gt; Reset Package Caches</strong>.
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span><span class="key-badge">Cmd + B</span> compile toujours après l'ajout des packages.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 3 : INITIALISER FIREBASE              -->
+    <!-- ========================================== -->
+    <article id="card-step3" data-category="config" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step3" onchange="toggleStep('step3')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Étape 3</span>
+              <span class="text-xs font-mono text-gray-400">VotreApp.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Initialiser Firebase au démarrage de l'application</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Firebase doit être configuré <strong class="text-white">une seule fois</strong>, au lancement de l'app, avant toute utilisation de l'authentification. Dans une app SwiftUI, on le fait dans le <code class="text-orange-300 font-mono">init()</code> de la structure <code class="text-orange-300 font-mono">@main</code>.
+      </p>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step3', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step3" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+            Remplacez <code class="text-orange-300 font-mono">MonApp</code> et <code class="text-orange-300 font-mono">ContentView</code> par les noms de votre propre projet. Ne créez pas un second <code class="text-orange-300 font-mono">@main</code> : modifiez celui qui existe déjà.
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="toggleAccordion('sol-step3', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step3" class="accordion-content">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">VotreApp.swift</span>
+              <button onclick="copySnippet(this, 'code-step3')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step3" class="language-swift">import SwiftUI
+import FirebaseCore
+
+@main
+struct MonApp: App {
+    init() {
+        FirebaseApp.configure()
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>L'app se lance sans crash et <code class="font-mono text-white">FirebaseApp.configure()</code> est appelé au démarrage.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 4 : ACTIVER LES FOURNISSEURS          -->
+    <!-- ========================================== -->
+    <article id="card-step4" data-category="config" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step4" onchange="toggleStep('step4')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Étape 4</span>
+              <span class="text-xs font-mono text-gray-400">Authentication &gt; Sign-in method</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Activer les trois fournisseurs dans la console</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Par défaut, aucun fournisseur n'est actif. Il faut autoriser explicitement Email/Mot de passe, Google et Apple dans la console Firebase.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div class="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
+          <span class="provider-badge provider-email">Email / Mot de passe</span>
+          <div class="text-gray-400 text-[11px] leading-relaxed">Authentication &gt; Sign-in method &gt; Email/Password &gt; Activer &gt; Enregistrer.</div>
+        </div>
+        <div class="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
+          <span class="provider-badge provider-google">Google</span>
+          <div class="text-gray-400 text-[11px] leading-relaxed">Même écran &gt; Google &gt; Activer &gt; Enregistrer. Téléchargez ensuite un nouveau <code class="font-mono">GoogleService-Info.plist</code> et remplacez l'ancien.</div>
+        </div>
+        <div class="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
+          <span class="provider-badge provider-apple">Apple</span>
+          <div class="text-gray-400 text-[11px] leading-relaxed">Même écran &gt; Apple &gt; Activer. La configuration complète est détaillée à l'étape 10.</div>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl warning-box text-xs leading-relaxed">
+        ⚠️ Pour Google, Firebase demande parfois de <strong>retélécharger</strong> le fichier <code class="font-mono">GoogleService-Info.plist</code> après l'activation. Remplacez l'ancien fichier dans Xcode par le nouveau.
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step4', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step4" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+            Si un fournisseur n'est pas activé, Firebase renvoie une erreur du type <code class="text-rose-300 font-mono">OPERATION_NOT_ALLOWED</code>. Ce n'est pas un bug de votre code : retournez dans la console et activez le fournisseur.
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>Les trois fournisseurs apparaissent avec le statut <strong class="text-white">Activé</strong>.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 5 : AUTHMANAGER (INSCRIPTION/CONNEXION) -->
+    <!-- ========================================== -->
+    <article id="card-step5" data-category="email" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step5" onchange="toggleStep('step5')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Étape 5</span>
+              <span class="text-xs font-mono text-gray-400">AuthManager.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Créer le gestionnaire d'authentification</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        On centralise toute la logique Firebase dans une classe <code class="text-orange-300 font-mono">AuthManager</code> conforme à <code class="text-blue-300 font-mono">ObservableObject</code>. Les vues SwiftUI pourront ainsi observer l'état de connexion et se mettre à jour automatiquement.
+      </p>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex justify-between gap-3">
+          <span class="font-mono text-orange-300">user</span>
+          <span class="text-gray-400 text-right">L'utilisateur Firebase connecté (ou nil).</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex justify-between gap-3">
+          <span class="font-mono text-orange-300">isAuthenticated</span>
+          <span class="text-gray-400 text-right">Vrai si la connexion a réussi.</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-white/5 border border-white/10 flex justify-between gap-3">
+          <span class="font-mono text-orange-300">errorMessage</span>
+          <span class="text-gray-400 text-right">Le dernier message d'erreur à afficher.</span>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step5', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step5" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed space-y-2">
+            <div>1. <code class="text-blue-300 font-mono">@MainActor</code> garantit que les modifications des propriétés se font sur le thread principal, celui de l'interface.</div>
+            <div>2. <code class="text-blue-300 font-mono">Task { }</code> lance une tâche asynchrone : les fonctions Firebase peuvent prendre du temps (réseau).</div>
+            <div>3. <code class="text-blue-300 font-mono">try await</code> attend le résultat et propage une erreur en cas d'échec.</div>
+            <div>4. <code class="text-blue-300 font-mono">do / catch</code> permet d'afficher un message lisible plutôt que de faire planter l'app.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="toggleAccordion('sol-step5', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step5" class="accordion-content">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">AuthManager.swift</span>
+              <button onclick="copySnippet(this, 'code-step5')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step5" class="language-swift">import Foundation
+import Combine
+import FirebaseAuth
+
+@MainActor
+final class AuthManager: ObservableObject {
+    @Published var user: User?
+    @Published var isAuthenticated = false
+    @Published var errorMessage: String?
+
+    func signUp(email: String, password: String) {
+        Task {
+            do {
+                let result = try await Auth.auth().createUser(
+                    withEmail: email,
+                    password: password
+                )
+                self.user = result.user
+                self.isAuthenticated = true
+                self.errorMessage = nil
+            } catch {
+                self.errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    func signIn(email: String, password: String) {
+        Task {
+            do {
+                let result = try await Auth.auth().signIn(
+                    withEmail: email,
+                    password: password
+                )
+                self.user = result.user
+                self.isAuthenticated = true
+                self.errorMessage = nil
+            } catch {
+                self.errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            user = nil
+            isAuthenticated = false
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span><span class="key-badge">Cmd + B</span> compile sans erreur avec <code class="font-mono text-white">AuthManager</code>.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 6 : VUE D'AUTHENTIFICATION            -->
+    <!-- ========================================== -->
+    <article id="card-step6" data-category="email" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step6" onchange="toggleStep('step6')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">Étape 6</span>
+              <span class="text-xs font-mono text-gray-400">AuthView.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Construire l'écran de connexion et d'inscription</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Cet écran contient deux champs (email et mot de passe) et deux boutons : <strong class="text-white">Se connecter</strong> et <strong class="text-white">Créer un compte</strong>. Les boutons Google et Apple seront ajoutés aux étapes suivantes.
+      </p>
+
+      <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200">
+        🎯 <strong>Règle d'interface :</strong> les champs email et mot de passe sont locaux à la vue (<code class="font-mono">@State</code>), tandis que l'état de connexion vient de <code class="font-mono">AuthManager</code> (<code class="font-mono">@ObservedObject</code>).
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step6', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step6" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed space-y-2">
+            <div>1. <code class="text-blue-300 font-mono">TextField</code> pour l'email, <code class="text-blue-300 font-mono">SecureField</code> pour le mot de passe.</div>
+            <div>2. <code class="text-blue-300 font-mono">.textInputAutocapitalization(.never)</code> évite les majuscules automatiques dans l'email.</div>
+            <div>3. Affichez <code class="text-blue-300 font-mono">authManager.errorMessage</code> dans un <code class="text-blue-300 font-mono">Text</code> rouge pour expliquer les échecs.</div>
+            <div>4. Les boutons appellent simplement les méthodes de <code class="text-blue-300 font-mono">AuthManager</code>.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="toggleAccordion('sol-step6', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step6" class="accordion-content">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">AuthView.swift</span>
+              <button onclick="copySnippet(this, 'code-step6')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step6" class="language-swift">import SwiftUI
+
+struct AuthView: View {
+    @ObservedObject var authManager: AuthManager
+    @State private var email = ""
+    @State private var password = ""
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                Text("Bienvenue")
+                    .font(.largeTitle.bold())
+
+                TextField("Adresse email", text: $email)
+                    .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.emailAddress)
+
+                SecureField("Mot de passe", text: $password)
+                    .textFieldStyle(.roundedBorder)
+
+                if let error = authManager.errorMessage {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .multilineTextAlignment(.center)
+                }
+
+                Button("Se connecter") {
+                    authManager.signIn(email: email, password: password)
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button("Créer un compte") {
+                    authManager.signUp(email: email, password: password)
+                }
+            }
+            .padding()
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>L'écran s'affiche et les boutons email appellent bien <code class="font-mono text-white">AuthManager</code>.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 7 : ÉCRAN CONNECTÉ + DÉCONNEXION      -->
+    <!-- ========================================== -->
+    <article id="card-step7" data-category="email" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step7" onchange="toggleStep('step7')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Étape 7</span>
+              <span class="text-xs font-mono text-gray-400">ContentView.swift &amp; HomeView.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Afficher l'écran connecté et gérer la déconnexion</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Une vue racine choisit automatiquement entre l'écran d'authentification et l'écran principal selon <code class="text-emerald-300 font-mono">isAuthenticated</code>. La déconnexion ramène immédiatement à l'écran de connexion.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="font-bold text-white mb-1">ContentView</div>
+          <div class="text-gray-400 text-[11px]">Crée <code class="text-orange-300">AuthManager</code> avec <code class="text-orange-300">@StateObject</code> et choisit la vue à afficher.</div>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="font-bold text-white mb-1">HomeView</div>
+          <div class="text-gray-400 text-[11px]">Affiche l'email de l'utilisateur et un bouton <strong class="text-white">Se déconnecter</strong>.</div>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="font-bold text-white mb-1">signOut()</div>
+          <div class="text-gray-400 text-[11px]">Appelle <code class="text-orange-300">Auth.auth().signOut()</code> et remet <code class="text-orange-300">isAuthenticated</code> à <code class="text-orange-300">false</code>.</div>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="toggleAccordion('sol-step7', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step7" class="accordion-content space-y-3">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">ContentView.swift</span>
+              <button onclick="copySnippet(this, 'code-step7-content')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step7-content" class="language-swift">import SwiftUI
+
+struct ContentView: View {
+    @StateObject private var authManager = AuthManager()
+
+    var body: some View {
+        Group {
+            if authManager.isAuthenticated {
+                HomeView(authManager: authManager)
+            } else {
+                AuthView(authManager: authManager)
+            }
+        }
+    }
+}</code></pre>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">HomeView.swift</span>
+              <button onclick="copySnippet(this, 'code-step7-home')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step7-home" class="language-swift">import SwiftUI
+
+struct HomeView: View {
+    @ObservedObject var authManager: AuthManager
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Vous êtes connecté")
+                .font(.title.bold())
+
+            Text(authManager.user?.email ?? "Email inconnu")
+                .foregroundStyle(.secondary)
+
+            Button("Se déconnecter") {
+                authManager.signOut()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>Après connexion, l'écran principal s'affiche ; après déconnexion, l'écran de connexion revient.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 8 : GOOGLE - CONFIGURATION            -->
+    <!-- ========================================== -->
+    <article id="card-step8" data-category="google" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step8" onchange="toggleStep('step8')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">Étape 8</span>
+              <span class="text-xs font-mono text-gray-400">GoogleSignIn-iOS &amp; URL Types</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Google Sign-In : préparer Xcode</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Google Sign-In utilise un package séparé de Firebase. Il faut aussi autoriser l'application à être rouverte par Google après la connexion, via un <strong class="text-white">URL Scheme</strong>.
+      </p>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">1.</span>
+          <span class="text-gray-300"><strong class="text-white">File &gt; Add Package Dependencies...</strong> puis ajoutez <code class="font-mono text-orange-300">https://github.com/google/GoogleSignIn-iOS</code>.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">2.</span>
+          <span class="text-gray-300">Ajoutez les produits <strong class="text-white">GoogleSignIn</strong> et <strong class="text-white">GoogleSignInSwift</strong> à votre target.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">3.</span>
+          <span class="text-gray-300">Target &gt; Build Settings &gt; <strong class="text-white">Other Linker Flags</strong> : ajoutez <code class="font-mono text-orange-300">-ObjC</code>.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">4.</span>
+          <span class="text-gray-300">Ouvrez <code class="font-mono">GoogleService-Info.plist</code>, copiez la valeur de <code class="font-mono text-orange-300">REVERSED_CLIENT_ID</code>.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">5.</span>
+          <span class="text-gray-300">Target &gt; Info &gt; <strong class="text-white">URL Types</strong> &gt; <strong class="text-white">+</strong> &gt; collez cette valeur dans <strong class="text-white">URL Schemes</strong>.</span>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl warning-box text-xs leading-relaxed">
+        ⚠️ Sans le flag <code class="font-mono">-ObjC</code>, Google Sign-In peut planter au lancement. Sans l'URL Scheme, la fenêtre Google se ferme mais l'app ne reçoit jamais la réponse.
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>Le projet compile et l'URL Scheme <code class="font-mono text-white">REVERSED_CLIENT_ID</code> est présent dans l'onglet Info.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 9 : GOOGLE - CODE                     -->
+    <!-- ========================================== -->
+    <article id="card-step9" data-category="google" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step9" onchange="toggleStep('step9')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Étape 9</span>
+              <span class="text-xs font-mono text-gray-400">AuthManager.swift &amp; VotreApp.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Google Sign-In : connecter le compte à Firebase</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Le SDK Google affiche la fenêtre de choix de compte et renvoie un <strong class="text-white">jeton d'identité</strong>. On transforme ce jeton en <code class="text-orange-300 font-mono">AuthCredential</code> Firebase, puis on appelle <code class="text-orange-300 font-mono">Auth.auth().signIn(with:)</code>.
+      </p>
+
+      <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200">
+        💡 La fonction <code class="font-mono">onOpenURL</code> est indispensable : elle permet à Google de transmettre le résultat de la connexion à votre application après avoir quitté Safari.
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step9', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step9" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed space-y-2">
+            <div>1. Google a besoin d'un <code class="text-blue-300 font-mono">UIViewController</code> pour présenter sa fenêtre. L'extension <code class="text-blue-300 font-mono">UIApplication</code> fournit le contrôleur racine.</div>
+            <div>2. Le <code class="text-blue-300 font-mono">clientID</code> se trouve dans la configuration Firebase, pas dans votre code.</div>
+            <div>3. On crée le credential avec l'ID token et l'access token, puis on le donne à Firebase.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="toggleAccordion('sol-step9', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step9" class="accordion-content space-y-3">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">UIApplication+Root.swift</span>
+              <button onclick="copySnippet(this, 'code-step9-root')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step9-root" class="language-swift">import UIKit
+
+extension UIApplication {
+    var rootViewController: UIViewController? {
+        connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }?
+            .windows
+            .first { $0.isKeyWindow }?
+            .rootViewController
+    }
+}</code></pre>
+          </div>
+
+          <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200">
+            Ajoutez ces imports en haut de <code class="font-mono">AuthManager.swift</code> : <code class="font-mono">import FirebaseCore</code>, <code class="font-mono">import GoogleSignIn</code> et <code class="font-mono">import UIKit</code>.
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">AuthManager.swift (ajout)</span>
+              <button onclick="copySnippet(this, 'code-step9-google')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step9-google" class="language-swift">func signInWithGoogle() {
+    Task {
+        do {
+            guard let clientID = FirebaseApp.app()?.options.clientID else {
+                self.errorMessage = "Client ID Google introuvable."
+                return
+            }
+
+            GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+
+            guard let rootViewController = UIApplication.shared.rootViewController else {
+                self.errorMessage = "Écran principal introuvable."
+                return
+            }
+
+            let googleResult = try await GIDSignIn.sharedInstance.signIn(
+                withPresenting: rootViewController
+            )
+
+            guard let idToken = googleResult.user.idToken?.tokenString else {
+                self.errorMessage = "Jeton Google introuvable."
+                return
+            }
+
+            let credential = GoogleAuthProvider.credential(
+                withIDToken: idToken,
+                accessToken: googleResult.user.accessToken.tokenString
+            )
+
+            let authResult = try await Auth.auth().signIn(with: credential)
+            self.user = authResult.user
+            self.isAuthenticated = true
+            self.errorMessage = nil
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+    }
+}</code></pre>
+          </div>
+
+          <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200">
+            Dans <code class="font-mono">AuthView.swift</code>, ajoutez <code class="font-mono">import GoogleSignInSwift</code> en haut du fichier, puis ce bouton sous les boutons email, dans le <code class="font-mono">VStack</code> :
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">AuthView.swift (ajout)</span>
+              <button onclick="copySnippet(this, 'code-step9-view')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step9-view" class="language-swift">GoogleSignInButton {
+    authManager.signInWithGoogle()
+}
+.frame(height: 44)</code></pre>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">VotreApp.swift (ajout)</span>
+              <button onclick="copySnippet(this, 'code-step9-app')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step9-app" class="language-swift">import SwiftUI
+import FirebaseCore
+import GoogleSignIn
+
+@main
+struct MonApp: App {
+    init() {
+        FirebaseApp.configure()
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>Le bouton Google ouvre le sélecteur de compte, puis l'utilisateur est connecté dans Firebase.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 10 : APPLE - CONFIGURATION            -->
+    <!-- ========================================== -->
+    <article id="card-step10" data-category="apple" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step10" onchange="toggleStep('step10')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-500/20 text-slate-300 border border-slate-500/30">Étape 10</span>
+              <span class="text-xs font-mono text-gray-400">Signing &amp; Capabilities</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Sign in with Apple : activer la capacité et Firebase</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Sign in with Apple permet à l'utilisateur de se connecter avec son identifiant Apple, sans créer de mot de passe. C'est le fournisseur le plus exigeant en configuration.
+      </p>
+
+      <div class="p-4 rounded-xl warning-box text-xs leading-relaxed">
+        ⚠️ <strong>Prérequis :</strong> un compte <strong>Apple Developer Program</strong> payant. Sans lui, la capacité Sign in with Apple n'apparaît pas. Dans ce cas, terminez Email + Google et revenez plus tard.
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">1.</span>
+          <span class="text-gray-300">Dans Xcode : target &gt; <strong class="text-white">Signing &amp; Capabilities</strong> &gt; <strong class="text-white">+ Capability</strong> &gt; <strong class="text-white">Sign in with Apple</strong>.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">2.</span>
+          <span class="text-gray-300">Dans la console Firebase : Authentication &gt; Sign-in method &gt; <strong class="text-white">Apple</strong> &gt; Activer.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">3.</span>
+          <span class="text-gray-300">Renseignez le <strong class="text-white">Service ID</strong>, le <strong class="text-white">Team ID</strong>, le <strong class="text-white">Key ID</strong> et la clé privée Apple, ainsi que l'URL de retour <code class="font-mono text-orange-300">https://VOTRE_PROJECT_ID.firebaseapp.com/__/auth/handler</code>.</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2">
+          <span class="text-orange-400 font-bold">4.</span>
+          <span class="text-gray-300">Vérifiez que votre Bundle Identifier dans Xcode correspond à celui enregistré côté Apple et Firebase.</span>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step10', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step10" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed">
+            Si l'option Apple est grisée dans Firebase, c'est que la configuration Apple Developer n'est pas terminée. Firebase a besoin de la clé privée <code class="text-orange-300 font-mono">.p8</code> téléchargée depuis le portail Apple Developer. Cette clé ne se télécharge qu'une seule fois : conservez-la précieusement.
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>La capacité <strong class="text-white">Sign in with Apple</strong> apparaît dans Xcode et le fournisseur Apple est activé dans Firebase.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 11 : APPLE - CODE                     -->
+    <!-- ========================================== -->
+    <article id="card-step11" data-category="apple" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step11" onchange="toggleStep('step11')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-500/20 text-slate-300 border border-slate-500/30">Étape 11</span>
+              <span class="text-xs font-mono text-gray-400">AppleSignInHelper.swift &amp; AuthManager.swift</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Sign in with Apple : nonce, credential et connexion</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Apple exige un <strong class="text-white">nonce</strong> : une chaîne aléatoire envoyée à Apple, puis vérifiée par Firebase. Cela empêche qu'un jeton intercepté soit rejoué par un autre site.
+      </p>
+
+      <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200">
+        🎯 Le nonce brut est conservé dans l'app, tandis que sa version <strong>hachée en SHA-256</strong> est envoyée à Apple. Firebase recalcule le hash et compare.
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step11', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Indice pédagogique</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step11" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed space-y-2">
+            <div>1. <code class="text-blue-300 font-mono">SecRandomCopyBytes</code> génère des octets aléatoires sûrs.</div>
+            <div>2. <code class="text-blue-300 font-mono">SHA256.hash</code> vient de <code class="text-blue-300 font-mono">CryptoKit</code>.</div>
+            <div>3. <code class="text-blue-300 font-mono">SignInWithAppleButton</code> gère l'interface officielle Apple.</div>
+            <div>4. Dans <code class="text-blue-300 font-mono">onCompletion</code>, on récupère le jeton Apple et on crée le credential Firebase.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="toggleAccordion('sol-step11', this)" class="text-xs text-gray-400 hover:text-white font-semibold flex items-center gap-1.5 transition">
+          <span class="solution-lock-indicator">🔒</span>
+          <span>Afficher la solution</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="sol-step11" class="accordion-content space-y-3">
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">AppleSignInHelper.swift</span>
+              <button onclick="copySnippet(this, 'code-step11-helper')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step11-helper" class="language-swift">import Foundation
+import CryptoKit
+import Security
+
+func randomNonceString(length: Int = 32) -> String {
+    var randomBytes = [UInt8](repeating: 0, count: length)
+    let errorCode = SecRandomCopyBytes(
+        kSecRandomDefault,
+        randomBytes.count,
+        &amp;randomBytes
+    )
+    if errorCode != errSecSuccess {
+        fatalError("Impossible de générer un nonce.")
+    }
+
+    let charset: [Character] = Array(
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._"
+    )
+    return String(randomBytes.map { charset[Int($0) % charset.count] })
+}
+
+func sha256(_ input: String) -> String {
+    let inputData = Data(input.utf8)
+    let hashedData = SHA256.hash(data: inputData)
+    return hashedData.map { String(format: "%02x", $0) }.joined()
+}</code></pre>
+          </div>
+
+          <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200">
+            Ajoutez <code class="font-mono">import AuthenticationServices</code> en haut de <code class="font-mono">AuthManager.swift</code>. La propriété <code class="font-mono">currentNonce</code> est incluse dans l'extrait ci-dessous.
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">AuthManager.swift (ajout)</span>
+              <button onclick="copySnippet(this, 'code-step11-apple')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step11-apple" class="language-swift">@Published var currentNonce: String?
+
+func signInWithApple(
+    credential: ASAuthorizationAppleIDCredential,
+    nonce: String
+) {
+    Task {
+        do {
+            guard let appleIDToken = credential.identityToken,
+                  let idTokenString = String(data: appleIDToken, encoding: .utf8)
+            else {
+                self.errorMessage = "Jeton Apple introuvable."
+                return
+            }
+
+            let firebaseCredential = OAuthProvider.appleCredential(
+                withIDToken: idTokenString,
+                rawNonce: nonce,
+                fullName: credential.fullName
+            )
+
+            let authResult = try await Auth.auth().signIn(with: firebaseCredential)
+            self.user = authResult.user
+            self.isAuthenticated = true
+            self.errorMessage = nil
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+    }
+}</code></pre>
+          </div>
+
+          <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200">
+            Dans <code class="font-mono">AuthView.swift</code>, ajoutez <code class="font-mono">import AuthenticationServices</code> puis ce bouton sous le bouton Google :
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="text-xs text-gray-400 font-mono">AuthView.swift (ajout)</span>
+              <button onclick="copySnippet(this, 'code-step11-view')" class="text-xs text-gray-400 hover:text-white transition">Copier</button>
+            </div>
+            <pre class="p-4 text-xs overflow-x-auto"><code id="code-step11-view" class="language-swift">SignInWithAppleButton(.signIn) { request in
+    let nonce = randomNonceString()
+    authManager.currentNonce = nonce
+    request.requestedScopes = [.fullName, .email]
+    request.nonce = sha256(nonce)
+} onCompletion: { result in
+    switch result {
+    case .success(let authorization):
+        guard let credential = authorization.credential
+            as? ASAuthorizationAppleIDCredential,
+            let nonce = authManager.currentNonce else {
+            return
+        }
+        authManager.signInWithApple(
+            credential: credential,
+            nonce: nonce
+        )
+    case .failure(let error):
+        authManager.errorMessage = error.localizedDescription
+    }
+}
+.frame(height: 44)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>La fenêtre Apple s'affiche et l'utilisateur est connecté dans Firebase après avoir autorisé l'app.</span>
+      </div>
+    </article>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 12 : TESTS ET DÉPANNAGE               -->
+    <!-- ========================================== -->
+    <article id="card-step12" data-category="final" class="step-card glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <input type="checkbox" id="check-step12" onchange="toggleStep('step12')" class="custom-checkbox" title="Marquer comme complété">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="step-number-badge px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Étape 12</span>
+              <span class="text-xs font-mono text-gray-400">Tests &amp; dépannage</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Tester les trois parcours et corriger les erreurs</h2>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-300 leading-relaxed">
+        Votre module est terminé lorsque les trois parcours fonctionnent : inscription email, connexion Google, connexion Apple, puis déconnexion.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="p-4 rounded-xl success-box">
+          <div class="font-bold text-white mb-1">✅ Scénario Email</div>
+          <div class="leading-relaxed">Créer un compte avec un email valide et un mot de passe d'au moins 6 caractères, se déconnecter, puis se reconnecter.</div>
+        </div>
+        <div class="p-4 rounded-xl success-box">
+          <div class="font-bold text-white mb-1">✅ Scénario Google</div>
+          <div class="leading-relaxed">Appuyer sur le bouton Google, choisir un compte, vérifier que l'écran principal affiche l'email Google.</div>
+        </div>
+        <div class="p-4 rounded-xl success-box">
+          <div class="font-bold text-white mb-1">✅ Scénario Apple</div>
+          <div class="leading-relaxed">Appuyer sur le bouton Apple, autoriser, vérifier la connexion. Tester sur un appareil réel si le simulateur bloque.</div>
+        </div>
+        <div class="p-4 rounded-xl success-box">
+          <div class="font-bold text-white mb-1">✅ Scénario Déconnexion</div>
+          <div class="leading-relaxed">Depuis l'écran principal, se déconnecter et vérifier le retour immédiat à l'écran de connexion.</div>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleAccordion('hint-step12', this)" class="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1.5 transition">
+          <span>💡 Erreurs fréquentes et solutions</span>
+          <span class="accordion-arrow inline-block transition-transform duration-200">▾</span>
+        </button>
+        <div id="hint-step12" class="accordion-content">
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 leading-relaxed space-y-2">
+            <div><strong class="text-white">« FirebaseApp.configure() has not been called »</strong> : l'initialisation manque dans le <code class="text-blue-300 font-mono">init()</code> de l'App, ou le plist n'est pas dans la target.</div>
+            <div><strong class="text-white">« The supplied auth credential is malformed »</strong> : le Bundle Identifier ne correspond pas à celui enregistré dans Firebase.</div>
+            <div><strong class="text-white">« OPERATION_NOT_ALLOWED »</strong> : le fournisseur n'est pas activé dans Authentication &gt; Sign-in method.</div>
+            <div><strong class="text-white">Google ne revient pas dans l'app</strong> : URL Scheme <code class="text-blue-300 font-mono">REVERSED_CLIENT_ID</code> manquant, ou <code class="text-blue-300 font-mono">onOpenURL</code> absent.</div>
+            <div><strong class="text-white">« Missing or invalid nonce »</strong> : le nonce envoyé à Apple n'est pas le SHA-256 du nonce brut, ou <code class="text-blue-300 font-mono">currentNonce</code> a été perdu.</div>
+            <div><strong class="text-white">Apple ne s'ouvre pas</strong> : capacité Sign in with Apple absente, ou compte Apple Developer non configuré.</div>
+            <div><strong class="text-white">Erreur réseau</strong> : vérifiez la connexion Internet et que l'appareil/simulateur n'est pas bloqué par un pare-feu.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200">
+        🔎 Pour diagnostiquer : ouvrez la console Xcode (en bas de la fenêtre) et lisez le message d'erreur complet. Firebase indique souvent précisément le fournisseur ou la configuration en cause.
+      </div>
+
+      <div class="text-xs text-emerald-400 font-medium flex items-center gap-2 pt-2 border-t border-white/10">
+        <span>✓ Objectif de validation :</span>
+        <span>Les 3 méthodes de connexion et la déconnexion fonctionnent sur votre projet personnel.</span>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-white/10 py-8 text-center text-xs text-gray-500 bg-black/40 backdrop-blur-xl">
+    <div class="flex items-center justify-center gap-2 mb-2 flex-wrap">
+      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      <span class="text-gray-300 font-semibold">Module Firebase Auth</span>
+      <span class="text-gray-600">&bull;</span>
+      <a href="../presentation/index.html" class="text-orange-400 hover:underline">Diaporama Firebase</a>
+      <span class="text-gray-600">&bull;</span>
+      <a href="../../index.html" class="text-blue-400 hover:underline">Retour au portail</a>
+    </div>
+    <p>Conçu pour accompagner les étudiants pas à pas dans la mise en place d'une authentification Firebase sur leur projet iOS personnel.</p>
+  </footer>
+
+  <!-- Modal mot de passe -->
+  <div id="password-modal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] hidden items-center justify-center p-6">
+    <div class="glass-panel max-w-md w-full rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-lg">
+            🔐
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Corrections protégées</h3>
+            <p class="text-[11px] text-gray-400">Accès enseignant / sur consigne</p>
+          </div>
+        </div>
+        <button onclick="closePasswordModal()" class="text-gray-400 hover:text-white transition text-sm">✕</button>
+      </div>
+
+      <p class="text-xs text-gray-300 leading-relaxed mb-4">
+        Les solutions complètes de chaque étape sont verrouillées. Saisissez le mot de passe pour les déverrouiller :
+      </p>
+
+      <form onsubmit="event.preventDefault(); checkCorrectionPassword();" class="space-y-3">
+        <div>
+          <input id="pwd-input" type="password" placeholder="Mot de passe..." autocomplete="off"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 font-mono transition">
+          <div id="pwd-error" class="hidden mt-2 text-[11px] text-rose-400 flex items-center gap-1 font-medium">
+            <span>⚠️ Mot de passe incorrect. Demandez à votre enseignant.</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closePasswordModal()" class="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-gray-300 hover:text-white transition border border-white/10">
+            Annuler
+          </button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-400 hover:to-rose-500 text-xs font-bold text-white transition shadow-lg shadow-orange-500/20">
+            Déverrouiller
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
